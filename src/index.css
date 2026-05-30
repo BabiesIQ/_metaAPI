@@ -1,0 +1,515 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: "Figtree";
+    --font-body: "Figtree";
+    --font-mono: "JetBrains Mono";
+    --radius: 0.625rem;
+
+    --background: 0.99 0.002 260;
+    --foreground: 0.15 0.01 260;
+    --card: 1.0 0.0 0;
+    --card-foreground: 0.15 0.01 260;
+    --popover: 1.0 0.0 0;
+    --popover-foreground: 0.15 0.01 260;
+
+    --primary: 0.72 0.24 254;
+    --primary-foreground: 0.98 0.005 260;
+
+    --secondary: 0.95 0.01 260;
+    --secondary-foreground: 0.25 0.01 260;
+    --muted: 0.95 0.01 260;
+    --muted-foreground: 0.5 0.01 260;
+
+    --accent: 0.65 0.22 310;
+    --accent-foreground: 0.98 0.005 260;
+
+    --destructive: 0.62 0.21 25;
+    --destructive-foreground: 0.98 0.005 260;
+
+    --border: 0.9 0.01 260;
+    --input: 0.9 0.01 260;
+    --ring: 0.72 0.24 254;
+
+    --chart-1: 0.72 0.24 254;
+    --chart-2: 0.65 0.22 310;
+    --chart-3: 0.62 0.21 25;
+    --chart-4: 0.75 0.15 85;
+    --chart-5: 0.68 0.2 270;
+
+    --sidebar: 0.98 0 0;
+    --sidebar-foreground: 0.15 0.01 260;
+    --sidebar-primary: 0.72 0.24 254;
+    --sidebar-primary-foreground: 0.98 0.005 260;
+    --sidebar-accent: 0.95 0.01 260;
+    --sidebar-accent-foreground: 0.25 0.01 260;
+    --sidebar-border: 0.9 0.01 260;
+    --sidebar-ring: 0.72 0.24 254;
+  }
+
+  .dark {
+    --background: 0.08 0.005 260;
+    --foreground: 0.94 0.012 260;
+    --card: 0.14 0.008 260;
+    --card-foreground: 0.94 0.012 260;
+    --popover: 0.18 0.008 260;
+    --popover-foreground: 0.94 0.012 260;
+
+    --primary: 0.72 0.24 254;
+    --primary-foreground: 0.08 0.005 260;
+
+    --secondary: 0.18 0.008 260;
+    --secondary-foreground: 0.85 0.01 260;
+    --muted: 0.18 0.008 260;
+    --muted-foreground: 0.55 0.01 260;
+
+    --accent: 0.65 0.22 310;
+    --accent-foreground: 0.08 0.005 260;
+
+    --destructive: 0.62 0.21 25;
+    --destructive-foreground: 0.94 0.012 260;
+
+    --border: 0.22 0.008 260;
+    --input: 0.22 0.008 260;
+    --ring: 0.72 0.24 254;
+
+    --chart-1: 0.72 0.24 254;
+    --chart-2: 0.65 0.22 310;
+    --chart-3: 0.62 0.21 25;
+    --chart-4: 0.78 0.15 85;
+    --chart-5: 0.68 0.2 270;
+
+    --sidebar: 0.14 0.008 260;
+    --sidebar-foreground: 0.94 0.012 260;
+    --sidebar-primary: 0.72 0.24 254;
+    --sidebar-primary-foreground: 0.08 0.005 260;
+    --sidebar-accent: 0.18 0.008 260;
+    --sidebar-accent-foreground: 0.85 0.01 260;
+    --sidebar-border: 0.22 0.008 260;
+    --sidebar-ring: 0.72 0.24 254;
+  }
+
+  [data-theme="midnight"] {
+    --background: 0.12 0.04 254;
+    --foreground: 0.92 0.02 254;
+    --card: 0.16 0.05 254;
+    --card-foreground: 0.92 0.02 254;
+    --popover: 0.19 0.05 254;
+    --popover-foreground: 0.92 0.02 254;
+
+    --primary: 0.65 0.22 270;
+    --primary-foreground: 0.98 0 0;
+
+    --secondary: 0.2 0.05 254;
+    --secondary-foreground: 0.82 0.02 254;
+    --muted: 0.2 0.05 254;
+    --muted-foreground: 0.58 0.03 254;
+
+    --accent: 0.55 0.25 300;
+    --accent-foreground: 0.98 0 0;
+
+    --destructive: 0.62 0.21 25;
+    --destructive-foreground: 0.92 0.02 254;
+
+    --border: 0.25 0.05 254;
+    --input: 0.25 0.05 254;
+    --ring: 0.65 0.22 270;
+
+    --chart-1: 0.65 0.22 270;
+    --chart-2: 0.55 0.25 300;
+    --chart-3: 0.62 0.21 25;
+    --chart-4: 0.75 0.15 85;
+    --chart-5: 0.68 0.2 254;
+
+    --sidebar: 0.15 0.05 254;
+    --sidebar-foreground: 0.92 0.02 254;
+    --sidebar-primary: 0.65 0.22 270;
+    --sidebar-primary-foreground: 0.98 0 0;
+    --sidebar-accent: 0.2 0.05 254;
+    --sidebar-accent-foreground: 0.82 0.02 254;
+    --sidebar-border: 0.25 0.05 254;
+    --sidebar-ring: 0.65 0.22 270;
+
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/assets/fonts/Figtree.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono.woff2") format("woff2");
+  font-display: swap;
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .shadow-elevated {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px
+      rgba(0, 0, 0, 0.04);
+  }
+
+  .shadow-subtle {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .glass {
+    @apply backdrop-blur-md bg-opacity-10 border border-white border-opacity-10;
+  }
+
+  .gradient-primary {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--primary)) 0%,
+      oklch(var(--accent)) 100%
+    );
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  .fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Ripple effect */
+  .btn-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+  .ripple-circle {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple-expand 0.6s linear;
+    background-color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+  }
+  @keyframes ripple-expand {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* Marquee */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  /* Floating icons */
+  @keyframes float-up {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-18px) rotate(8deg);
+      opacity: 0.9;
+    }
+  }
+  .float-icon-1 {
+    animation: float-up 5s ease-in-out infinite;
+  }
+  .float-icon-2 {
+    animation: float-up 6.5s ease-in-out infinite 0.8s;
+  }
+  .float-icon-3 {
+    animation: float-up 4.5s ease-in-out infinite 1.5s;
+  }
+
+  /* Animated gradient CTA bg */
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  .animated-gradient-bg {
+    background: linear-gradient(
+      270deg,
+      oklch(0.08 0.005 260),
+      oklch(0.13 0.06 254),
+      oklch(0.11 0.05 310),
+      oklch(0.08 0.005 260)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 10s ease infinite;
+  }
+
+  /* Orb pulse */
+  @keyframes orb-pulse-1 {
+    0%,
+    100% {
+      transform: scale(1) translate(0, 0);
+      opacity: 0.55;
+    }
+    50% {
+      transform: scale(1.15) translate(24px, -18px);
+      opacity: 0.8;
+    }
+  }
+  @keyframes orb-pulse-2 {
+    0%,
+    100% {
+      transform: scale(1) translate(0, 0);
+      opacity: 0.45;
+    }
+    50% {
+      transform: scale(0.9) translate(-16px, 12px);
+      opacity: 0.65;
+    }
+  }
+  @keyframes orb-pulse-3 {
+    0%,
+    100% {
+      transform: scale(1) translate(0, 0);
+      opacity: 0.35;
+    }
+    50% {
+      transform: scale(1.2) translate(12px, 20px);
+      opacity: 0.6;
+    }
+  }
+  .orb-animate-1 {
+    animation: orb-pulse-1 10s ease-in-out infinite;
+  }
+  .orb-animate-2 {
+    animation: orb-pulse-2 14s ease-in-out infinite;
+  }
+  .orb-animate-3 {
+    animation: orb-pulse-3 18s ease-in-out infinite 2s;
+  }
+
+  /* Badge pulse glow */
+  @keyframes badge-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 oklch(0.72 0.24 254 / 0.6);
+    }
+    50% {
+      box-shadow: 0 0 0 7px oklch(0.72 0.24 254 / 0);
+    }
+  }
+  .badge-pulse {
+    animation: badge-pulse 2.2s ease-in-out infinite;
+  }
+
+  /* Cursor blink */
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+  .typewriter-cursor {
+    animation: blink 1s step-end infinite;
+  }
+
+  /* Plan card glow on hover */
+  .plan-card-glow:hover {
+    box-shadow: 0 0 32px -4px oklch(0.72 0.24 254 / 0.3), 0 12px 28px -8px
+      rgba(0, 0, 0, 0.3);
+    transform: translateY(-6px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s
+      cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Progress bar fill animation */
+  @keyframes fill-bar {
+    from {
+      width: 0%;
+    }
+  }
+  .bar-fill {
+    animation: fill-bar 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Checkmark draw animation */
+  @keyframes check-draw {
+    from {
+      stroke-dashoffset: 60;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .check-draw {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: check-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Musical note float-up animation (hero developer scene) */
+  @keyframes float-note {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(-10deg) scale(0.8);
+    }
+    20% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-70px) rotate(12deg) scale(1.1);
+    }
+  }
+
+  /* Animate gradient text */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+  /* Social icon hover glow */
+  .social-icon-github:hover {
+    color: oklch(0.85 0 0);
+  }
+  .social-icon-x:hover {
+    color: oklch(0.9 0 0);
+  }
+  .social-icon-youtube:hover {
+    color: oklch(0.65 0.22 25);
+  }
+
+  /* Endpoint card left-border glow on hover */
+  .endpoint-card-hover:hover {
+    border-left: 2px solid oklch(0.72 0.24 254);
+    background: oklch(0.72 0.24 254 / 0.04);
+    transition: border-left 0.2s ease, background 0.2s ease;
+  }
+
+  /* Waveform bar oscillation (for music visualizer) */
+  @keyframes waveform-bar {
+    0% {
+      transform: scaleY(0.3);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      oklch(0.72 0.24 254),
+      oklch(0.65 0.22 310)
+    );
+    transform-origin: left;
+    z-index: 9999;
+  }
+}
+
+/* Live indicator pulse — BabiesIQ header brand dot */
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7), 0 0 8px 2px
+      rgba(168, 85, 247, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0), 0 0 16px 4px
+      rgba(168, 85, 247, 0.3);
+  }
+}
+.live-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a855f7;
+  animation: live-pulse 2s ease-in-out infinite;
+  display: inline-block;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+[dir="rtl"] .rounded-l-lg {
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+[dir="rtl"] .rounded-r-lg {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
