@@ -31,7 +31,8 @@ async function parseResponse<T>(res: Response): Promise<ApiResponse<T>> {
 }
 
 async function adminFetch<T>(path: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
-  const url = `${BASE_URL()}/admin${path}`;
+  // FIX: /api/admin prefix so nginx /api/ proxy block handles it
+  const url = `${BASE_URL()}/api/admin${path}`;
   const res = await fetch(url, {
     credentials: "include",
     headers: {
@@ -55,9 +56,9 @@ export function getAdminMe() {
   return adminFetch<Admin>("/me");
 }
 
-// ── Stats ─────────────────────────────────────────────────────────────────────
+// ── Stats — FIX: backend route is /dashboard not /stats ──────────────────────
 export function getAdminStats() {
-  return adminFetch<AdminStats>("/stats");
+  return adminFetch<AdminStats>("/dashboard");
 }
 
 // ── Users ─────────────────────────────────────────────────────────────────────
@@ -97,8 +98,9 @@ export function resetUserPassword(id: number, password: string) {
 export function changeUserRole(id: number, role: string, subscriptionMonths: number) {
   return adminFetch<{ message: string }>(`/users/${id}/change-role`, { method: "POST", body: JSON.stringify({ role, subscription_months: subscriptionMonths }) });
 }
-export function sendUserNotification(id: number, title: string, message: string, level: string, sendEmail: boolean) {
-  return adminFetch<{ message: string }>(`/users/${id}/notify`, { method: "POST", body: JSON.stringify({ title, message, level, send_email: sendEmail }) });
+// FIX: backend route is POST /notify-user (not /users/:id/notify)
+export function sendUserNotification(userId: number, title: string, message: string, level: string, sendEmail: boolean) {
+  return adminFetch<{ message: string }>("/notify-user", { method: "POST", body: JSON.stringify({ user_id: userId, title, message, level, send_email: sendEmail }) });
 }
 
 // ── Support ───────────────────────────────────────────────────────────────────
@@ -115,8 +117,9 @@ export function getSupportTicket(id: number) {
 export function replyToTicket(id: number, message: string, sendEmail: boolean) {
   return adminFetch<{ message: string }>(`/support/${id}/reply`, { method: "POST", body: JSON.stringify({ message, send_email: sendEmail }) });
 }
+// FIX: backend uses POST not PATCH
 export function updateTicketStatus(id: number, status: string) {
-  return adminFetch<{ message: string }>(`/support/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
+  return adminFetch<{ message: string }>(`/support/${id}/status`, { method: "POST", body: JSON.stringify({ status }) });
 }
 
 // ── Manage Admins ─────────────────────────────────────────────────────────────
@@ -129,9 +132,11 @@ export function addAdmin(data: { email: string; name: string; password: string; 
 export function removeAdmin(id: number) {
   return adminFetch<{ message: string }>(`/admins/${id}`, { method: "DELETE" });
 }
+// FIX: backend uses PUT
 export function updateAdminPermissions(id: number, permissions: string[]) {
   return adminFetch<{ message: string; permissions: string[] }>(`/admins/${id}/permissions`, { method: "PUT", body: JSON.stringify({ permissions }) });
 }
+// FIX: backend uses PUT not PATCH
 export function updateAdminStatus(id: number, status: string) {
-  return adminFetch<{ message: string }>(`/admins/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
+  return adminFetch<{ message: string }>(`/admins/${id}/status`, { method: "PUT", body: JSON.stringify({ status }) });
 }
