@@ -1,0 +1,40 @@
+{
+  "name": "BabiesIQ Web",
+  "description": "BabiesIQ — Developer Platform frontend. React + Vite SPA with API dashboard, pricing, docs, and admin panel.",
+  "keywords": ["react", "vite", "typescript", "tailwindcss", "shadcn", "babiesiq"],
+  "website": "https://github.com/YOUR_USERNAME/web-main",
+  "repository": "https://github.com/YOUR_USERNAME/web-main",
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "BACKEND_BASE_URL": {
+      "description": "Backend API ka base URL. Default: https://babyapi.pro — change karo agar alag server ho.",
+      "required": false,
+      "value": "https://babyapi.pro"
+    },
+    "WEBSITE_MODE": {
+      "description": "live ya test — live mode mein real payments, test mein sandbox.",
+      "required": false,
+      "value": "live"
+    },
+    "NODE_ENV": {
+      "description": "Node environment.",
+      "required": false,
+      "value": "production"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [],
+  "scripts": {
+    "postdeploy": "echo 'BabiesIQ Web deployed successfully!'"
+  }
+}
