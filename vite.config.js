@@ -41,6 +41,7 @@ export default defineConfig({
     allowedHosts: [
       "babyapi.pro",
       "www.babyapi.pro",
+      "api.babyapi.pro",
       "babiesiq.tech",
       "www.babiesiq.tech",
       "localhost",

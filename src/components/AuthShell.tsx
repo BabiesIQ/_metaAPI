@@ -165,7 +165,7 @@ export function AuthShell({ children }: AuthShellProps) {
                 </p>
                 <p className="pl-4">
                   <span className="text-emerald-400">
-                    `https://babyapi.pro/api/stream`
+                    `https://api.babyapi.pro/api/stream`
                   </span>
                   <span className="text-white/50">,</span>
                 </p>
