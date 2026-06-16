@@ -1,5 +1,5 @@
 {
   "WEBSITE_MODE": "live",
-  "BACKEND_BASE_URL": "https://babyapi.pro",
+  "BACKEND_BASE_URL": "https://api.babiesiq.tech.pro",
   "VERSION": "1.0.0"
 }
