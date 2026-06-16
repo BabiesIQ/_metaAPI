@@ -39,11 +39,11 @@ export default defineConfig({
     port: 5173,
 
     allowedHosts: [
-      "babyapi.pro",
-      "www.babyapi.pro",
-      "api.babyapi.pro",
       "babiesiq.tech",
       "www.babiesiq.tech",
+      "api.babiesiq.tech",
+      "babyapi.pro",
+      "www.babyapi.pro",
       "localhost",
       "127.0.0.1",
     ],

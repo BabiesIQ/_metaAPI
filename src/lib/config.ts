@@ -6,7 +6,7 @@ export type Config = {
 
 const defaultConfig: Config = {
   WEBSITE_MODE: "live",
-  BACKEND_BASE_URL: "https://api.babyapi.pro",
+  BACKEND_BASE_URL: "https://api.babiesiq.tech",
   VERSION: "1.0.0",
 };
 

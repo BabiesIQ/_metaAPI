@@ -110,7 +110,7 @@ export default function BillingPage() {
 
   const handleBuy = useCallback(async (planCode: string) => {
     if (planCode === "business") {
-      window.location.href = "mailto:support@babyapi.pro?subject=Business Plan Inquiry";
+      window.location.href = "mailto:support@babiesiq.tech?subject=Business Plan Inquiry";
       return;
     }
     setPaying(planCode);

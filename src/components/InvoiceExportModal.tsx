@@ -50,8 +50,8 @@ export function InvoiceExportModal({ open, invoice, userEmail, userName, onClose
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid #f3f4f6;">
     <div>
       <div style="font-size:28px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#7c3aed,#db2777);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">BabiesIQ</div>
-      <div style="font-size:12px;color:#9ca3af;margin-top:4px;">babyapi.pro</div>
-      <div style="font-size:12px;color:#9ca3af;">support@babyapi.pro</div>
+      <div style="font-size:12px;color:#9ca3af;margin-top:4px;">babiesiq.tech</div>
+      <div style="font-size:12px;color:#9ca3af;">support@babiesiq.tech</div>
     </div>
     <div style="text-align:right;">
       <div style="font-size:22px;font-weight:700;color:#111;letter-spacing:-0.3px;">INVOICE</div>
@@ -75,7 +75,7 @@ export function InvoiceExportModal({ open, invoice, userEmail, userName, onClose
     <div>
       <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#9ca3af;text-transform:uppercase;margin-bottom:8px;">From</div>
       <div style="font-size:14px;font-weight:600;color:#111;">BabiesIQ Technologies</div>
-      <div style="font-size:13px;color:#6b7280;margin-top:2px;">support@babyapi.pro</div>
+      <div style="font-size:13px;color:#6b7280;margin-top:2px;">support@babiesiq.tech</div>
     </div>
   </div>
 
@@ -114,13 +114,13 @@ export function InvoiceExportModal({ open, invoice, userEmail, userName, onClose
   <div style="padding:16px;background:#faf5ff;border:1px solid #ede9fe;border-radius:8px;margin-bottom:28px;">
     <p style="font-size:12px;color:#7c3aed;margin:0;line-height:1.6;">
       Thank you for subscribing to BabiesIQ. Your subscription has been activated and API access is now available.
-      For any billing queries, contact us at <strong>support@babyapi.pro</strong>.
+      For any billing queries, contact us at <strong>support@babiesiq.tech</strong>.
     </p>
   </div>
 
   <!-- Footer -->
   <div style="text-align:center;padding-top:20px;border-top:1px solid #f3f4f6;">
-    <p style="font-size:11px;color:#9ca3af;">© 2025 BabiesIQ · babyapi.pro · All prices in INR</p>
+    <p style="font-size:11px;color:#9ca3af;">© 2025 BabiesIQ · babiesiq.tech · All prices in INR</p>
   </div>
 </div>`;
 
