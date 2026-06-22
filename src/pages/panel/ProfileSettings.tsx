@@ -644,24 +644,31 @@ function ConnectedAppsCard() {
     queryKey: ["telegram-status"],
     queryFn: async () => {
       const res = await getTelegramStatus();
-      return res.data;
+      // Handle both old format {connected,...} and new format {success, data:{connected,...}}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = res as any;
+      if (typeof r?.success === "boolean") return r.data as { connected: boolean; telegram_id?: number; bot_url?: string } | null;
+      return r as { connected: boolean; telegram_id?: number; bot_url?: string };
     },
   });
 
   const disconnectMutation = useMutation({
     mutationFn: () => telegramDisconnect(),
     onSuccess: (res) => {
-      if (res.success) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = res as any;
+      const succeeded = r?.success === true || r?.status === "disconnected";
+      if (succeeded) {
         toast.success("Telegram disconnected successfully");
         refetch();
       } else {
-        toast.error(res.error ?? "Failed to disconnect");
+        toast.error(r?.error ?? r?.message ?? "Failed to disconnect");
       }
     },
     onError: () => toast.error("Network error"),
   });
 
-  const botUrl = data?.bot_url ?? "https://t.me/BabyAPIBot";
+  const botUrl = data?.bot_url ?? "https://t.me/BabiesIQBot";
   const isConnected = !!data?.connected;
 
   return (
