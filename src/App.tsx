@@ -29,6 +29,7 @@ import { PasswordSuccessPage } from "@/pages/auth/PasswordSuccess";
 import { VerifyOtpPage } from "@/pages/auth/VerifyOtp";
 
 import { CookieConsent } from "@/components/CookieConsent";
+import { TelegramConnectPage } from "@/pages/TelegramConnect";
 import { ApiKeysPage } from "@/pages/panel/ApiKeys";
 import { BillingPage } from "@/pages/panel/Billing";
 // Panel pages
@@ -173,6 +174,11 @@ const panelProfileRoute = createRoute({
   path: "/panel/profile-settings",
   component: ProfileSettingsPage,
 });
+const telegramConnectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/connect/telegram",
+  component: TelegramConnectPage,
+});
 
 // ── Router ────────────────────────────────────────────────────────────────────
 
@@ -207,6 +213,7 @@ const routeTree = rootRoute.addChildren([
   panelInvoicesRoute,
   panelNotificationsRoute,
   panelProfileRoute,
+  telegramConnectRoute,
   adminLoginRoute,
   adminDashboardRoute,
   adminUsersRoute,

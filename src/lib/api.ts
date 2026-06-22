@@ -324,6 +324,41 @@ export function deleteNotifications(ids: string[]) {
   });
 }
 
+// ── Telegram — PUBLIC + PROTECTED ─────────────────────────────────────────────
+
+export function checkTelegramToken(token: string) {
+  return publicApiClient<{ status: string; telegram_id?: number }>(
+    `/api/telegram/check?token=${encodeURIComponent(token)}`,
+  );
+}
+
+export function linkTelegramAuth(token: string) {
+  return protectedApiClient<{
+    status: string;
+    telegram_id?: number;
+    user_id?: number;
+    bot_url?: string;
+  }>("/api/v1/telegram/link", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+}
+
+export function getTelegramStatus() {
+  return protectedApiClient<{
+    connected: boolean;
+    telegram_id?: number;
+    bot_url?: string;
+  }>("/api/v1/telegram/status");
+}
+
+export function telegramDisconnect() {
+  return protectedApiClient<{ status: string; message?: string }>(
+    "/api/v1/telegram/disconnect",
+    { method: "POST" },
+  );
+}
+
 // ── Contact — PUBLIC ──────────────────────────────────────────────────────────
 
 export function submitContact(data: {

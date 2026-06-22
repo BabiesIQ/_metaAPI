@@ -7,12 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
-import { changePassword, updateProfile } from "@/lib/api";
+import { changePassword, getTelegramStatus, telegramDisconnect, updateProfile } from "@/lib/api";
 import { PLAN_COLORS, PLAN_LABELS } from "@/types/index";
 import type { PlanCode } from "@/types/index";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Camera, Eye, EyeOff, Lock, Save, Shield, User } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Camera, Eye, EyeOff, Link2, Link2Off, Lock, Save, Shield, User } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -620,9 +620,142 @@ export function ProfileSettingsPage() {
                 </CardContent>
               </Card>
             </motion.div>
+            {/* Card 3 — Connected Apps */}
+            <ConnectedAppsCard />
           </div>
         </PageTransition>
       </DashboardLayout>
     </ProtectedRoute>
+  );
+}
+
+// ── Connected Apps Card ────────────────────────────────────────────────────────
+
+function TelegramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+    </svg>
+  );
+}
+
+function ConnectedAppsCard() {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["telegram-status"],
+    queryFn: async () => {
+      const res = await getTelegramStatus();
+      return res.data;
+    },
+  });
+
+  const disconnectMutation = useMutation({
+    mutationFn: () => telegramDisconnect(),
+    onSuccess: (res) => {
+      if (res.success) {
+        toast.success("Telegram disconnected successfully");
+        refetch();
+      } else {
+        toast.error(res.error ?? "Failed to disconnect");
+      }
+    },
+    onError: () => toast.error("Network error"),
+  });
+
+  const botUrl = data?.bot_url ?? "https://t.me/BabyAPIBot";
+  const isConnected = !!data?.connected;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: 0.2 }}
+    >
+      <Card className="bg-card border-border shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="font-display text-base flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Link2 className="w-4 h-4 text-primary" />
+            </div>
+            Connected Apps
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Connect external apps to enable quick login and bot commands.
+          </p>
+
+          <div className="rounded-xl border border-border bg-background p-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#229ED9]/10 flex items-center justify-center">
+                  <TelegramIcon className="w-5 h-5 text-[#229ED9]" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground text-sm">Telegram</p>
+                  {isLoading ? (
+                    <div className="h-3 w-24 rounded bg-muted/50 animate-pulse mt-1" />
+                  ) : isConnected ? (
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span className="text-xs text-emerald-500">Connected</span>
+                      {data?.telegram_id && (
+                        <span className="text-xs text-muted-foreground">
+                          · ID {data.telegram_id}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                      <span className="text-xs text-muted-foreground">Not connected</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {isConnected ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="border-destructive/40 text-destructive hover:bg-destructive/5 hover:border-destructive gap-1.5 text-xs"
+                    disabled={disconnectMutation.isPending}
+                    onClick={() => disconnectMutation.mutate()}
+                  >
+                    {disconnectMutation.isPending ? (
+                      <Spinner />
+                    ) : (
+                      <Link2Off className="w-3.5 h-3.5" />
+                    )}
+                    Disconnect
+                  </Button>
+                ) : (
+                  <a
+                    href={botUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border hover:border-primary/40 text-xs font-medium text-foreground transition-colors"
+                  >
+                    <TelegramIcon className="w-3.5 h-3.5 text-[#229ED9]" />
+                    Connect via Bot
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {!isConnected && !isLoading && (
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <p className="text-xs text-muted-foreground">
+                  Open the Telegram bot and use{" "}
+                  <code className="bg-muted px-1 py-0.5 rounded">/login</code> →{" "}
+                  <span className="text-foreground font-medium">◈ Automated Login</span> to connect.
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
