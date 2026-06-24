@@ -6,7 +6,8 @@
 
 [![API Status](https://img.shields.io/badge/API-Live-22c55e?style=for-the-badge&logo=statuspage&logoColor=white)](https://babyapi.pro)&nbsp;[![Version](https://img.shields.io/badge/v1.0.0-stable-6366f1?style=for-the-badge)](https://babyapi.pro)&nbsp;[![FFmpeg](https://img.shields.io/badge/FFmpeg-Powered-007808?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)&nbsp;[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-**Base URL:** `https://babyapi.pro/api/v1`
+**Website URL:** `https://babiesIQ.Tech`
+**Backend URL:** `https://api.babiesIQ.Tech`
 
 </div>
 
@@ -19,12 +20,10 @@
 | `/media/song` | `GET` | Song stream / download |
 | `/media/video` | `GET` | Video stream / download |
 | `/media/search` | `GET` | Search songs & videos |
-| `/media/meta` | `GET` | Metadata only (no download) |
+| `/media/meta` | `GET` | Metadata only (no download) <br> <span style="color:red">🚧 Soon Available</span> |
 | `/media/thumbnail` | `GET` | Thumbnail image |
-| `/media/lyrics` | `GET` | Song lyrics |
 | `/media/formats` | `GET` | Available quality formats list |
-| `/media/playlist` | `GET` | Playlist info & all tracks |
-
+| `/media/playlist` | `GET` | Playlist info & all tracks <br> <span style="color:red">🚧 Soon Available</span> |
 ---
 
 ## 🔑 Authentication
