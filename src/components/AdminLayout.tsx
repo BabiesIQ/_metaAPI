@@ -4,9 +4,11 @@ import {
   BarChart2,
   Bell,
   ChevronRight,
+  Globe,
   Headphones,
   Key,
   LogOut,
+  Megaphone,
   Menu,
   Settings,
   Shield,
@@ -25,10 +27,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard",    path: "/admin/dashboard",  icon: BarChart2  },
-  { label: "Users",        path: "/admin/users",      icon: Users,     perm: "view_users"   },
-  { label: "Support",      path: "/admin/support",    icon: Headphones, perm: "view_support" },
-  { label: "Manage Admins",path: "/admin/admins",     icon: Shield,    ownerOnly: true      },
+  { label: "Dashboard",       path: "/admin/dashboard",     icon: BarChart2                       },
+  { label: "Users",           path: "/admin/users",         icon: Users,     perm: "view_users"   },
+  { label: "Support",         path: "/admin/support",       icon: Headphones, perm: "view_support" },
+  { label: "Announcements",   path: "/admin/announcements", icon: Megaphone, ownerOnly: true      },
+  { label: "Trusted Domains", path: "/admin/domains",       icon: Globe,     ownerOnly: true      },
+  { label: "Manage Admins",   path: "/admin/admins",        icon: Shield,    ownerOnly: true      },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
