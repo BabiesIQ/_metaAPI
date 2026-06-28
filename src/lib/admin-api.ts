@@ -114,10 +114,24 @@ export function listSupportTickets(params: { status?: string; page?: number; lim
 export function getSupportTicket(id: number) {
   return adminFetch<ContactMessage>(`/support/${id}`);
 }
-export function replyToTicket(id: number, message: string, sendEmail: boolean) {
-  return adminFetch<{ message: string }>(`/support/${id}/reply`, { method: "POST", body: JSON.stringify({ message, send_email: sendEmail }) });
-}
-// FIX: backend uses POST not PATCH
+export function replyToTicket(
+    id: number,
+    message: string,
+    sendEmail: boolean,
+    sendNotification: boolean = true,
+    sendTelegram: boolean = false
+  ) {
+    return adminFetch<{ message: string }>(`/support/${id}/reply`, {
+      method: "POST",
+      body: JSON.stringify({
+        message,
+        send_email: sendEmail,
+        send_notification: sendNotification,
+        send_telegram: sendTelegram,
+      }),
+    });
+  }
+  // FIX: backend uses POST not PATCH
 export function updateTicketStatus(id: number, status: string) {
   return adminFetch<{ message: string }>(`/support/${id}/status`, { method: "POST", body: JSON.stringify({ status }) });
 }
