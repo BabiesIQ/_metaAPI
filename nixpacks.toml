@@ -1,9 +1,9 @@
+# cache-bust: 2026-06-28
 [phases.install]
 cmds = ["npm install --include=dev"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = ["rm -rf dist && npm run build"]
 
 [start]
 cmd = "node server.js"
-
