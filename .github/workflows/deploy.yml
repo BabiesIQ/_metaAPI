@@ -3,10 +3,11 @@ name: Deploy to Railway
   on:
     push:
       branches: [main]
+    workflow_dispatch:
 
   jobs:
     deploy:
-      name: Deploy Web to Railway
+      name: Build & Deploy to Railway
       runs-on: ubuntu-latest
       steps:
         - name: Checkout code
@@ -21,14 +22,12 @@ name: Deploy to Railway
         - name: Install dependencies
           run: npm install --include=dev
 
-        - name: Build app
+        - name: Build
           run: npm run build
 
-        - name: Install Railway CLI
-          run: npm install -g @railway/cli
-
         - name: Deploy to Railway
-          run: railway up --service web --detach
-          env:
-            RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          uses: bervProject/railway-deploy@main
+          with:
+            railway_token: ${{ secrets.RAILWAY_TOKEN }}
+            service: web
   
