@@ -7,6 +7,7 @@ export interface AnnouncementListItem {
   pinned: boolean;
   author_name: string;
   view_count: number;
+  reactions: Record<string, number>;
   publish_at: string | null;
   created_at: string;
   updated_at: string;
