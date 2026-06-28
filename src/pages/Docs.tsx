@@ -13,11 +13,14 @@ import {
   ChevronDown,
   Code2,
   Copy,
+  Download,
   Gauge,
   Key,
   Music2,
+  Package,
   PlayCircle,
   Sliders,
+  Terminal,
   Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
@@ -34,6 +37,8 @@ type SectionId =
   | "rate-limits"
   | "eq-presets"
   | "code-examples"
+  | "sdk"
+  | "cli"
   | "try-it";
 
 interface NavItem {
@@ -971,6 +976,224 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
                 lang={codeLang.toLowerCase()}
                 code={CODE_EXAMPLES[codeLang]}
               />
+            </section>
+
+
+            {/* ── SDK Downloads ── */}
+            <section className="mb-14" data-ocid="docs.sdk.section">
+              <SectionHeading
+                id="sdk"
+                title="SDKs & Libraries"
+                subtitle="Official client libraries for popular languages — zero boilerplate, typed responses."
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  {
+                    lang: "Python",
+                    pkg: "babiesiq",
+                    install: "pip install babiesiq",
+                    usage: `from babiesiq import BabiesIQ
+client = BabiesIQ(api_key="YOUR_KEY")
+results = client.search("shape of you")
+audio_url = client.song(results[0]["id"])
+print(audio_url)`,
+                    badge: "PyPI",
+                    color: "from-blue-500/20 to-cyan-500/20",
+                    border: "border-blue-500/25",
+                    icon: "🐍",
+                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/python",
+                  },
+                  {
+                    lang: "JavaScript / TypeScript",
+                    pkg: "babiesiq",
+                    install: "npm install babiesiq",
+                    usage: `import { BabiesIQ } from 'babiesiq';
+const client = new BabiesIQ({ apiKey: 'YOUR_KEY' });
+const results = await client.search('shape of you');
+const { stream } = await client.song(results[0].id);
+console.log(stream);`,
+                    badge: "npm",
+                    color: "from-yellow-500/20 to-amber-500/20",
+                    border: "border-yellow-500/25",
+                    icon: "⚡",
+                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/javascript",
+                  },
+                  {
+                    lang: "Go",
+                    pkg: "github.com/BabiesIQ/BabiesIQ_API/sdk/go",
+                    install: "go get github.com/BabiesIQ/BabiesIQ_API/sdk/go",
+                    usage: `import babiesiq "github.com/BabiesIQ/BabiesIQ_API/sdk/go"
+client := babiesiq.New("YOUR_KEY")
+results, _ := client.Search("shape of you")
+song, _ := client.Song(results[0].ID)
+fmt.Println(song.Stream)`,
+                    badge: "go get",
+                    color: "from-cyan-500/20 to-teal-500/20",
+                    border: "border-cyan-500/25",
+                    icon: "🔵",
+                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/go",
+                  },
+                  {
+                    lang: "PHP",
+                    pkg: "babiesiq/babiesiq-php",
+                    install: "composer require babiesiq/babiesiq-php",
+                    usage: `use BabiesIQ\BabiesIQ;
+$client = new BabiesIQ('YOUR_KEY');
+$results = $client->search('shape of you');
+$song = $client->song($results[0]['id']);
+echo $song['stream'];`,
+                    badge: "Composer",
+                    color: "from-violet-500/20 to-purple-500/20",
+                    border: "border-violet-500/25",
+                    icon: "🐘",
+                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/php",
+                  },
+                ].map((sdk, i) => {
+                  const [codeOpen, setCodeOpen] = [false, () => {}];
+                  return (
+                    <motion.div
+                      key={sdk.lang}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-30px" }}
+                      transition={{ duration: 0.4, delay: i * 0.08 }}
+                      className={`rounded-xl border ${sdk.border} bg-gradient-to-br ${sdk.color} p-4 flex flex-col gap-3`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-2xl">{sdk.icon}</span>
+                          <div>
+                            <h3 className="font-semibold text-sm text-foreground">{sdk.lang}</h3>
+                            <span className="text-[10px] font-mono text-muted-foreground">{sdk.badge}</span>
+                          </div>
+                        </div>
+                        <a
+                          href={sdk.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[11px] text-primary hover:text-primary/80 transition-colors font-medium"
+                        >
+                          <Download className="w-3 h-3" />
+                          Source
+                        </a>
+                      </div>
+                      <CopyableCode code={sdk.install} lang="bash" />
+                      <details className="group">
+                        <summary className="text-[11px] text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none list-none flex items-center gap-1">
+                          <Code2 className="w-3 h-3" />
+                          Quick example
+                          <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform duration-200" />
+                        </summary>
+                        <div className="mt-2">
+                          <CopyableCode code={sdk.usage} lang={sdk.lang.toLowerCase().split("/")[0].trim()} />
+                        </div>
+                      </details>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <div className="rounded-xl border border-border bg-muted/20 p-4 flex items-start gap-3">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground">
+                  All SDKs are open source and maintained in the{" "}
+                  <a href="https://github.com/BabiesIQ/BabiesIQ_API" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                    BabiesIQ_API repository
+                  </a>
+                  . Community contributions welcome.
+                </p>
+              </div>
+            </section>
+
+            {/* ── CLI Tool ── */}
+            <section className="mb-14" data-ocid="docs.cli.section">
+              <SectionHeading
+                id="cli"
+                title="CLI Tool"
+                subtitle="Use BabiesIQ directly from your terminal — search, download, and stream without writing any code."
+              />
+              <div className="mb-5 rounded-xl border border-border bg-card overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                  </div>
+                  <span className="text-[10px] font-mono text-muted-foreground ml-2">Terminal</span>
+                </div>
+                <div className="p-4 space-y-4">
+                  {[
+                    {
+                      title: "Install",
+                      code: `# Using Go (recommended)
+go install github.com/BabiesIQ/BabiesIQ_API/cli@latest
+
+# Or clone and build manually
+git clone https://github.com/BabiesIQ/BabiesIQ_API.git
+cd BabiesIQ_API/cli && go build -o babiesiq .`,
+                    },
+                    {
+                      title: "Configure",
+                      code: `# Set your API key (stored in ~/.babiesiq/config.json)
+babiesiq config set api-key YOUR_API_KEY
+
+# Or use environment variable
+export BABIESIQ_API_KEY=YOUR_API_KEY`,
+                    },
+                    {
+                      title: "Search & Download",
+                      code: `# Search for a song
+babiesiq search "shape of you"
+
+# Download audio (MP3)
+babiesiq song "shape of you" --download --out ./music/
+
+# Apply EQ preset while downloading
+babiesiq song JGwWNGJdvx8 --eq bass_boost --download
+
+# Search for a video and download
+babiesiq video "lofi hip hop" --download
+
+# Generate a YouTube thumbnail (design 1-20)
+babiesiq thumbnail JGwWNGJdvx8 --design 5 --out ./thumbs/`,
+                    },
+                    {
+                      title: "Streaming",
+                      code: `# Get stream URL (prints to stdout)
+babiesiq song "shape of you" --stream-url
+
+# Play directly with mpv/ffplay
+babiesiq song "shape of you" --stream-url | xargs mpv
+
+# Pipe to ffmpeg for transcoding
+babiesiq song JGwWNGJdvx8 --stream-url | xargs ffmpeg -i - output.ogg`,
+                    },
+                  ].map((item) => (
+                    <div key={item.title}>
+                      <p className="text-[10px] font-mono text-primary uppercase tracking-widest mb-1.5">
+                        # {item.title}
+                      </p>
+                      <CopyableCode code={item.code} lang="bash" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { icon: Terminal, title: "Cross-platform", desc: "Works on macOS, Linux, and Windows (WSL)" },
+                  { icon: Zap, title: "Fast", desc: "Native Go binary — starts in <10ms, no runtime needed" },
+                  { icon: Key, title: "Secure", desc: "API key stored locally, never transmitted beyond BabiesIQ API" },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <div key={title} className="rounded-lg border border-border bg-muted/20 p-3.5 flex gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">{title}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
 
             {/* ── Try It ── */}
