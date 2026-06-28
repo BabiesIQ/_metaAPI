@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@tanstack/react-router";
 import {
   Bell,
+  Megaphone,
   ChevronDown,
   Globe,
   LayoutDashboard,
@@ -25,6 +26,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n, { SUPPORTED_LANGUAGES, applyDocumentDir } from "../lib/i18n";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { UpdateChannel } from "./UpdateChannel";
 
 const NAV_KEYS = [
   { key: "home", to: "/" },
@@ -133,6 +135,7 @@ function LanguageSwitcher() {
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [channelOpen, setChannelOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const { t } = useTranslation();
 
@@ -277,6 +280,22 @@ export function Header() {
           <LanguageSwitcher />
           <ThemeSwitcher />
 
+          {/* BabiesIQ Update Channel button */}
+          <button
+            type="button"
+            onClick={() => setChannelOpen(true)}
+            className="relative flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200"
+            aria-label="BabiesIQ Update Channel"
+            title="BabiesIQ Update"
+            data-ocid="header.channel.button"
+          >
+            <Megaphone className="w-4 h-4" />
+            <span
+              className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-black"
+              style={{ background: "linear-gradient(135deg, #a855f7, #ec4899)" }}
+            />
+          </button>
+
           {isAuthenticated ? (
             <div className="flex items-center gap-1.5 pl-1">
               {/* Notification bell */}
@@ -411,6 +430,19 @@ export function Header() {
         <div className="md:hidden flex items-center gap-1.5">
           <LanguageSwitcher />
           <ThemeSwitcher />
+          <button
+            type="button"
+            onClick={() => setChannelOpen(true)}
+            className="relative flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200"
+            aria-label="BabiesIQ Update Channel"
+            data-ocid="header.mobile_channel.button"
+          >
+            <Megaphone className="w-4 h-4" />
+            <span
+              className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-black"
+              style={{ background: "linear-gradient(135deg, #a855f7, #ec4899)" }}
+            />
+          </button>
           <button
             type="button"
             className="flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors duration-200"
@@ -552,5 +584,8 @@ export function Header() {
         )}
       </AnimatePresence>
     </header>
+
+    {/* BabiesIQ Update Channel Panel */}
+    <UpdateChannel open={channelOpen} onClose={() => setChannelOpen(false)} />
   );
 }
