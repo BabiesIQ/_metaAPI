@@ -1,9 +1,10 @@
-# cache-bust: 2026-06-28
-[phases.install]
-cmds = ["npm install --include=dev"]
+# cache-bust: 2026-06-28-v3
+  [phases.install]
+  cmds = ["npm install --include=dev"]
 
-[phases.build]
-cmds = ["rm -rf dist && npm run build"]
+  [phases.build]
+  cmds = ["rm -rf dist && npm run build"]
 
-[start]
-cmd = "node server.js"
+  [start]
+  cmd = "node server.js"
+  
