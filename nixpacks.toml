@@ -1,9 +1,9 @@
-# cache-bust: 2026-06-28-v4
+# cache-bust: 2026-06-29
 [phases.install]
-cmds = ["npm install --include=dev"]
+cmds = ["pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["rm -rf dist && npm run build"]
+cmds = ["rm -rf dist && pnpm run build"]
 
 [start]
 cmd = "node server.js"
