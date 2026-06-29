@@ -1,5 +1,5 @@
 {
-  "WEBSITE_MODE": "live",
   "BACKEND_BASE_URL": "https://api.babiesiq.tech",
-  "VERSION": "1.0.0"
+  "WEBSITE_MODE": "live",
+  "VERSION": "2.0.0"
 }
