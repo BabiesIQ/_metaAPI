@@ -540,6 +540,44 @@ function EqPresetBadge({ preset, delay }: { preset: string; delay: number }) {
   );
 }
 
+
+// ─── Language Icons ───────────────────────────────────────────────────────────
+function LangIcon({ lang }: { lang: string }) {
+  if (lang === "Python") {
+    return (
+      <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.914 0C5.82 0 6.2 2.656 6.2 2.656l.007 2.752h5.814v.826H3.9S0 5.789 0 11.969c0 6.18 3.403 5.963 3.403 5.963h2.031v-2.867s-.109-3.403 3.347-3.403h5.765s3.236.052 3.236-3.127V3.204S18.28 0 11.914 0zm-3.21 1.853a1.043 1.043 0 1 1 0 2.087 1.044 1.044 0 0 1 0-2.087z" fill="#3776AB"/>
+        <path d="M12.086 24c6.094 0 5.714-2.656 5.714-2.656l-.007-2.752h-5.814v-.826h8.121S24 18.211 24 12.031c0-6.18-3.403-5.963-3.403-5.963h-2.031v2.867s.109 3.403-3.347 3.403H9.454s-3.236-.052-3.236 3.127v5.331S5.72 24 12.086 24zm3.21-1.853a1.043 1.043 0 1 1 0-2.087 1.044 1.044 0 0 1 0 2.087z" fill="#FFD43B"/>
+      </svg>
+    );
+  }
+  if (lang === "JavaScript / TypeScript") {
+    return (
+      <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="2" fill="#F7DF1E"/>
+        <path d="M6.235 17.234l1.621-.981c.313.555.597.925 1.204.925.581 0 .95-.228.95-.925V9.897h1.994v6.397c0 1.534-.899 2.234-2.211 2.234-1.185 0-1.872-.613-2.228-1.294zm4.824-.24l1.621-.981c.399.654.921 1.134 1.844 1.134.777 0 1.277-.389 1.277-.932 0-.647-.512-.877-1.376-1.254l-.47-.201c-1.363-.58-2.267-1.31-2.267-2.855 0-1.42 1.083-2.5 2.775-2.5 1.206 0 2.071.419 2.692 1.516l-1.55.994c-.323-.578-.674-.803-1.142-.803-.52 0-.852.33-.852.803 0 .561.331.79 1.1 1.135l.47.201c1.607.688 2.512 1.39 2.512 2.967 0 1.698-1.334 2.636-3.127 2.636-1.754 0-2.886-.832-3.434-1.86z" fill="#323330"/>
+      </svg>
+    );
+  }
+  if (lang === "Go") {
+    return (
+      <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.811 10.231c-.047 0-.058-.023-.035-.059l.246-.315c.023-.035.081-.058.128-.058h4.172c.046 0 .058.035.035.07l-.199.303c-.023.036-.082.07-.117.07zm-.177 1.082c-.047 0-.059-.023-.035-.058l.245-.316c.023-.035.082-.058.129-.058h5.328c.047 0 .07.035.059.07l-.093.28c-.012.047-.059.07-.105.07zm2.828 1.075c-.047 0-.059-.035-.035-.07l.163-.292c.023-.035.07-.07.117-.07h2.337c.047 0 .07.035.07.082l-.023.28c0 .047-.047.082-.082.082z" fill="#00ADD8"/>
+        <path d="M19.753 11.143c-.745.186-1.257.327-1.99.514-.186.046-.198.058-.362-.117-.187-.198-.327-.327-.607-.444-.817-.397-1.608-.28-2.343.164-.876.537-1.327 1.35-1.304 2.38.023.98.679 1.795 1.655 1.913.817.105 1.514-.175 2.061-.7.105-.105.198-.222.315-.362h-2.225c-.245 0-.303-.152-.222-.35.152-.362.432-1.003.596-1.319.047-.105.152-.28.362-.28h4.793c-.058.585-.058 1.157-.152 1.716-.269 1.716-1.003 3.198-2.237 4.423-1.979 1.96-4.363 2.647-7.07 2.157-2.45-.444-4.22-1.842-5.235-4.07-.94-2.04-.69-4.14.315-6.04 1.074-2.051 2.694-3.38 5.012-3.79 1.876-.328 3.674-.023 5.247 1.015.77.503 1.327 1.191 1.702 2.017.094.163.07.222-.093.257z" fill="#00ADD8"/>
+      </svg>
+    );
+  }
+  if (lang === "PHP") {
+    return (
+      <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="12" cy="12" rx="12" ry="6.5" fill="#777BB4"/>
+        <path d="M5.996 14.577l.668-3.417h1.32c.74 0 1.262.197 1.568.59.306.392.386.937.24 1.633-.148.696-.439 1.246-.874 1.65-.435.403-.967.606-1.596.606H6.34l-.344-.01zm1.388-1.42l.343-.001c.25 0 .467-.09.65-.27.183-.18.307-.435.374-.766.064-.302.046-.534-.052-.694-.098-.16-.274-.24-.527-.24h-.37l-.418 1.971zm3.348 1.42l.667-3.417h.88l-.136.698h.36c.496 0 .853.088 1.07.264.217.175.29.45.219.824-.076.388-.261.69-.554.903-.292.213-.647.32-1.063.32l-.344-.001-.185.41h-.914zm1.175-1.01l.12-.583h.283c.218 0 .37.03.454.09.085.06.114.16.088.302-.026.137-.09.238-.19.302-.1.063-.242.095-.425.095l-.33-.001-.009-.205zm2.44 1.01l.668-3.417h.88l-.136.698h.36c.495 0 .852.088 1.07.264.216.175.29.45.218.824-.075.388-.26.69-.553.903-.293.213-.647.32-1.063.32l-.344-.001-.185.41h-.915zm1.176-1.01l.12-.583h.283c.217 0 .37.03.454.09.084.06.113.16.087.302-.025.137-.09.238-.19.302-.1.063-.24.095-.424.095l-.33-.001-.009-.205z" fill="#fff"/>
+      </svg>
+    );
+  }
+  return <span className="text-2xl">📦</span>;
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export function DocsPage() {
   const { t } = useTranslation();
@@ -991,7 +1029,7 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
                   {
                     lang: "Python",
                     pkg: "babiesiq",
-                    install: "pip install babiesiq",
+                    install: "pip install babiesiq-sdk",
                     usage: `from babiesiq import BabiesIQ
 client = BabiesIQ(api_key="YOUR_KEY")
 results = client.search("shape of you")
@@ -1000,8 +1038,7 @@ print(audio_url)`,
                     badge: "PyPI",
                     color: "from-blue-500/20 to-cyan-500/20",
                     border: "border-blue-500/25",
-                    icon: "🐍",
-                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/python",
+                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/python",
                   },
                   {
                     lang: "JavaScript / TypeScript",
@@ -1015,14 +1052,13 @@ console.log(stream);`,
                     badge: "npm",
                     color: "from-yellow-500/20 to-amber-500/20",
                     border: "border-yellow-500/25",
-                    icon: "⚡",
-                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/javascript",
+                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/javascript",
                   },
                   {
                     lang: "Go",
-                    pkg: "github.com/BabiesIQ/BabiesIQ_API/sdk/go",
-                    install: "go get github.com/BabiesIQ/BabiesIQ_API/sdk/go",
-                    usage: `import babiesiq "github.com/BabiesIQ/BabiesIQ_API/sdk/go"
+                    pkg: "github.com/BabiesIQ/babiesiq-sdk-go",
+                    install: "go get github.com/BabiesIQ/babiesiq-sdk-go",
+                    usage: `import babiesiq "github.com/BabiesIQ/babiesiq-sdk-go"
 client := babiesiq.New("YOUR_KEY")
 results, _ := client.Search("shape of you")
 song, _ := client.Song(results[0].ID)
@@ -1030,8 +1066,7 @@ fmt.Println(song.Stream)`,
                     badge: "go get",
                     color: "from-cyan-500/20 to-teal-500/20",
                     border: "border-cyan-500/25",
-                    icon: "🔵",
-                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/go",
+                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/go",
                   },
                   {
                     lang: "PHP",
@@ -1045,8 +1080,7 @@ echo $song['stream'];`,
                     badge: "Composer",
                     color: "from-violet-500/20 to-purple-500/20",
                     border: "border-violet-500/25",
-                    icon: "🐘",
-                    link: "https://github.com/BabiesIQ/BabiesIQ_API/tree/main/sdk/php",
+                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/php",
                   },
                 ].map((sdk, i) => {
                   const [codeOpen, setCodeOpen] = [false, () => {}];
@@ -1061,7 +1095,7 @@ echo $song['stream'];`,
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2.5">
-                          <span className="text-2xl">{sdk.icon}</span>
+                          <LangIcon lang={sdk.lang} />
                           <div>
                             <h3 className="font-semibold text-sm text-foreground">{sdk.lang}</h3>
                             <span className="text-[10px] font-mono text-muted-foreground">{sdk.badge}</span>
@@ -1096,8 +1130,8 @@ echo $song['stream'];`,
                 <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground">
                   All SDKs are open source and maintained in the{" "}
-                  <a href="https://github.com/BabiesIQ/BabiesIQ_API" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
-                    BabiesIQ_API repository
+                  <a href="https://github.com/BabiesIQ/web" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                    BabiesIQ/web repository
                   </a>
                   . Community contributions welcome.
                 </p>
@@ -1125,11 +1159,11 @@ echo $song['stream'];`,
                     {
                       title: "Install",
                       code: `# Using Go (recommended)
-go install github.com/BabiesIQ/BabiesIQ_API/cli@latest
+go install github.com/BabiesIQ/web/cli@latest
 
 # Or clone and build manually
-git clone https://github.com/BabiesIQ/BabiesIQ_API.git
-cd BabiesIQ_API/cli && go build -o babiesiq .`,
+git clone https://github.com/BabiesIQ/web.git
+cd web/cli && go build -o babiesiq .`,
                     },
                     {
                       title: "Configure",
