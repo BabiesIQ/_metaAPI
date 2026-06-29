@@ -28,6 +28,17 @@ class BabiesIQ
     public const SDK_VERSION = '2.0.0';
     public const DEFAULT_BASE_URL = 'https://api.babiesiq.tech';
 
+    /** @var array<string,string> SDK package metadata */
+    public static array $_metadata = [
+        'name'     => 'biq-api',
+        'version'  => '2.0.0',
+        'author'   => 'BabiesIQ Team',
+        'homepage' => 'https://babiesiq.tech',
+        'docs'     => 'https://babiesiq.tech/docs',
+        'source'   => 'https://github.com/BabiesIQ/web',
+        'language' => 'php',
+    ];
+
     private string $apiKey;
     private string $baseUrl;
     private int $maxRetries;
@@ -84,7 +95,7 @@ class BabiesIQ
                 CURLOPT_HTTPHEADER     => [
                     'X-API-Key: ' . $this->apiKey,
                     'Content-Type: application/json',
-                    'User-Agent: babiesiq-php/' . self::SDK_VERSION,
+                    'User-Agent: biq-api-php/' . self::SDK_VERSION,
                 ],
                 CURLOPT_CUSTOMREQUEST  => strtoupper($method),
             ]);

@@ -1,5 +1,5 @@
 {
-  "name": "@babiesiq/sdk",
+  "name": "biq-api",
   "version": "2.0.0",
   "description": "Official JavaScript/TypeScript SDK for BabiesIQ API",
   "main": "dist/index.js",
@@ -17,12 +17,12 @@
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "test": "vitest run"
   },
-  "keywords": ["babiesiq", "youtube", "audio", "video", "streaming", "sdk"],
+  "keywords": ["babiesiq", "biq-api", "youtube", "audio", "video", "streaming", "sdk"],
   "author": "BabiesIQ Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BabiesIQ/sdk-js"
+    "url": "https://github.com/BabiesIQ/web"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

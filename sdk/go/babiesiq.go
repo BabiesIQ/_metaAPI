@@ -32,6 +32,26 @@ const (
 	defaultTimeout    = 30 * time.Second
 )
 
+// Metadata contains SDK package information.
+// Usage: fmt.Println(babiesiq.Metadata.Version)
+var Metadata = struct {
+	Name     string
+	Version  string
+	Author   string
+	Homepage string
+	Docs     string
+	Source   string
+	Language string
+}{
+	Name:     "biq-api",
+	Version:  sdkVersion,
+	Author:   "BabiesIQ Team",
+	Homepage: "https://babiesiq.tech",
+	Docs:     "https://babiesiq.tech/docs",
+	Source:   "https://github.com/BabiesIQ/web",
+	Language: "go",
+}
+
 // Client is the BabiesIQ API client.
 type Client struct {
 	apiKey     string

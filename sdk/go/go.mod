@@ -1,3 +1,3 @@
-module github.com/BabiesIQ/babiesiq-sdk-go
+module github.com/BabiesIQ/biq-api-go
 
 go 1.21.0

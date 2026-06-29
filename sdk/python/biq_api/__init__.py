@@ -8,8 +8,20 @@ from .errors import AuthError, BabiesIQError, NotFoundError, RateLimitError, Tim
 from .models import SongResult, VideoResult, SearchResult, ThumbnailResult
 
 __version__ = "2.0.0"
+
+_metadata = {
+    "name": "biq-api",
+    "version": "2.0.0",
+    "author": "BabiesIQ Team",
+    "homepage": "https://babiesiq.tech",
+    "docs": "https://babiesiq.tech/docs",
+    "source": "https://github.com/BabiesIQ/web",
+    "language": "python",
+}
+
 __all__ = [
     "BabiesIQ",
+    "_metadata",
     "BabiesIQError",
     "AuthError",
     "RateLimitError",
