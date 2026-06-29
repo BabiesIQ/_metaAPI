@@ -149,7 +149,7 @@ func (c *Client) request(ctx context.Context, method, path string, params url.Va
 		}
 		req.Header.Set("X-API-Key", c.apiKey)
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("User-Agent", "babiesiq-go/"+sdkVersion)
+		req.Header.Set("User-Agent", "biq-api-go/"+sdkVersion)
 
 		resp, err := c.httpClient.Do(req)
 		if err != nil {
