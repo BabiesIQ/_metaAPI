@@ -1076,16 +1076,11 @@ fmt.Println(song.StreamURL)`,
                     pkg: "babiesiq/biq-api",
                     install: "composer require babiesiq/biq-api",
                     usage: `use BabiesIQ\BabiesIQ;
+echo BabiesIQ::$_metadata['version']; // 2.0.0
 
 $client = new BabiesIQ('biq_YOUR_KEY');
-
-// Search & stream
 $song = $client->songs->search('Shape of You');
-echo $song->streamUrl;
-
-// With EQ preset
-$bass = $client->songs->search('Shape of You', ['eq' => 'bass_boost']);
-echo $bass->streamUrl;`,
+echo $song->streamUrl;`,
                     badge: "Composer",
                     color: "from-violet-500/20 to-purple-500/20",
                     border: "border-violet-500/25",
