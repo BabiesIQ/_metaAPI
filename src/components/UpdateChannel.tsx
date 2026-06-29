@@ -31,12 +31,177 @@ function formatDate(d: string | Date): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-// Simple markdown → HTML renderer (no external deps)
+// ═══════════════════════════════════════════════════════════════
+// Syntax Highlighter — VS Code Dark+ palette, zero deps
+// ═══════════════════════════════════════════════════════════════
+
+const COLORS: Record<string, string> = {
+  comment:   "#6A9955", // green
+  string:    "#CE9178", // orange
+  keyword:   "#C792EA", // purple
+  type:      "#4EC9B0", // cyan
+  number:    "#B5CEA8", // light green
+  func:      "#DCDCAA", // yellow
+  variable:  "#9CDCFE", // light blue
+  operator:  "#89DDFF", // bright cyan
+  builtin:   "#82AAFF", // blue
+  decorator: "#82AAFF", // blue/violet
+};
+
+function ESC(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+type Rule = [string, RegExp]; // [tokenType, stickyRegex]
+
+function mk(rules: Array<[string, string | RegExp]>): Rule[] {
+  return rules.map(([t, re]) => [t, new RegExp(typeof re === "string" ? re : re.source, "y")] as Rule);
+}
+
+const RULES: Record<string, Rule[]> = {
+  python: mk([
+    ["comment",   /#[^\n]*/],
+    ["string",    /"""[\s\S]*?"""|'''[\s\S]*?'''|[bBfFrRuU]{0,2}"(?:[^"\\]|\\.)*"|[bBfFrRuU]{0,2}'(?:[^'\\]|\\.)*'/],
+    ["decorator", /@\w+/],
+    ["keyword",   /\b(?:def|class|import|from|return|if|elif|else|for|while|try|except|finally|with|as|in|not|and|or|is|None|True|False|pass|break|continue|lambda|yield|async|await|raise|del|global|nonlocal|assert)\b/],
+    ["type",      /\b(?:int|str|list|dict|tuple|set|bool|float|bytes|complex|frozenset|type|object|Any|Optional|Union|List|Dict|Tuple|Set)\b/],
+    ["builtin",   /\b(?:print|len|range|isinstance|issubclass|hasattr|getattr|setattr|open|super|zip|map|filter|enumerate|sorted|reversed|sum|min|max|abs|round|repr|input|vars|dir|id|hash|hex|bin|oct|next|iter)\b/],
+    ["func",      /\b[a-zA-Z_]\w*(?=\s*\()/],
+    ["number",    /\b(?:0x[0-9a-fA-F]+|0o[0-7]+|0b[01]+|\d+\.?\d*(?:[eE][+-]?\d+)?[jJ]?)\b/],
+    ["operator",  /[+\-*/%=<>!&|^~@]+|[,:.]/],
+  ]),
+
+  go: mk([
+    ["comment",   /\/\/[^\n]*|\/\*[\s\S]*?\*\//],
+    ["string",    /`[\s\S]*?`|"(?:[^"\\]|\\.)*"/],
+    ["keyword",   /\b(?:func|var|const|type|struct|interface|map|chan|go|defer|return|if|else|for|range|switch|case|default|break|continue|import|package|select|fallthrough|goto)\b/],
+    ["type",      /\b(?:string|int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|uintptr|float32|float64|complex64|complex128|bool|byte|rune|error|any)\b/],
+    ["builtin",   /\b(?:make|new|len|cap|append|copy|delete|close|panic|recover|print|println)\b/],
+    ["func",      /\b[a-zA-Z_]\w*(?=\s*\()/],
+    ["number",    /\b(?:0x[0-9a-fA-F]+|\d+\.?\d*(?:[eE][+-]?\d+)?i?)\b/],
+    ["operator",  /[:=<>!+\-*\/&|^%]+|[,;.]/],
+  ]),
+
+  bash: mk([
+    ["comment",   /#[^\n]*/],
+    ["string",    /"(?:[^"\\]|\\.)*"|'[^']*'/],
+    ["variable",  /\$\{[^}]*\}|\$[a-zA-Z_][a-zA-Z0-9_]*|\$\d+|\$[@#?!*$]/],
+    ["keyword",   /\b(?:if|then|else|elif|fi|for|do|done|while|until|case|esac|function|return|exit|in|select|break|continue|local|readonly|shift|trap)\b/],
+    ["builtin",   /\b(?:echo|printf|read|export|source|cd|ls|grep|awk|sed|curl|wget|git|mkdir|rm|rmdir|cp|mv|cat|head|tail|find|chmod|chown|sudo|apt|npm|pip|go|python|python3|node|bash|sh|touch|xargs)\b/],
+    ["func",      /\b[a-zA-Z_]\w*(?=\s*\()/],
+    ["operator",  /--?[a-zA-Z][a-zA-Z0-9_-]*/],
+    ["number",    /\b\d+\b/],
+  ]),
+
+  javascript: mk([
+    ["comment",   /\/\/[^\n]*|\/\*[\s\S]*?\*\//],
+    ["string",    /`(?:[^`\\]|\\.)*`|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/],
+    ["decorator", /@\w+/],
+    ["keyword",   /\b(?:const|let|var|function|return|if|else|for|while|do|class|import|export|from|default|async|await|try|catch|finally|new|this|typeof|instanceof|void|null|undefined|true|false|throw|extends|implements|super|switch|case|break|continue|of|in|delete|yield|static|get|set)\b/],
+    ["type",      /\b(?:string|number|boolean|any|void|never|unknown|object|Array|Promise|Record|Map|Set|Symbol|BigInt|Error|Object|Function|Date|RegExp|HTMLElement|Event|React)\b/],
+    ["builtin",   /\b(?:console|Math|JSON|parseInt|parseFloat|isNaN|isFinite|setTimeout|clearTimeout|setInterval|clearInterval|fetch|document|window|process|require|module|exports|localStorage|sessionStorage)\b/],
+    ["func",      /\b[a-zA-Z_$]\w*(?=\s*\()/],
+    ["number",    /\b(?:0x[0-9a-fA-F]+|0o[0-7]+|0b[01]+|\d+\.?\d*(?:[eE][+-]?\d+)?n?)\b/],
+    ["operator",  /[=<>!+\-*\/&|^%?:]+|[.,;]/],
+  ]),
+
+  rust: mk([
+    ["comment",   /\/\/[^\n]*|\/\*[\s\S]*?\*\//],
+    ["string",    /r#*"[\s\S]*?"#*|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/],
+    ["decorator", /#\[[\s\S]*?\]/],
+    ["keyword",   /\b(?:fn|let|mut|const|static|struct|enum|impl|trait|for|if|else|while|loop|match|return|use|mod|pub|crate|super|self|Self|where|type|async|await|move|ref|Box|Option|Result|Some|None|Ok|Err|true|false)\b/],
+    ["type",      /\b(?:i8|i16|i32|i64|i128|isize|u8|u16|u32|u64|u128|usize|f32|f64|bool|char|str|String|Vec|HashMap|HashSet)\b/],
+    ["builtin",   /\b(?:println|print|eprintln|eprint|format|panic|assert|assert_eq|assert_ne|todo|unimplemented|unreachable|dbg)\b/],
+    ["func",      /\b[a-zA-Z_]\w*(?=\s*\()/],
+    ["number",    /\b(?:0x[0-9a-fA-F_]+|0o[0-7_]+|0b[01_]+|\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?(?:i8|i16|i32|i64|i128|isize|u8|u16|u32|u64|u128|usize|f32|f64)?)\b/],
+    ["operator",  /[=<>!+\-*\/&|^%?:]+|[.,;]/],
+  ]),
+};
+
+RULES["typescript"] = RULES["javascript"];
+RULES["ts"]         = RULES["javascript"];
+RULES["js"]         = RULES["javascript"];
+RULES["jsx"]        = RULES["javascript"];
+RULES["tsx"]        = RULES["javascript"];
+RULES["sh"]         = RULES["bash"];
+RULES["shell"]      = RULES["bash"];
+RULES["zsh"]        = RULES["bash"];
+RULES["py"]         = RULES["python"];
+RULES["rs"]         = RULES["rust"];
+
+function applyRules(code: string, rules: Rule[]): string {
+  let out = "";
+  let i = 0;
+  while (i < code.length) {
+    let matched = false;
+    for (const [type, re] of rules) {
+      re.lastIndex = i;
+      const m = re.exec(code);
+      if (m) {
+        const color = COLORS[type] ?? "#E2E8F0";
+        out += `<span style="color:${color}">${ESC(m[0])}</span>`;
+        i += m[0].length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      out += ESC(code[i]);
+      i++;
+    }
+  }
+  return out;
+}
+
+function highlightCode(code: string, lang: string): string {
+  const rules = RULES[lang];
+  if (!rules) return ESC(code);
+  return applyRules(code, rules);
+}
+
+// Language badge metadata
+const LANG_META: Record<string, { label: string; bg: string; color: string }> = {
+  python:     { label: "Python",     bg: "#3776AB", color: "#FFD43B" },
+  py:         { label: "Python",     bg: "#3776AB", color: "#FFD43B" },
+  go:         { label: "Go",         bg: "#00ADD8", color: "#fff"    },
+  javascript: { label: "JavaScript", bg: "#F7DF1E", color: "#323330" },
+  js:         { label: "JavaScript", bg: "#F7DF1E", color: "#323330" },
+  jsx:        { label: "JSX",        bg: "#F7DF1E", color: "#323330" },
+  typescript: { label: "TypeScript", bg: "#3178C6", color: "#fff"    },
+  ts:         { label: "TypeScript", bg: "#3178C6", color: "#fff"    },
+  tsx:        { label: "TSX",        bg: "#3178C6", color: "#fff"    },
+  bash:       { label: "Bash",       bg: "#4EAA25", color: "#fff"    },
+  sh:         { label: "Shell",      bg: "#4EAA25", color: "#fff"    },
+  shell:      { label: "Shell",      bg: "#4EAA25", color: "#fff"    },
+  zsh:        { label: "Zsh",        bg: "#4EAA25", color: "#fff"    },
+  rust:       { label: "Rust",       bg: "#CE412B", color: "#fff"    },
+  rs:         { label: "Rust",       bg: "#CE412B", color: "#fff"    },
+  json:       { label: "JSON",       bg: "#555",    color: "#FFD700" },
+  yaml:       { label: "YAML",       bg: "#CB171E", color: "#fff"    },
+  sql:        { label: "SQL",        bg: "#F29111", color: "#fff"    },
+  html:       { label: "HTML",       bg: "#E34F26", color: "#fff"    },
+  css:        { label: "CSS",        bg: "#1572B6", color: "#fff"    },
+};
+
+function buildCodeBlock(lang: string, code: string): string {
+  const l = lang.toLowerCase();
+  const meta = LANG_META[l];
+  const highlighted = highlightCode(code, l);
+  const badge = meta
+    ? `<span class="md-lang-badge" style="background:${meta.bg};color:${meta.color}">${meta.label}</span>`
+    : lang
+    ? `<span class="md-lang-badge" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5)">${lang}</span>`
+    : "";
+  return `<div class="md-pre-wrap">${badge}<pre class="md-pre"><code>${highlighted}</code></pre></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Markdown renderer
+// ═══════════════════════════════════════════════════════════════
 function renderMarkdown(md: string): string {
   return md
-    // Code blocks (must come before inline code)
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_m, _lang, code) =>
-      `<pre class="md-pre"><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim()}</code></pre>`)
+    // Fenced code blocks — must be first
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_m, lang, code) => buildCodeBlock(lang, code.trim()))
     // Inline code
     .replace(/`([^`]+)`/g, '<code class="md-code">$1</code>')
     // Horizontal rule
@@ -46,9 +211,9 @@ function renderMarkdown(md: string): string {
     .replace(/^## (.+)$/gm, '<h2 class="md-h2">$1</h2>')
     .replace(/^# (.+)$/gm, '<h1 class="md-h1">$1</h1>')
     // Bold + Italic
-    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
     // Blockquote
     .replace(/^> (.+)$/gm, '<blockquote class="md-blockquote">$1</blockquote>')
     // Unordered list
@@ -56,25 +221,22 @@ function renderMarkdown(md: string): string {
     .replace(/(<li[\s\S]*?<\/li>(\n|$))+/g, (m) => `<ul class="md-ul">${m}</ul>`)
     // Ordered list
     .replace(/^\d+\. (.+)$/gm, '<li class="md-li">$1</li>')
-    // Table (basic)
+    // Table
     .replace(/(\|.+\|\n\|[-| :]+\|\n(\|.+\|\n?)+)/g, (table) => {
-      const rows = table.trim().split('\n').filter(r => !r.match(/^\|[-| :]+\|$/));
+      const rows = table.trim().split("\n").filter((r) => !r.match(/^\|[-| :]+\|$/));
       const [header, ...body] = rows;
-      const th = (header || '').split('|').filter(Boolean).map(c => `<th class="md-th">${c.trim()}</th>`).join('');
-      const trs = body.map(r => {
-        const tds = r.split('|').filter(Boolean).map(c => `<td class="md-td">${c.trim()}</td>`).join('');
+      const th = (header ?? "").split("|").filter(Boolean).map((c) => `<th class="md-th">${c.trim()}</th>`).join("");
+      const trs = body.map((r) => {
+        const tds = r.split("|").filter(Boolean).map((c) => `<td class="md-td">${c.trim()}</td>`).join("");
         return `<tr>${tds}</tr>`;
-      }).join('');
+      }).join("");
       return `<table class="md-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
     })
-    // Paragraphs (blank line separated)
+    // Paragraphs
     .replace(/\n\n(?!<)/g, '</p><p class="md-p">')
-    .replace(/^(?!<)(.+)$/gm, (line) => line.startsWith('<') ? line : line)
-    // Newlines inside paragraphs
-    .replace(/\n(?!<)/g, '<br />')
-    // Wrap in initial paragraph if doesn't start with tag
+    .replace(/\n(?!<)/g, "<br />")
     .replace(/^([^<])/, '<p class="md-p">$1')
-    .replace(/([^>])$/, '$1</p>');
+    .replace(/([^>])$/, "$1</p>");
 }
 
 function MarkdownContent({ content }: { content: string }) {
@@ -86,6 +248,9 @@ function MarkdownContent({ content }: { content: string }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// PostCard
+// ═══════════════════════════════════════════════════════════════
 type PostState = AnnouncementListItem & { reactions?: Record<string, number> };
 
 function PostCard({ ann, onReact }: {
@@ -105,8 +270,7 @@ function PostCard({ ann, onReact }: {
       const full = await fetchAnnouncementById(ann.id);
       if (full) {
         setContent(full.content ?? "");
-        // Backend incremented view on fetch, update local count
-        setViewCount((full.view_count ?? 0));
+        setViewCount(full.view_count ?? 0);
       }
       setLoadingContent(false);
     }
@@ -165,7 +329,7 @@ function PostCard({ ann, onReact }: {
         </div>
       )}
 
-      {/* Read more / collapse button */}
+      {/* Read more / collapse */}
       <div className="px-4 pb-2">
         <button
           type="button"
@@ -234,6 +398,9 @@ function PostCard({ ann, onReact }: {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// UpdateChannel panel
+// ═══════════════════════════════════════════════════════════════
 export function UpdateChannel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [posts, setPosts] = useState<PostState[]>([]);
   const [loading, setLoading] = useState(false);
