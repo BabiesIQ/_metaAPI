@@ -22,8 +22,10 @@ class BabiesIQ:
 
     Example::
 
+        from biq_api import BabiesIQ
         client = BabiesIQ(api_key="biq_your_key")
         song = client.songs.search("Shape of You")
+        print(song.stream_url)
     """
 
     def __init__(
@@ -66,7 +68,7 @@ class BabiesIQ:
         headers = {
             "X-API-Key": self._api_key,
             "Content-Type": "application/json",
-            "User-Agent": f"babiesiq-python/{SDK_VERSION}",
+            "User-Agent": f"biq-api-python/{SDK_VERSION}",
         }
 
         req = urllib.request.Request(url, data=data, headers=headers, method=method)

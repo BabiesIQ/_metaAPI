@@ -14,7 +14,6 @@ import { AnnouncementBar } from "@/components/AnnouncementBar";
 // ── Pages ─────────────────────────────────────────────────────────────────────
 import { ContactPage } from "@/pages/Contact";
 import { DocsPage } from "@/pages/Docs";
-import { SdkPage } from "@/pages/Sdk";
 import { ForgotPasswordPage } from "@/pages/ForgotPassword";
 import { HomePage } from "@/pages/Home";
 import { LoginPage } from "@/pages/Login";
@@ -84,7 +83,6 @@ const rootRoute = createRootRoute({ component: RootComponent });
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", component: HomePage });
 const pricingRoute = createRoute({ getParentRoute: () => rootRoute, path: "/pricing", component: PricingPage });
 const docsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/docs", component: DocsPage });
-const sdkRoute = createRoute({ getParentRoute: () => rootRoute, path: "/sdk", component: SdkPage });
 const contactRoute = createRoute({ getParentRoute: () => rootRoute, path: "/contact", component: ContactPage });
 const privacyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/privacy", component: PrivacyPage });
 const termsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/terms", component: TermsPage });
@@ -149,7 +147,6 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   pricingRoute,
   docsRoute,
-  sdkRoute,
   contactRoute,
   privacyRoute,
   termsRoute,

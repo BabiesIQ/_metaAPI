@@ -1,5 +1,6 @@
 """
-babiesiq — Official Python SDK for BabiesIQ API
+biq_api — Official Python SDK for BabiesIQ API
+pip install biq-api
 """
 
 from .client import BabiesIQ

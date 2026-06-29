@@ -1030,11 +1030,15 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
                     lang: "Python",
                     pkg: "biq-api",
                     install: "pip install biq-api",
-                    usage: `from babiesiq import BabiesIQ
-client = BabiesIQ(api_key="YOUR_KEY")
-results = client.search("shape of you")
-audio_url = client.song(results[0]["id"])
-print(audio_url)`,
+                    usage: `from biq_api import BabiesIQ
+
+client = BabiesIQ(api_key="biq_YOUR_KEY")
+song = client.songs.search("Shape of You")
+print(song.stream_url)
+
+# With EQ preset
+bass = client.songs.search("Shape of You", eq="bass_boost")
+print(bass.stream_url)`,
                     badge: "PyPI",
                     color: "from-blue-500/20 to-cyan-500/20",
                     border: "border-blue-500/25",
@@ -1045,10 +1049,16 @@ print(audio_url)`,
                     pkg: "babiesiq",
                     install: "npm install babiesiq",
                     usage: `import { BabiesIQ } from 'babiesiq';
-const client = new BabiesIQ({ apiKey: 'YOUR_KEY' });
-const results = await client.search('shape of you');
-const { stream } = await client.song(results[0].id);
-console.log(stream);`,
+
+const client = new BabiesIQ({ apiKey: 'biq_YOUR_KEY' });
+
+// Search & stream
+const song = await client.songs.search('Shape of You');
+console.log(song.streamUrl);
+
+// With EQ
+const bass = await client.songs.search('Shape of You', { eq: 'bass_boost' });
+console.log(bass.streamUrl);`,
                     badge: "npm",
                     color: "from-yellow-500/20 to-amber-500/20",
                     border: "border-yellow-500/25",
@@ -1059,10 +1069,17 @@ console.log(stream);`,
                     pkg: "github.com/BabiesIQ/babiesiq-sdk-go",
                     install: "go get github.com/BabiesIQ/babiesiq-sdk-go",
                     usage: `import babiesiq "github.com/BabiesIQ/babiesiq-sdk-go"
-client := babiesiq.New("YOUR_KEY")
-results, _ := client.Search("shape of you")
-song, _ := client.Song(results[0].ID)
-fmt.Println(song.Stream)`,
+
+client := babiesiq.New("biq_YOUR_KEY")
+
+// Search & stream
+song, _ := client.Songs.Search("Shape of You")
+fmt.Println(song.StreamURL)
+
+// With EQ preset
+bass, _ := client.Songs.Search("Shape of You",
+    babiesiq.WithEQ("bass_boost"))
+fmt.Println(bass.StreamURL)`,
                     badge: "go get",
                     color: "from-cyan-500/20 to-teal-500/20",
                     border: "border-cyan-500/25",
@@ -1073,10 +1090,16 @@ fmt.Println(song.Stream)`,
                     pkg: "babiesiq/babiesiq-php",
                     install: "composer require babiesiq/babiesiq-php",
                     usage: `use BabiesIQ\BabiesIQ;
-$client = new BabiesIQ('YOUR_KEY');
-$results = $client->search('shape of you');
-$song = $client->song($results[0]['id']);
-echo $song['stream'];`,
+
+$client = new BabiesIQ('biq_YOUR_KEY');
+
+// Search & stream
+$song = $client->songs->search('Shape of You');
+echo $song->streamUrl;
+
+// With EQ preset
+$bass = $client->songs->search('Shape of You', ['eq' => 'bass_boost']);
+echo $bass->streamUrl;`,
                     badge: "Composer",
                     color: "from-violet-500/20 to-purple-500/20",
                     border: "border-violet-500/25",
