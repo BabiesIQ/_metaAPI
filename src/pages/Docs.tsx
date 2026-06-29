@@ -1028,8 +1028,8 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
                 {[
                   {
                     lang: "Python",
-                    pkg: "babiesiq",
-                    install: "pip install babiesiq-sdk",
+                    pkg: "biq-api",
+                    install: "pip install biq-api",
                     usage: `from babiesiq import BabiesIQ
 client = BabiesIQ(api_key="YOUR_KEY")
 results = client.search("shape of you")
