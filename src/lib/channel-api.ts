@@ -1,5 +1,5 @@
 import { getBackendUrl } from "@/lib/config";
-import type { AnnouncementListItem } from "@/types/announcements";
+import type { Announcement, AnnouncementListItem } from "@/types/announcements";
 
 export const ALLOWED_REACTIONS = ["👍", "❤️", "🔥", "😂", "😮", "👏"] as const;
 export type ReactionEmoji = (typeof ALLOWED_REACTIONS)[number];
@@ -37,6 +37,22 @@ export async function fetchAnnouncements(): Promise<AnnouncementListItem[]> {
   }
 }
 
+// Fetches full announcement (with content) AND increments view count on backend
+export async function fetchAnnouncementById(id: number): Promise<Announcement | null> {
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/v1/announcements/${id}`, {
+      credentials: "omit",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    const json = await res.json() as { success: boolean; data: Announcement };
+    return json.success ? json.data : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function reactToAnnouncement(
   id: number,
   emoji: ReactionEmoji,
@@ -56,7 +72,6 @@ export async function reactToAnnouncement(
     if (!res.ok) return null;
     const json = await res.json() as { success: boolean; data: { reactions: Record<string, number> } };
     if (json.success) {
-      // Update local storage
       const stored = getStoredReactions();
       const current = stored[id] ?? [];
       if (action === "add") {
