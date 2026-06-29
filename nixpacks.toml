@@ -1,9 +1,7 @@
-# cache-bust: 2026-06-29
+# dist is pre-built locally and committed to repo
+# Railway only needs to install runtime deps and start the server
 [phases.install]
-cmds = ["pnpm install --no-frozen-lockfile"]
-
-[phases.build]
-cmds = ["rm -rf dist && pnpm run build"]
+cmds = ["npm install --omit=dev"]
 
 [start]
 cmd = "node server.js"
