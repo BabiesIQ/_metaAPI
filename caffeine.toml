@@ -1,7 +1,7 @@
 manifest_version = "0.1.0"
 
 [project]
-name = "frontend"
+name = "babiesiq-web"
 type = "assets"
 
 [build]
