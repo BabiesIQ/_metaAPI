@@ -19,11 +19,13 @@
 
 ## What is BabiesIQ?
 
-BabiesIQ is a **developer-first REST API** for streaming and downloading YouTube media — audio, video, thumbnails — with built-in EQ processing, one-time secure stream tokens, Telegram CDN delivery, and usage metering.
+**BabiesIQ** is a **developer-first tech & coding community** founded in **2025**, focused on building modern developer tools, open-source projects, and high-performance APIs.
 
-**This repository** is the **developer portal and SDK monorepo** — the web dashboard at [babiesiq.tech](https://babiesiq.tech) where developers sign up, manage API keys, monitor usage, and handle billing. It also ships the official client SDKs for JavaScript/TypeScript, Python, Go, and PHP.
+Our flagship product, **_metaAPI**, is a powerful streaming platform that provides fast media streaming, secure delivery, and developer-friendly REST APIs. Alongside our products, BabiesIQ regularly shares coding tips, backend architecture guides, API integrations, DevOps practices, and real-world engineering knowledge to help developers build scalable applications.
 
-The backend API server lives at → [`BabiesIQ/BabiesIQ_API`](https://github.com/BabiesIQ/BabiesIQ_API) (Go + Gin + MongoDB + Redis + yt-dlp + ffmpeg).
+**This repository** serves as the official **developer portal and SDK monorepo**, powering the web dashboard at **https://babiesiq.tech**, where developers can create projects, generate API keys, monitor usage, manage billing, and access documentation. It also includes the official SDKs for JavaScript/TypeScript, Python, Go, and PHP.
+
+Beyond APIs, BabiesIQ actively welcomes **developer collaborations**, open-source contributions, technical partnerships, and community-driven innovation to build the next generation of developer tools together.
 
 ---
 
