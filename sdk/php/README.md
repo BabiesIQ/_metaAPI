@@ -18,11 +18,11 @@ composer require babiesiq/biq-api
 
 You can also clone or download this SDK directly from GitHub:
 
-**→ <https://github.com/BabiesIQ/web/tree/main/sdk/php>**
+**→ <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/php>**
 
 ```bash
 # Clone just the SDK folder (sparse checkout)
-git clone --filter=blob:none --sparse https://github.com/BabiesIQ/web.git
+git clone --filter=blob:none --sparse https://github.com/BabiesIQ/_metaAPI.git
 cd web
 git sparse-checkout set sdk/php
 ```
@@ -125,7 +125,7 @@ try {
 |----------|-----|
 | API Docs | <https://babiesiq.tech/docs> |
 | Packagist | <https://packagist.org/packages/babiesiq/biq-api> |
-| Source | <https://github.com/BabiesIQ/web/tree/main/sdk/php> |
+| Source | <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/php> |
 | Dashboard | <https://babiesiq.tech/panel/api-keys> |
 
 ## License

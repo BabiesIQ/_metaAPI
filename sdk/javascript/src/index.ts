@@ -21,6 +21,6 @@ export const _metadata = {
   author: "BabiesIQ Team",
   homepage: "https://babiesiq.tech",
   docs: "https://babiesiq.tech/docs",
-  source: "https://github.com/BabiesIQ/web",
+  source: "https://github.com/BabiesIQ/_metaAPI",
   language: "javascript",
 } as const;

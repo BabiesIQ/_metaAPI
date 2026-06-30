@@ -18,11 +18,11 @@ pip install biq-api
 
 You can also clone or download this SDK directly from GitHub:
 
-**→ <https://github.com/BabiesIQ/web/tree/main/sdk/python>**
+**→ <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/python>**
 
 ```bash
 # Clone just the SDK folder (sparse checkout)
-git clone --filter=blob:none --sparse https://github.com/BabiesIQ/web.git
+git clone --filter=blob:none --sparse https://github.com/BabiesIQ/_metaAPI.git
 cd web
 git sparse-checkout set sdk/python
 ```
@@ -126,7 +126,7 @@ except BabiesIQError as e:
 |----------|-----|
 | API Docs | <https://babiesiq.tech/docs> |
 | PyPI | <https://pypi.org/project/biq-api/> |
-| Source | <https://github.com/BabiesIQ/web/tree/main/sdk/python> |
+| Source | <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/python> |
 | Dashboard | <https://babiesiq.tech/panel/api-keys> |
 
 ## License

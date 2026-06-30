@@ -17,11 +17,11 @@ go get github.com/BabiesIQ/biq-api-go
 
 You can also clone or download this SDK directly from GitHub:
 
-**→ <https://github.com/BabiesIQ/web/tree/main/sdk/go>**
+**→ <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go>**
 
 ```bash
 # Clone just the SDK folder (sparse checkout)
-git clone --filter=blob:none --sparse https://github.com/BabiesIQ/web.git
+git clone --filter=blob:none --sparse https://github.com/BabiesIQ/_metaAPI.git
 cd web
 git sparse-checkout set sdk/go
 ```
@@ -144,7 +144,7 @@ if err != nil {
 |----------|-----|
 | API Docs | <https://babiesiq.tech/docs> |
 | pkg.go.dev | <https://pkg.go.dev/github.com/BabiesIQ/biq-api-go> |
-| Source | <https://github.com/BabiesIQ/web/tree/main/sdk/go> |
+| Source | <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go> |
 | Dashboard | <https://babiesiq.tech/panel/api-keys> |
 
 ## License

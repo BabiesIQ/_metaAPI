@@ -21,11 +21,11 @@ pnpm add biq-api
 
 You can also clone or download this SDK directly from GitHub:
 
-**→ <https://github.com/BabiesIQ/web/tree/main/sdk/javascript>**
+**→ <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/javascript>**
 
 ```bash
 # Clone just the SDK folder (sparse checkout)
-git clone --filter=blob:none --sparse https://github.com/BabiesIQ/web.git
+git clone --filter=blob:none --sparse https://github.com/BabiesIQ/_metaAPI.git
 cd web
 git sparse-checkout set sdk/javascript
 ```
@@ -132,7 +132,7 @@ import type { SongResult, VideoResult, SearchResult, ThumbnailResult } from 'biq
 |----------|-----|
 | API Docs | <https://babiesiq.tech/docs> |
 | npm | <https://www.npmjs.com/package/biq-api> |
-| Source | <https://github.com/BabiesIQ/web/tree/main/sdk/javascript> |
+| Source | <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/javascript> |
 | Dashboard | <https://babiesiq.tech/panel/api-keys> |
 
 ## License

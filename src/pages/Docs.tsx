@@ -1043,8 +1043,8 @@ print(song.stream_url)`,
                     badge: "PyPI",
                     color: "from-blue-500/20 to-cyan-500/20",
                     border: "border-blue-500/25",
-                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/python",
-                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/python",
+                    link: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/python",
+                    download: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/python",
                   },
                   {
                     lang: "JavaScript / TypeScript",
@@ -1063,8 +1063,8 @@ console.log(song.streamUrl);`,
                     badge: "npm",
                     color: "from-yellow-500/20 to-amber-500/20",
                     border: "border-yellow-500/25",
-                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/javascript",
-                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/javascript",
+                    link: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/javascript",
+                    download: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/javascript",
                   },
                   {
                     lang: "Go",
@@ -1083,8 +1083,8 @@ fmt.Println(song.StreamURL)`,
                     badge: "go get",
                     color: "from-cyan-500/20 to-teal-500/20",
                     border: "border-cyan-500/25",
-                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/go",
-                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/go",
+                    link: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go",
+                    download: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go",
                   },
                   {
                     lang: "PHP",
@@ -1103,8 +1103,8 @@ echo $song->streamUrl;`,
                     badge: "Composer",
                     color: "from-violet-500/20 to-purple-500/20",
                     border: "border-violet-500/25",
-                    link: "https://github.com/BabiesIQ/web/tree/main/sdk/php",
-                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/php",
+                    link: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/php",
+                    download: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/php",
                   },
                 ]
                 ].map((sdk, i) => {
@@ -1155,8 +1155,8 @@ echo $song->streamUrl;`,
                 <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground">
                   All SDKs are open source and maintained in the{" "}
-                  <a href="https://github.com/BabiesIQ/web" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
-                    BabiesIQ/web repository
+                  <a href="https://github.com/BabiesIQ/_metaAPI" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                    BabiesIQ/_metaAPI repository
                   </a>
                   . Community contributions welcome.
                 </p>
@@ -1184,10 +1184,10 @@ echo $song->streamUrl;`,
                     {
                       title: "Install",
                       code: `# Using Go (recommended)
-go install github.com/BabiesIQ/web/cli@latest
+go install github.com/BabiesIQ/_metaAPI/cli@latest
 
 # Or clone and build manually
-git clone https://github.com/BabiesIQ/web.git
+git clone https://github.com/BabiesIQ/_metaAPI.git
 cd web/cli && go build -o babiesiq .`,
                     },
                     {

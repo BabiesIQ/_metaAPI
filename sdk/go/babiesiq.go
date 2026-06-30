@@ -48,7 +48,7 @@ var Metadata = struct {
 	Author:   "BabiesIQ Team",
 	Homepage: "https://babiesiq.tech",
 	Docs:     "https://babiesiq.tech/docs",
-	Source:   "https://github.com/BabiesIQ/web",
+	Source:   "https://github.com/BabiesIQ/_metaAPI",
 	Language: "go",
 }
 
