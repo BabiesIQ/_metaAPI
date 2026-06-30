@@ -33,7 +33,7 @@ Beyond APIs, BabiesIQ actively welcomes **developer collaborations**, open-sourc
 
 | | |
 |---|---|
-| <img src="https://cdn.simpleicons.org/soundcloud/ff7700" height="16" align="absmiddle"/> **Audio Streaming** | MP3 / M4A / Opus / WebM · search query or YouTube URL |
+| <img src="https://cdn.simpleicons.org/soundcloud/ff7700" height="16" align="absmiddle"/> **Audio Streaming** | MP3 / M4A / Opus / WebM / 64K–320K · search query or YouTube URL |
 | <img src="https://cdn.simpleicons.org/youtube/FF0000" height="16" align="absmiddle"/> **Video Streaming** | HD / 4K · search query or YouTube URL |
 | <img src="https://cdn.simpleicons.org/algolia/003DFF" height="16" align="absmiddle"/> **Search** | Structured JSON results from any YouTube search |
 | <img src="https://cdn.simpleicons.org/audacity/0000CC" height="16" align="absmiddle"/> **EQ Presets** | 30+ presets — bass boost, nightcore, 8D, lofi, slowed + reverb … |
