@@ -1,14 +1,19 @@
 <div align="center">
 
-<img src="https://babiesiq.tech/favicon.ico" width="64" alt="BabiesIQ Logo" />
+<img src="https://babiesiq.tech/favicon.ico" width="72" alt="BabiesIQ Logo" />
 
-# BabiesIQ — Media Streaming API Platform
+# BabiesIQ
 
-**YouTube Audio · Video · Search · EQ Presets · CLI · Multi-language SDKs**
+### Developer-First YouTube Media Streaming API
 
-[![API Status](https://img.shields.io/badge/API-Live-22c55e?style=for-the-badge)](https://babyapi.pro)&nbsp;[![Version](https://img.shields.io/badge/v1.0.0-stable-6366f1?style=for-the-badge)](https://babiesiq.tech)&nbsp;[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)&nbsp;[![Developers](https://img.shields.io/badge/300K%2B-Developers-f59e0b?style=for-the-badge)](https://babiesiq.tech)
+**Audio · Video · Search · EQ Presets · Thumbnails · Multi-language SDKs**
 
-**Dashboard:** [babiesiq.tech](https://babiesiq.tech) &nbsp;|&nbsp; **API Base:** `https://api.babiesiq.tech` &nbsp;|&nbsp; **Docs:** [babiesiq.tech/docs](https://babiesiq.tech/docs)
+[![API Status](https://img.shields.io/badge/API-Live-22c55e?style=flat-square)](https://babyapi.pro)
+[![Version](https://img.shields.io/badge/Portal-v1.0-6366f1?style=flat-square)](https://babiesiq.tech)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+[![Telegram](https://img.shields.io/badge/Community-Telegram-2CA5E0?style=flat-square&logo=telegram)](https://t.me/babiesiq)
+
+**Portal:** [babiesiq.tech](https://babiesiq.tech) &nbsp;·&nbsp; **API:** `https://api.babiesiq.tech` &nbsp;·&nbsp; **Docs:** [babiesiq.tech/docs](https://babiesiq.tech/docs) &nbsp;·&nbsp; **Status:** [babyapi.pro](https://babyapi.pro)
 
 </div>
 
@@ -16,64 +21,146 @@
 
 ## What is BabiesIQ?
 
-BabiesIQ is a **developer-first media streaming API** that gives you:
+BabiesIQ is a **developer-first REST API** for streaming and downloading YouTube media — audio, video, thumbnails — with built-in EQ processing, CDN delivery, and usage metering.
 
-- 🎵 **Audio streaming** — high-quality MP3/AAC/FLAC/Opus from any YouTube URL or search query
-- 🎬 **Video streaming** — HD/4K video with format & codec control
-- 🔍 **Search API** — structured JSON results from YouTube search
-- 🎛️ **EQ Presets** — 30+ equalizer presets (bass boost, nightcore, 8D, lofi, slowed + reverb…)
-- ⏩ **Seek & clip** — start from any timestamp, cut any duration
-- 🖥️ **CLI tool** — download audio/video directly from the terminal
-- 📦 **4 SDKs** — Python, JavaScript/TypeScript, Go, PHP
+**This repository** is the **developer portal and SDK monorepo** — the web dashboard at [babiesiq.tech](https://babiesiq.tech) where developers sign up, manage API keys, monitor usage, and handle billing. It also ships the official client SDKs for JavaScript/TypeScript, Python, Go, and PHP.
 
-No scraping. No bots. Just a clean REST API — get your key, make a request, get your stream.
+The backend API server lives at → [`BabiesIQ/BabiesIQ_API`](https://github.com/BabiesIQ/BabiesIQ_API) (Go + Gin + MongoDB + Redis + yt-dlp + ffmpeg).
 
 ---
 
-## Quick Start — 60 seconds
+## Features
 
-### 1. Get a free API key
+| | |
+|---|---|
+| 🎵 **Audio Streaming** | High-quality MP3 / M4A / Opus / WebM from any YouTube URL or search query |
+| 🎬 **Video Streaming** | HD / 4K video with quality selection (144p → 4K) |
+| 🔍 **Search API** | Structured JSON results from YouTube search |
+| 🎛️ **EQ Presets** | 30+ equalizer presets — bass boost, nightcore, 8D, lofi, slowed + reverb, and more |
+| ⏩ **Seek & Stream** | Start playback from any timestamp |
+| 🖼️ **Thumbnail Generator** | 20 stylized thumbnail designs, Python-powered |
+| 📊 **Usage Dashboard** | Real-time request tracking, daily limits, plan overview |
+| 💳 **Billing** | Plan upgrades via Razorpay (INR), subscription management |
+| 🤖 **Telegram Bot** | Admin management + Telegram CDN-backed media delivery |
+| 📦 **4 Official SDKs** | JavaScript/TypeScript, Python, Go, PHP — all in this repo |
 
-[Sign up at babiesiq.tech](https://babiesiq.tech/signup) → Dashboard → API Keys → Generate
+---
 
-### 2. Make your first request
+## Quick Start
+
+### 1. Get a Free API Key
+
+[Sign up at babiesiq.tech](https://babiesiq.tech/signup) → Dashboard → **API Keys** → Generate
+
+### 2. Make Your First Request
 
 ```bash
 # Search for a song
 curl "https://api.babiesiq.tech/media/search?q=Tum+Hi+Ho" \
-  -H "X-API-Key: YOUR_KEY"
+  -H "X-API-Key: biq_YOUR_KEY"
 
-# Stream audio (returns MP3)
-curl "https://api.babiesiq.tech/media/song?q=Tum+Hi+Ho&quality=high" \
-  -H "X-API-Key: YOUR_KEY" -o song.mp3
+# Stream audio
+curl "https://api.babiesiq.tech/media/song?q=Tum+Hi+Ho" \
+  -H "X-API-Key: biq_YOUR_KEY" -L -o song.mp3
 
-# Get a video
-curl "https://api.babiesiq.tech/media/video?q=https://youtu.be/ID&quality=720p" \
-  -H "X-API-Key: YOUR_KEY" -o video.mp4
+# Stream video (720p)
+curl "https://api.babiesiq.tech/media/video?q=https://youtu.be/VIDEO_ID&quality=720p" \
+  -H "X-API-Key: biq_YOUR_KEY" -L -o video.mp4
+
+# Thumbnail (design #3)
+curl "https://api.babiesiq.tech/media/thumbnail?id=VIDEO_ID&design=3" \
+  -H "X-API-Key: biq_YOUR_KEY" -L -o thumb.jpg
 ```
+
+**Authentication:** Pass your key as `X-API-Key: biq_YOUR_KEY` header **or** `?api_key=biq_YOUR_KEY` query param.
 
 ---
 
-## API Endpoints
+## API Reference
+
+### Endpoints
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/media/song` | GET | Audio stream / download |
-| `/media/video` | GET | Video stream / download |
+|---|---|---|
+| `/media/song` | GET | Audio stream or download |
+| `/media/video` | GET | Video stream or download |
 | `/media/search` | GET | Search YouTube |
-| `/media/thumbnail` | GET | Thumbnail image |
-| `/media/formats` | GET | Available quality formats |
-| `/media/meta` | GET | Metadata only (coming soon) |
+| `/media/thumbnail` | GET | Generate stylized thumbnail |
+| `/api/stream/:id` | GET | CDN stream by stream ID |
+| `/health` | GET | API health check |
 
-**Authentication:** `X-API-Key: YOUR_KEY` header **or** `?api_key=YOUR_KEY` query param
+### Common Parameters
 
-➡️ **Full API docs with all parameters:** [babiesiq.tech/docs](https://babiesiq.tech/docs)
+| Parameter | Type | Description |
+|---|---|---|
+| `q` | string | YouTube URL or search query |
+| `quality` | string | `high`, `medium`, `low` for audio; `144p`–`4K` for video |
+| `eq` | string | EQ preset — `bass_boost`, `treble_boost`, `nightcore`, `8d_audio`, `lofi`, `slowed_reverb`, etc. |
+| `download` | boolean | Return download URL instead of stream URL |
+| `seek` | number | Start timestamp in seconds |
+
+➡️ **Full parameter docs:** [babiesiq.tech/docs](https://babiesiq.tech/docs)
+
+### Response Format
+
+All endpoints return a consistent JSON envelope:
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+On error:
+
+```json
+{
+  "success": false,
+  "error": "Description of what went wrong"
+}
+```
 
 ---
 
 ## SDKs
 
-Install in your language of choice:
+All official SDKs live in `sdk/` in this repo and share the same API design.
+
+### JavaScript / TypeScript
+
+```bash
+npm install @babiesiq/sdk
+# or
+yarn add @babiesiq/sdk
+```
+
+```typescript
+import { BabiesIQ } from "@babiesiq/sdk";
+
+const client = new BabiesIQ({ apiKey: "biq_YOUR_KEY" });
+
+// Search
+const results = await client.search.query("Tum Hi Ho");
+
+// Get audio stream URL
+const song = await client.songs.search("Tum Hi Ho");
+console.log(song.stream_url);  // ready to play
+
+// With EQ preset + download link
+const bass = await client.songs.get("VIDEO_ID", { eq: "bass_boost", download: false });
+
+// Get video
+const video = await client.videos.get("VIDEO_ID", { download: false });
+
+// Thumbnail
+const thumb = await client.thumbnails.get("VIDEO_ID");
+console.log(thumb.url);
+```
+
+> **Source:** [`sdk/javascript/`](./sdk/javascript/) &nbsp;·&nbsp; **SDK README:** [`sdk/javascript/README.md`](./sdk/javascript/README.md)
+
+---
 
 ### Python
 
@@ -82,298 +169,268 @@ pip install biq-api
 ```
 
 ```python
-from babiesiq import BabiesIQClient
+from biq_api import BabiesIQ
 
-client = BabiesIQClient(api_key="YOUR_KEY")
-results = client.search("Tum Hi Ho")
-url = client.get_stream_url("Tum Hi Ho", quality="high")
-print(url)
+client = BabiesIQ(api_key="biq_YOUR_KEY")
+
+# Search
+results = client.search.query("Tum Hi Ho")
+
+# Audio stream
+song = client.songs.search("Tum Hi Ho")
+print(song.stream_url)
+
+# With EQ preset
+song_bass = client.songs.get("VIDEO_ID", eq="bass_boost")
+
+# Video
+video = client.videos.get("VIDEO_ID")
+
+# Thumbnail
+thumb = client.thumbnails.get("VIDEO_ID")
+print(thumb.url)
 ```
 
-### JavaScript / TypeScript
+> **Source:** [`sdk/python/`](./sdk/python/) &nbsp;·&nbsp; **SDK README:** [`sdk/python/README.md`](./sdk/python/README.md)
 
-```bash
-npm install babiesiq
-```
-
-```typescript
-import { BabiesIQClient } from "babiesiq";
-
-const client = new BabiesIQClient({ apiKey: "YOUR_KEY" });
-const results = await client.search("Tum Hi Ho");
-const url = await client.getStreamUrl("Tum Hi Ho", { quality: "high" });
-console.log(url);
-```
+---
 
 ### Go
 
 ```bash
-go get github.com/BabiesIQ/babiesiq-sdk-go
+go get github.com/BabiesIQ/sdk-go
 ```
 
 ```go
-import babiesiq "github.com/BabiesIQ/babiesiq-sdk-go"
+package main
 
-client := babiesiq.NewClient("YOUR_KEY")
-results, _ := client.Search("Tum Hi Ho")
-url, _ := client.GetStreamURL("Tum Hi Ho", babiesiq.Quality("high"))
-fmt.Println(url)
+import (
+    "fmt"
+    babiesiq "github.com/BabiesIQ/sdk-go"
+)
+
+func main() {
+    client := babiesiq.NewClient("biq_YOUR_KEY")
+
+    // Search
+    results, _ := client.Search.Query("Tum Hi Ho")
+
+    // Audio stream
+    song, _ := client.Songs.Search("Tum Hi Ho")
+    fmt.Println(song.StreamURL)
+
+    // Video
+    video, _ := client.Videos.Get("VIDEO_ID", nil)
+    fmt.Println(video.StreamURL)
+}
 ```
+
+> **Source:** [`sdk/go/`](./sdk/go/) &nbsp;·&nbsp; **SDK README:** [`sdk/go/README.md`](./sdk/go/README.md)
+
+---
 
 ### PHP
 
 ```bash
-composer require babiesiq/babiesiq-php
+composer require babiesiq/sdk
 ```
 
 ```php
-use BabiesIQ\BabiesIQClient;
+use BabiesIQ\BabiesIQ;
 
-$client = new BabiesIQClient('YOUR_KEY');
-$results = $client->search('Tum Hi Ho');
-$url = $client->getStreamUrl('Tum Hi Ho', ['quality' => 'high']);
-echo $url;
+$client = new BabiesIQ('biq_YOUR_KEY');
+
+// Search
+$results = $client->search->query('Tum Hi Ho');
+
+// Audio stream
+$song = $client->songs->search('Tum Hi Ho');
+echo $song->stream_url;
+
+// Video
+$video = $client->videos->get('VIDEO_ID');
+
+// Thumbnail
+$thumb = $client->thumbnails->get('VIDEO_ID');
 ```
+
+> **Source:** [`sdk/php/`](./sdk/php/) &nbsp;·&nbsp; **SDK README:** [`sdk/php/README.md`](./sdk/php/README.md)
 
 ---
 
-## CLI Tool
+## Plans & Limits
 
-```bash
-# Install
-go install github.com/BabiesIQ/web/cli@latest
+| Plan | Daily Requests | Features |
+|---|---|---|
+| **Free** | 500 req/day | All endpoints, all EQ presets |
+| **Starter** | Higher limits | Priority queue |
+| **Pro** | Higher limits | Faster CDN, advanced features |
+| **Enterprise** | Custom | Dedicated support, custom SLA |
 
-# Configure
-babiesiq configure --api-key YOUR_KEY
-
-# Download audio
-babiesiq song "Tum Hi Ho" --quality high --format mp3
-
-# Download video
-babiesiq video "https://youtu.be/ID" --quality 720p
-
-# Search
-babiesiq search "Arijit Singh" --limit 5
-```
-
----
-
-## Plans
-
-| Plan | API calls/day | Price |
-|------|--------------|-------|
-| **Free** | 500 | ₹0 forever |
-| **Pro** | 2,500 | ₹49/mo |
-| **Business** | 10,000 | ₹149/mo |
-| **Enterprise** | Unlimited | Custom |
-
-[See full pricing →](https://babiesiq.tech/pricing)
+Upgrade anytime from your dashboard → [babiesiq.tech/pricing](https://babiesiq.tech/pricing)
 
 ---
 
 ## Repository Structure
 
 ```
-BabiesIQ/web/
+_metaAPI/
+├── src/                        # React + TypeScript web portal
+│   ├── components/             # Shared UI components (header, footer, layouts)
+│   ├── api.ts                  # Backend REST client (auth, profile, billing)
+│   └── App.tsx                 # Root app + routing
 │
-├── src/                        # React + Vite frontend (TypeScript)
-│   ├── pages/                  # Route-level page components
-│   │   ├── Home.tsx            # Landing page
-│   │   ├── Docs.tsx            # Full API documentation
-│   │   ├── Sdk.tsx             # SDK landing page (/sdk)
-│   │   ├── Pricing.tsx         # Pricing plans
-│   │   ├── Contact.tsx         # Contact form
-│   │   ├── Login.tsx           # Auth — login
-│   │   ├── Signup.tsx          # Auth — register
-│   │   ├── Dashboard.tsx       # User dashboard
-│   │   └── admin/              # Admin panel pages
-│   ├── components/             # Shared UI components
-│   │   ├── Header.tsx          # Navigation bar
-│   │   ├── Footer.tsx          # Footer with newsletter
-│   │   ├── Layout.tsx          # Page wrapper
-│   │   ├── TryItWidget.tsx     # Live API demo widget
-│   │   └── ui/                 # shadcn/ui components
-│   ├── lib/                    # Utility libraries
-│   │   ├── api.ts              # API client (axios/fetch)
-│   │   ├── config.ts           # Runtime config loader
-│   │   ├── i18n.ts             # Internationalization (EN, HI, KO, ZH)
-│   │   └── domain-verify.ts    # Deployment authorization
-│   ├── hooks/                  # Custom React hooks
-│   ├── store/                  # Zustand state management
-│   └── App.tsx                 # Router setup (TanStack Router)
+├── sdk/                        # Official client SDKs
+│   ├── javascript/             # @babiesiq/sdk — TypeScript/JS SDK
+│   ├── python/                 # biq-api — Python SDK (PyPI)
+│   ├── go/                     # Go SDK
+│   └── php/                    # PHP SDK
 │
-├── sdk/                        # Official SDKs (open source)
-│   ├── python/                 # biq-api — pip install biq-api
-│   │   ├── babiesiq/           # Package source
-│   │   └── pyproject.toml
-│   ├── javascript/             # babiesiq — npm install babiesiq
-│   │   ├── src/
-│   │   └── package.json
-│   ├── go/                     # go get github.com/BabiesIQ/babiesiq-sdk-go
-│   │   ├── babiesiq.go
-│   │   └── go.mod
-│   └── php/                    # babiesiq/babiesiq-php — composer require
-│       ├── src/
-│       └── composer.json
-│
-├── cli/                        # BabiesIQ CLI (Go)
-│   ├── main.go
-│   └── go.mod
-│
-├── dist/                       # Pre-built static site (served by server.js)
-│   ├── index.html
-│   └── assets/
-│
-├── server.js                   # Express static file server + self-ping keep-alive
-├── index.html                  # Vite entry point
-├── vite.config.js              # Vite build config
-├── tailwind.config.js          # Tailwind CSS config
-├── package.json                # npm dependencies
-└── caffeine.toml               # Build manifest (assets deployment)
+├── cli/                        # Go-based CLI tool (audio/video downloader)
+├── public/                     # Static assets, fonts
+├── .github/workflows/          # CI: Netlify deploy + Python SDK publish
+├── netlify.toml                # Netlify build & redirect config
+└── package.json                # Vite + React 19 project
 ```
 
 ---
 
-## Tech Stack
+## Portal Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 19, TypeScript, Vite 5 |
-| **Routing** | TanStack Router |
-| **Styling** | Tailwind CSS v3, shadcn/ui, Radix UI |
-| **Animation** | Motion (Framer Motion) |
-| **State** | Zustand, TanStack Query |
-| **i18n** | i18next (English, Hindi, Korean, Chinese) |
-| **Charts** | Recharts |
-| **Server** | Express.js (static file server) |
-| **Build** | Vite + esbuild |
+|---|---|
+| Framework | React 19 + TypeScript + Vite |
+| Routing | TanStack Router v1 |
+| Data Fetching | TanStack Query v5 |
+| UI Components | shadcn/ui + Radix UI primitives |
+| Styling | Tailwind CSS v3 |
+| Animations | Motion (Framer Motion v12) |
+| State Management | Zustand |
+| Forms & Validation | React Hook Form + Zod |
+| Charts | Recharts |
+| Internationalization | i18next + react-i18next |
+| 3D / WebGL | Three.js + React Three Fiber |
+| Auth | Session-based (email + OTP) + Google OAuth |
+| Payments | Razorpay (INR) |
+| Deployment | Netlify |
 
 ---
 
-## Run Locally
+## Local Development
+
+### Prerequisites
+
+- Node.js ≥ 20
+- pnpm ≥ 9 (recommended) or npm ≥ 10
+- A running instance of [`BabiesIQ_API`](https://github.com/BabiesIQ/BabiesIQ_API) (see its README for setup)
+
+### Setup
 
 ```bash
-# Clone
-git clone https://github.com/BabiesIQ/web.git
-cd web
+# 1. Clone the repo
+git clone https://github.com/BabiesIQ/_metaAPI.git
+cd _metaAPI
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Set backend URL (optional — defaults to api.babiesiq.tech)
-echo '{ "BACKEND_BASE_URL": "https://api.babiesiq.tech" }' > public/config.json
+# 3. Configure environment
+cp env.json.example env.json
+# Edit env.json — set BACKEND_URL to your local API server (e.g. http://localhost:8080)
+```
 
-# Dev server
+### Run in Development
+
+```bash
 npm run dev
-# → Opens http://localhost:5173
+# Portal is available at http://localhost:5173
+```
 
-# Or build and serve (production mode)
+### Build for Production
+
+```bash
 npm run build
-npm start
-# → Opens http://localhost:3000
+# Output goes to dist/
 ```
 
-**Environment variables (optional):**
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3000` | Server port |
-| `BACKEND_BASE_URL` | `https://api.babiesiq.tech` | Backend API URL |
-| `WEBSITE_MODE` | `live` | `live` or `test` |
-| `APP_URL` | auto-detect | Public URL for self-ping keep-alive |
-
----
-
-## Deploy
-
-The repo includes config files for all major platforms — pick any:
-
-### One-click deploys
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/BabiesIQ/web)
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/babiesiq)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/BabiesIQ/web)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/BabiesIQ/web)
-
-[![Deploy to Vercel](https://img.shields.io/badge/▲_Deploy_to_Vercel-000000?style=for-the-badge&logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/BabiesIQ/web)
-[![Deploy to Koyeb](https://img.shields.io/badge/Deploy_to_Koyeb-121212?style=for-the-badge)](https://app.koyeb.com/deploy?type=git&repository=github.com/BabiesIQ/web&branch=main&name=babiesiq-web)
-
-### Platform configs included
-
-| File | Platform |
-|------|----------|
-| `Procfile` | Heroku |
-| `railway.json` + `nixpacks.toml` | Railway |
-| `netlify.toml` | Netlify |
-| `vercel.json` | Vercel |
-| `app.json` | Heroku app manifest |
-| `.replit` | Replit |
-| `server.js` | Any Node.js host |
-
-> **Note:** `dist/` is pre-built and committed. Most platforms (Railway, Render, Koyeb) can serve it directly without a build step — just `npm install --omit=dev && npm start`.
-
-### VPS (Ubuntu/Debian)
+### Other Scripts
 
 ```bash
-# Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs git nginx
-
-# Clone + install
-git clone https://github.com/BabiesIQ/web.git
-cd web && npm install --omit=dev
-
-# Run with PM2
-npm i -g pm2
-pm2 start server.js --name babiesiq
-pm2 startup && pm2 save
-
-# Nginx reverse proxy
-sudo nano /etc/nginx/sites-available/babiesiq
-```
-
-```nginx
-server {
-    listen 80;
-    server_name babiesiq.tech www.babiesiq.tech;
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-```bash
-sudo ln -s /etc/nginx/sites-available/babiesiq /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-
-# Free SSL
-sudo certbot --nginx -d babiesiq.tech -d www.babiesiq.tech
+npm run typecheck   # TypeScript type check (no emit)
+npm run check       # Biome lint check
+npm run fix         # Biome auto-fix
 ```
 
 ---
 
-## Self-Ping Keep-Alive
+## Deployment
 
-`server.js` includes a built-in **anti-sleep self-ping** that pings `/ping` every 14 minutes to prevent free-tier sleep on Render, Railway, etc.
+### Frontend (Netlify) — Automatic
 
-Auto-detects your platform URL. Override with:
-```bash
-APP_URL=https://your-app.onrender.com npm start
+Every push to `main` triggers a Netlify build via GitHub Actions:
+
 ```
+Build command : npm run build
+Publish dir   : dist/
+```
+
+Redirects and SPA routing are configured in [`netlify.toml`](./netlify.toml) and [`public/_redirects`](./public/_redirects).
+
+### Alternative Platforms
+
+This is a static Vite build — deploy anywhere that serves static files:
+
+```bash
+npm run build
+# Upload the dist/ folder to:
+# - Vercel, Cloudflare Pages, GitHub Pages, Railway (static), or any nginx/Apache server
+```
+
+---
+
+## Backend API Server
+
+The API that powers BabiesIQ's streaming is a separate private repository:
+
+**[→ BabiesIQ/BabiesIQ_API](https://github.com/BabiesIQ/BabiesIQ_API)**
+
+Built with:
+
+- **Go + Gin** — high-performance HTTP server
+- **yt-dlp + ffmpeg** — YouTube downloading and audio processing
+- **Telegram CDN** — media storage and delivery at scale
+- **MongoDB** — user accounts, API keys, usage records
+- **MySQL** — billing and payment records
+- **Redis** — session store, rate limiting, stream token cache
+- **Razorpay** — payment gateway (INR)
+- **Brevo** — transactional email (OTP, welcome, billing)
+- **Telegram Bot** — admin management, disk/RAM monitoring, DB backups
+
+Deployment: **Railway** · Self-host: see `BabiesIQ_API/start.sh` and `BabiesIQ_API/README.md`
 
 ---
 
 ## Contributing
 
-1. Fork → `git checkout -b feature/my-feature`
-2. Make changes in `src/`
-3. `npm run dev` to test locally
-4. `npm run build` to verify build
-5. Open a Pull Request
+We welcome contributions to the portal UI and SDK clients.
 
-For SDK contributions, see the individual README files in `sdk/python/`, `sdk/javascript/`, `sdk/go/`, `sdk/php/`.
+```bash
+# Fork the repo, then:
+git checkout -b feature/your-feature
+npm run dev          # start dev server
+npm run check        # lint before committing
+npm run typecheck    # ensure no type errors
+```
+
+Open a pull request against `main`.
+
+For **SDK contributions**, see the individual READMEs:
+- [`sdk/javascript/README.md`](./sdk/javascript/README.md)
+- [`sdk/python/README.md`](./sdk/python/README.md)
+- [`sdk/go/README.md`](./sdk/go/README.md)
+- [`sdk/php/README.md`](./sdk/php/README.md)
+
+For **bugs and feature requests**, open an [issue](https://github.com/BabiesIQ/_metaAPI/issues) or reach out on [Telegram](https://t.me/babiesiq).
 
 ---
 
@@ -381,13 +438,14 @@ For SDK contributions, see the individual README files in `sdk/python/`, `sdk/ja
 
 | | |
 |---|---|
-| 🌐 Website | [babiesiq.tech](https://babiesiq.tech) |
-| 📚 API Docs | [babiesiq.tech/docs](https://babiesiq.tech/docs) |
-| 📦 SDK Page | [babiesiq.tech/sdk](https://babiesiq.tech/sdk) |
-| 💰 Pricing | [babiesiq.tech/pricing](https://babiesiq.tech/pricing) |
-| 💬 Telegram | [@babiesiq](https://t.me/babiesiq) |
-| 🐛 Issues | [github.com/BabiesIQ/web/issues](https://github.com/BabiesIQ/web/issues) |
-| 📡 API Status | [babyapi.pro](https://babyapi.pro) |
+| 🌐 **Portal** | [babiesiq.tech](https://babiesiq.tech) |
+| 📚 **API Docs** | [babiesiq.tech/docs](https://babiesiq.tech/docs) |
+| 📦 **SDK Page** | [babiesiq.tech/sdk](https://babiesiq.tech/sdk) |
+| 💰 **Pricing** | [babiesiq.tech/pricing](https://babiesiq.tech/pricing) |
+| 📡 **API Status** | [babyapi.pro](https://babyapi.pro) |
+| 💬 **Telegram** | [@babiesiq](https://t.me/babiesiq) |
+| 🐛 **Issues** | [github.com/BabiesIQ/_metaAPI/issues](https://github.com/BabiesIQ/_metaAPI/issues) |
+| ⚙️ **API Server** | [github.com/BabiesIQ/BabiesIQ_API](https://github.com/BabiesIQ/BabiesIQ_API) |
 
 ---
 
@@ -395,6 +453,8 @@ For SDK contributions, see the individual README files in `sdk/python/`, `sdk/ja
 
 Made with ❤️ by the BabiesIQ team &nbsp;·&nbsp; MIT License
 
-[![API](https://img.shields.io/badge/babyapi.pro-Live-22c55e?style=flat-square)](https://babyapi.pro)&nbsp;[![Telegram](https://img.shields.io/badge/@BabiesIQ-2CA5E0?style=flat-square&logo=telegram&logoColor=white)](https://t.me/babiesiq)&nbsp;[![GitHub](https://img.shields.io/badge/BabiesIQ%2Fweb-181717?style=flat-square&logo=github)](https://github.com/BabiesIQ/web)
+[![API](https://img.shields.io/badge/babyapi.pro-Live-22c55e?style=flat-square)](https://babyapi.pro)
+[![Telegram](https://img.shields.io/badge/@BabiesIQ-2CA5E0?style=flat-square&logo=telegram&logoColor=white)](https://t.me/babiesiq)
+[![GitHub](https://img.shields.io/badge/BabiesIQ%2F__metaAPI-181717?style=flat-square&logo=github)](https://github.com/BabiesIQ/_metaAPI)
 
 </div>
