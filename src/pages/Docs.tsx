@@ -1031,8 +1031,12 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
                     pkg: "biq-api",
                     install: "pip install biq-api",
                     usage: `from biq_api import BabiesIQ, _metadata
-print(_metadata["version"])  # 2.0.0
 
+# SDK info
+print(_metadata["version"])  # 2.0.0
+print(_metadata["name"])     # biq-api
+
+# Create client & search
 client = BabiesIQ(api_key="biq_YOUR_KEY")
 song = client.songs.search("Shape of You")
 print(song.stream_url)`,
@@ -1040,14 +1044,19 @@ print(song.stream_url)`,
                     color: "from-blue-500/20 to-cyan-500/20",
                     border: "border-blue-500/25",
                     link: "https://github.com/BabiesIQ/web/tree/main/sdk/python",
+                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/python",
                   },
                   {
                     lang: "JavaScript / TypeScript",
                     pkg: "biq-api",
                     install: "npm install biq-api",
                     usage: `import { BabiesIQ, _metadata } from 'biq-api';
-console.log(_metadata.version); // 2.0.0
 
+// SDK info
+console.log(_metadata.version); // 2.0.0
+console.log(_metadata.name);    // biq-api
+
+// Create client & search
 const client = new BabiesIQ({ apiKey: 'biq_YOUR_KEY' });
 const song = await client.songs.search('Shape of You');
 console.log(song.streamUrl);`,
@@ -1055,14 +1064,19 @@ console.log(song.streamUrl);`,
                     color: "from-yellow-500/20 to-amber-500/20",
                     border: "border-yellow-500/25",
                     link: "https://github.com/BabiesIQ/web/tree/main/sdk/javascript",
+                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/javascript",
                   },
                   {
                     lang: "Go",
                     pkg: "github.com/BabiesIQ/biq-api-go",
                     install: "go get github.com/BabiesIQ/biq-api-go",
                     usage: `import babiesiq "github.com/BabiesIQ/biq-api-go"
-fmt.Println(babiesiq.Metadata.Version) // 2.0.0
 
+// SDK info
+fmt.Println(babiesiq.Metadata.Version) // 2.0.0
+fmt.Println(babiesiq.Metadata.Name)    // biq-api
+
+// Create client & search
 client, _ := babiesiq.New("biq_YOUR_KEY")
 song, _ := client.Songs.Search(ctx, "Shape of You", nil)
 fmt.Println(song.StreamURL)`,
@@ -1070,14 +1084,19 @@ fmt.Println(song.StreamURL)`,
                     color: "from-cyan-500/20 to-teal-500/20",
                     border: "border-cyan-500/25",
                     link: "https://github.com/BabiesIQ/web/tree/main/sdk/go",
+                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/go",
                   },
                   {
                     lang: "PHP",
                     pkg: "babiesiq/biq-api",
                     install: "composer require babiesiq/biq-api",
                     usage: `use BabiesIQ\BabiesIQ;
-echo BabiesIQ::$_metadata['version']; // 2.0.0
 
+// SDK info
+echo BabiesIQ::$_metadata['version']; // 2.0.0
+echo BabiesIQ::$_metadata['name'];    // biq-api
+
+// Create client & search
 $client = new BabiesIQ('biq_YOUR_KEY');
 $song = $client->songs->search('Shape of You');
 echo $song->streamUrl;`,
@@ -1085,7 +1104,9 @@ echo $song->streamUrl;`,
                     color: "from-violet-500/20 to-purple-500/20",
                     border: "border-violet-500/25",
                     link: "https://github.com/BabiesIQ/web/tree/main/sdk/php",
+                    download: "https://github.com/BabiesIQ/web/tree/main/sdk/php",
                   },
+                ]
                 ].map((sdk, i) => {
                   const [codeOpen, setCodeOpen] = [false, () => {}];
                   return (
