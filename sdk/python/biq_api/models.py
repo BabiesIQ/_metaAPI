@@ -1,4 +1,4 @@
-"""BabiesIQ SDK data models."""
+"""BabiesIQ SDK data models — matches actual API response structure."""
 
 from __future__ import annotations
 from dataclasses import dataclass, field
@@ -7,53 +7,55 @@ from typing import Optional
 
 @dataclass
 class SongResult:
-    id: str
-    title: str
-    stream_url: str
-    artist: Optional[str] = None
-    duration: Optional[int] = None
-    thumbnail: Optional[str] = None
+    """Result from songs.search().
+    
+    API returns: {query, status, stream, stream_id, type}
+    """
+    stream_url: str         # from API field "stream"
+    stream_id: str          # from API field "stream_id"
+    query: str              # original search query echoed back
+    status: str             # e.g. "processing"
+    type: str               # "audio"
 
     @classmethod
     def from_dict(cls, d: dict) -> "SongResult":
         return cls(
-            id=d.get("id", ""),
-            title=d.get("title", ""),
-            stream_url=d.get("stream_url", ""),
-            artist=d.get("artist"),
-            duration=d.get("duration"),
-            thumbnail=d.get("thumbnail"),
+            stream_url=d.get("stream", ""),
+            stream_id=d.get("stream_id", ""),
+            query=d.get("query", ""),
+            status=d.get("status", ""),
+            type=d.get("type", "audio"),
         )
 
 
 @dataclass
 class VideoResult:
-    id: str
-    title: str
-    stream_url: str
-    channel: Optional[str] = None
-    duration: Optional[int] = None
-    thumbnail: Optional[str] = None
-    quality: Optional[str] = None
+    """Result from videos.search().
+    
+    API returns: {query, status, stream, stream_id, type}
+    """
+    stream_url: str         # from API field "stream"
+    stream_id: str          # from API field "stream_id"
+    query: str              # original search query echoed back
+    status: str             # e.g. "processing"
+    type: str               # "video"
 
     @classmethod
     def from_dict(cls, d: dict) -> "VideoResult":
         return cls(
-            id=d.get("id", ""),
-            title=d.get("title", ""),
-            stream_url=d.get("stream_url", ""),
-            channel=d.get("channel"),
-            duration=d.get("duration"),
-            thumbnail=d.get("thumbnail"),
-            quality=d.get("quality"),
+            stream_url=d.get("stream", ""),
+            stream_id=d.get("stream_id", ""),
+            query=d.get("query", ""),
+            status=d.get("status", ""),
+            type=d.get("type", "video"),
         )
 
 
 @dataclass
 class SearchResult:
     type: str
-    id: str
-    title: str
+    id: str = ""
+    title: str = ""
     artist_or_channel: Optional[str] = None
     thumbnail: Optional[str] = None
     duration: Optional[int] = None
@@ -72,8 +74,8 @@ class SearchResult:
 
 @dataclass
 class ThumbnailResult:
-    video_id: str
-    url: str
+    video_id: str = ""
+    url: str = ""
     design: Optional[str] = None
 
     @classmethod

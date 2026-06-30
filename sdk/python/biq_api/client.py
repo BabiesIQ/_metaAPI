@@ -22,9 +22,10 @@ class BabiesIQ:
 
     Example::
 
-        from biq_api import BabiesIQ
+        from biq_api import BabiesIQ, _metadata
+        print(_metadata["version"])   # 2.0.0
         client = BabiesIQ(api_key="biq_your_key")
-        song = client.songs.search("Shape of You")
+        song = client.songs.search("Ram Siya Ram")
         print(song.stream_url)
     """
 
@@ -75,9 +76,9 @@ class BabiesIQ:
         try:
             with urllib.request.urlopen(req, timeout=self._timeout) as resp:
                 payload = json.loads(resp.read().decode())
-                if not payload.get("success"):
+                if not payload.get("success") and "error" in payload:
                     raise BabiesIQError(payload.get("error") or "Unknown error", resp.status)
-                return payload["data"]
+                return payload
 
         except urllib.error.HTTPError as e:
             if e.code == 401:
@@ -111,27 +112,32 @@ class _SongsAPI:
     def __init__(self, client: BabiesIQ) -> None:
         self._client = client
 
-    def search(self, query: str, *, download: bool = False, eq: Optional[str] = None) -> SongResult:
-        """Search for a song and get its streaming URL."""
-        data = self._client._request("GET", "/api/song", params={
-            "q": query,
-            "download": "1" if download else "0",
-            **({"eq": eq} if eq else {}),
-        })
-        return SongResult.from_dict(data) if isinstance(data, dict) else data
+    def search(self, query: str, *, eq: Optional[str] = None) -> SongResult:
+        """Search for a song and get its streaming URL.
+        
+        Args:
+            query: Song name to search for.
+            eq: Optional equalizer preset (e.g. "bass_boost").
+        """
+        params: dict = {"query": query}
+        if eq:
+            params["eq"] = eq
+        data = self._client._request("GET", "/api/song", params=params)
+        return SongResult.from_dict(data)
 
 
 class _VideosAPI:
     def __init__(self, client: BabiesIQ) -> None:
         self._client = client
 
-    def search(self, query: str, *, download: bool = False) -> VideoResult:
-        """Search for a video and get its streaming URL."""
-        data = self._client._request("GET", "/api/video", params={
-            "q": query,
-            "download": "1" if download else "0",
-        })
-        return VideoResult.from_dict(data) if isinstance(data, dict) else data
+    def search(self, query: str) -> VideoResult:
+        """Search for a video and get its streaming URL.
+        
+        Args:
+            query: Video name to search for.
+        """
+        data = self._client._request("GET", "/api/video", params={"query": query})
+        return VideoResult.from_dict(data)
 
 
 class _SearchAPI:
@@ -139,9 +145,15 @@ class _SearchAPI:
         self._client = client
 
     def query(self, q: str) -> list[SearchResult]:
-        """Search across songs and videos."""
+        """Search across songs and videos.
+        
+        Args:
+            q: Search query.
+        """
         data = self._client._request("POST", "/api/search", body={"q": q})
-        return [SearchResult.from_dict(item) for item in (data or [])]
+        if isinstance(data, list):
+            return [SearchResult.from_dict(item) for item in data]
+        return []
 
 
 class _ThumbnailsAPI:
@@ -149,9 +161,14 @@ class _ThumbnailsAPI:
         self._client = client
 
     def get(self, video_id: str, design: Optional[str] = None) -> ThumbnailResult:
-        """Get a YouTube thumbnail."""
-        data = self._client._request("GET", "/api/thumbnail", params={
-            "v": video_id,
-            **({"design": design} if design else {}),
-        })
-        return ThumbnailResult.from_dict(data) if isinstance(data, dict) else data
+        """Get a YouTube thumbnail.
+        
+        Args:
+            video_id: YouTube video ID.
+            design: Optional thumbnail design style.
+        """
+        params: dict = {"v": video_id}
+        if design:
+            params["design"] = design
+        data = self._client._request("GET", "/api/thumbnail", params=params)
+        return ThumbnailResult.from_dict(data)
