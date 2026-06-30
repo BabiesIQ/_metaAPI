@@ -1,0 +1,350 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg">
+<defs>
+
+  <!-- ═══ GRADIENTS ═══ -->
+  <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%"   stop-color="#020209"/>
+    <stop offset="45%"  stop-color="#06061a"/>
+    <stop offset="100%" stop-color="#020212"/>
+  </linearGradient>
+
+  <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%"   stop-color="#818cf8"/>
+    <stop offset="35%"  stop-color="#a78bfa"/>
+    <stop offset="65%"  stop-color="#38bdf8"/>
+    <stop offset="100%" stop-color="#6366f1">
+      <animate attributeName="stop-color" values="#6366f1;#38bdf8;#a78bfa;#6366f1" dur="5s" repeatCount="indefinite"/>
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="termBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%"   stop-color="#4f46e5" stop-opacity="0.6"/>
+    <stop offset="50%"  stop-color="#0ea5e9" stop-opacity="0.4"/>
+    <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.6"/>
+  </linearGradient>
+
+  <linearGradient id="scanline" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%"   stop-color="transparent"/>
+    <stop offset="49%"  stop-color="transparent"/>
+    <stop offset="50%"  stop-color="rgba(99,102,241,0.04)"/>
+    <stop offset="51%"  stop-color="transparent"/>
+    <stop offset="100%" stop-color="transparent"/>
+    <animateTransform attributeName="gradientTransform" type="translate" from="0 -1" to="0 3" dur="4s" repeatCount="indefinite"/>
+  </linearGradient>
+
+  <radialGradient id="leftGlow" cx="30%" cy="50%" r="50%">
+    <stop offset="0%"   stop-color="#4f46e5" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+  </radialGradient>
+
+  <radialGradient id="rightGlow" cx="80%" cy="50%" r="40%">
+    <stop offset="0%"   stop-color="#0ea5e9" stop-opacity="0.06"/>
+    <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+  </radialGradient>
+
+  <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%"   stop-color="#1e1b4b" stop-opacity="0.9"/>
+    <stop offset="50%"  stop-color="#4f46e5" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0.9"/>
+  </linearGradient>
+
+  <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%"   stop-color="#6366f1"/>
+    <stop offset="50%"  stop-color="#38bdf8"/>
+    <stop offset="100%" stop-color="#a78bfa"/>
+  </linearGradient>
+
+  <!-- ═══ FILTERS ═══ -->
+  <filter id="termGlow" x="-5%" y="-20%" width="110%" height="140%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <filter id="liveDot">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <!-- ═══ CLIP PATHS FOR TERMINAL TYPING (14s cycle each) ═══ -->
+  <clipPath id="tc1"><rect x="660" y="74"  height="18">
+    <animate attributeName="width" values="0;440;440;0;0" keyTimes="0;0.100;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="tc2"><rect x="660" y="96"  height="18">
+    <animate attributeName="width" values="0;0;440;440;0;0" keyTimes="0;0.143;0.243;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="tc3"><rect x="660" y="118" height="18">
+    <animate attributeName="width" values="0;0;440;440;0;0" keyTimes="0;0.257;0.357;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="tc4"><rect x="660" y="140" height="18">
+    <animate attributeName="width" values="0;0;440;440;0;0" keyTimes="0;0.371;0.428;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="tc5"><rect x="660" y="162" height="18">
+    <animate attributeName="width" values="0;0;440;440;0;0" keyTimes="0;0.443;0.528;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="tc6"><rect x="660" y="184" height="18">
+    <animate attributeName="width" values="0;0;440;440;0;0" keyTimes="0;0.543;0.628;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="tc7"><rect x="660" y="206" height="18">
+    <animate attributeName="width" values="0;0;440;440;0;0" keyTimes="0;0.628;0.714;0.714;0.757;1" dur="14s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+
+  <clipPath id="bg1"><rect x="30"  y="24"  height="16">
+    <animate attributeName="width" values="0;260;260;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="12s" repeatCount="indefinite" begin="0s"/>
+  </rect></clipPath>
+  <clipPath id="bg2"><rect x="30"  y="96"  height="16">
+    <animate attributeName="width" values="0;310;310;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="13s" repeatCount="indefinite" begin="2s"/>
+  </rect></clipPath>
+  <clipPath id="bg3"><rect x="30"  y="176" height="16">
+    <animate attributeName="width" values="0;240;240;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="11s" repeatCount="indefinite" begin="4s"/>
+  </rect></clipPath>
+  <clipPath id="bg4"><rect x="30"  y="256" height="16">
+    <animate attributeName="width" values="0;340;340;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="14s" repeatCount="indefinite" begin="1s"/>
+  </rect></clipPath>
+  <clipPath id="bg5"><rect x="30"  y="336" height="16">
+    <animate attributeName="width" values="0;200;200;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="10s" repeatCount="indefinite" begin="3s"/>
+  </rect></clipPath>
+  <clipPath id="bg6"><rect x="370" y="41"  height="16">
+    <animate attributeName="width" values="0;225;225;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="11s" repeatCount="indefinite" begin="1.5s"/>
+  </rect></clipPath>
+  <clipPath id="bg7"><rect x="370" y="134" height="16">
+    <animate attributeName="width" values="0;285;285;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="13s" repeatCount="indefinite" begin="3.5s"/>
+  </rect></clipPath>
+  <clipPath id="bg8"><rect x="370" y="226" height="16">
+    <animate attributeName="width" values="0;195;195;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="12s" repeatCount="indefinite" begin="5.5s"/>
+  </rect></clipPath>
+  <clipPath id="bg9"><rect x="370" y="316" height="16">
+    <animate attributeName="width" values="0;260;260;0;0" keyTimes="0;0.15;0.7;0.8;1" dur="10s" repeatCount="indefinite" begin="0.5s"/>
+  </rect></clipPath>
+
+</defs>
+
+<!-- ═══ BASE LAYER ═══ -->
+<rect width="1200" height="420" fill="url(#bgGrad)" rx="18"/>
+<rect width="1200" height="420" fill="url(#leftGlow)"  rx="18"/>
+<rect width="1200" height="420" fill="url(#rightGlow)" rx="18"/>
+<rect width="1200" height="420" fill="url(#scanline)"  rx="18"/>
+
+<!-- ═══ GRID ═══ -->
+<g opacity="0.03" stroke="#6366f1" stroke-width="1">
+  <line x1="0" y1="84"  x2="1200" y2="84"/>
+  <line x1="0" y1="168" x2="1200" y2="168"/>
+  <line x1="0" y1="252" x2="1200" y2="252"/>
+  <line x1="0" y1="336" x2="1200" y2="336"/>
+  <line x1="200" y1="0" x2="200" y2="420"/>
+  <line x1="400" y1="0" x2="400" y2="420"/>
+  <line x1="800" y1="0" x2="800" y2="420"/>
+  <line x1="1000" y1="0" x2="1000" y2="420"/>
+</g>
+
+<!-- ═══ BACKGROUND FLOATING CODE ═══ -->
+<g font-family="'Courier New', 'Fira Code', monospace" font-size="11.5" opacity="0.13">
+  <text x="30" y="38" fill="#22c55e" clip-path="url(#bg1)">POST /api/search  {"query": "Tum Hi Ho"}</text>
+  <text x="30" y="110" fill="#38bdf8" clip-path="url(#bg2)">Authorization: Bearer biq_x7Kp2mLqN9vRt...</text>
+  <text x="30" y="190" fill="#a78bfa" clip-path="url(#bg3)">"stream_id": "t7x9k2abc_mN3"</text>
+  <text x="30" y="270" fill="#22c55e" clip-path="url(#bg4)">GET /api/song?query=Blinding+Lights&amp;eq=bass_boost</text>
+  <text x="30" y="350" fill="#38bdf8" clip-path="url(#bg5)">GET /health  →  200 OK</text>
+  <text x="370" y="55" fill="#fbbf24" clip-path="url(#bg6)">X-API-Key: biq_YOUR_KEY</text>
+  <text x="370" y="148" fill="#22c55e" clip-path="url(#bg7)">GET /api/video?query=Neon&amp;seek=90&amp;download=false</text>
+  <text x="370" y="240" fill="#a78bfa" clip-path="url(#bg8)">"status": "ok",  "type": "audio"</text>
+  <text x="370" y="330" fill="#38bdf8" clip-path="url(#bg9)">GET /api/thumbnail?vidid=dQw4w9WgXcQ</text>
+</g>
+
+<!-- ═══ PARTICLES ═══ -->
+<g>
+  <circle cx="42" cy="80" r="1.8" fill="#818cf8" opacity="0.5">
+    <animate attributeName="cy" values="80;62;80" dur="4.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="4.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="88" cy="310" r="1.2" fill="#38bdf8" opacity="0.4">
+    <animate attributeName="cy" values="310;292;310" dur="5.1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0.7;0.2" dur="5.1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="160" cy="160" r="1.5" fill="#a78bfa" opacity="0.35">
+    <animate attributeName="cy" values="160;144;160" dur="3.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="500" cy="50" r="1.5" fill="#22c55e" opacity="0.3">
+    <animate attributeName="cy" values="50;36;50" dur="4.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="540" cy="370" r="1.2" fill="#818cf8" opacity="0.4">
+    <animate attributeName="cy" values="370;354;370" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+</g>
+
+<!-- ═══ LEFT CONTENT AREA ═══ -->
+<rect x="56" y="62" width="56" height="3" rx="1.5" fill="url(#waveGrad)" opacity="0.8"/>
+
+<text x="56" y="148"
+      font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+      font-size="92" font-weight="900" letter-spacing="-4"
+      fill="url(#titleGrad)">BabiesIQ</text>
+
+<text x="60" y="178"
+      font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+      font-size="13.5" font-weight="500" letter-spacing="4"
+      fill="#475569">DEVELOPER REST API</text>
+
+<rect x="60" y="193" width="480" height="1" fill="#1e293b" opacity="0.8"/>
+
+<text x="60" y="216"
+      font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+      font-size="12.5" font-weight="400" fill="#64748b" letter-spacing="0.5">
+  <tspan fill="#818cf8" font-weight="600">3M+</tspan> Users &#160;·&#160;
+  <tspan fill="#38bdf8" font-weight="600">50M+</tspan> Streams &#160;·&#160;
+  <tspan fill="#22c55e" font-weight="600">99.9%</tspan> Uptime
+</text>
+
+<text x="61" y="242"
+      font-family="'Courier New', monospace"
+      font-size="12" fill="#334155" letter-spacing="0.3">api.babiesiq.tech</text>
+
+<!-- Waveform bars -->
+<g transform="translate(60, 262)" filter="url(#termGlow)" opacity="0.9">
+  <g fill="url(#waveGrad)">
+    <rect x="0"   width="5" height="22" rx="2.5"><animate attributeName="height" values="22;10;30;6;22"  dur="1.0s" repeatCount="indefinite" begin="0s"/><animate attributeName="y" values="9;21;1;25;9"   dur="1.0s" repeatCount="indefinite" begin="0s"/></rect>
+    <rect x="9"   width="5" height="30" rx="2.5"><animate attributeName="height" values="30;8;22;36;30"   dur="0.85s" repeatCount="indefinite" begin="0.06s"/><animate attributeName="y" values="1;22;9;-5;1"  dur="0.85s" repeatCount="indefinite" begin="0.06s"/></rect>
+    <rect x="18"  width="5" height="16" rx="2.5"><animate attributeName="height" values="16;34;8;28;16"   dur="1.2s" repeatCount="indefinite" begin="0.12s"/><animate attributeName="y" values="15;-3;23;3;15" dur="1.2s" repeatCount="indefinite" begin="0.12s"/></rect>
+    <rect x="27"  width="5" height="36" rx="2.5"><animate attributeName="height" values="36;12;28;8;36"   dur="0.9s" repeatCount="indefinite" begin="0.18s"/><animate attributeName="y" values="-5;19;3;23;-5" dur="0.9s" repeatCount="indefinite" begin="0.18s"/></rect>
+    <rect x="36"  width="5" height="12" rx="2.5"><animate attributeName="height" values="12;30;6;36;12"   dur="1.1s" repeatCount="indefinite" begin="0.24s"/><animate attributeName="y" values="19;1;25;-5;19" dur="1.1s" repeatCount="indefinite" begin="0.24s"/></rect>
+    <rect x="45"  width="5" height="28" rx="2.5"><animate attributeName="height" values="28;10;36;14;28"  dur="0.95s" repeatCount="indefinite" begin="0.30s"/><animate attributeName="y" values="3;21;-5;17;3"  dur="0.95s" repeatCount="indefinite" begin="0.30s"/></rect>
+    <rect x="54"  width="5" height="20" rx="2.5"><animate attributeName="height" values="20;36;10;30;20"  dur="1.15s" repeatCount="indefinite" begin="0.36s"/><animate attributeName="y" values="11;-5;21;1;11"  dur="1.15s" repeatCount="indefinite" begin="0.36s"/></rect>
+    <rect x="63"  width="5" height="36" rx="2.5"><animate attributeName="height" values="36;16;24;8;36"   dur="0.88s" repeatCount="indefinite" begin="0.42s"/><animate attributeName="y" values="-5;15;7;23;-5" dur="0.88s" repeatCount="indefinite" begin="0.42s"/></rect>
+    <rect x="72"  width="5" height="10" rx="2.5"><animate attributeName="height" values="10;34;18;36;10"  dur="1.3s" repeatCount="indefinite" begin="0.48s"/><animate attributeName="y" values="21;-3;13;-5;21" dur="1.3s" repeatCount="indefinite" begin="0.48s"/></rect>
+    <rect x="81"  width="5" height="30" rx="2.5"><animate attributeName="height" values="30;8;36;20;30"   dur="1.0s" repeatCount="indefinite" begin="0.54s"/><animate attributeName="y" values="1;23;-5;11;1"  dur="1.0s" repeatCount="indefinite" begin="0.54s"/></rect>
+    <rect x="90"  width="5" height="24" rx="2.5"><animate attributeName="height" values="24;36;12;32;24"  dur="0.92s" repeatCount="indefinite" begin="0.60s"/><animate attributeName="y" values="7;-5;19;-1;7"  dur="0.92s" repeatCount="indefinite" begin="0.60s"/></rect>
+    <rect x="99"  width="5" height="36" rx="2.5"><animate attributeName="height" values="36;14;26;10;36"  dur="1.08s" repeatCount="indefinite" begin="0.66s"/><animate attributeName="y" values="-5;17;5;21;-5" dur="1.08s" repeatCount="indefinite" begin="0.66s"/></rect>
+    <rect x="108" width="5" height="18" rx="2.5"><animate attributeName="height" values="18;36;8;34;18"   dur="0.82s" repeatCount="indefinite" begin="0.72s"/><animate attributeName="y" values="13;-5;23;-3;13" dur="0.82s" repeatCount="indefinite" begin="0.72s"/></rect>
+    <rect x="117" width="5" height="34" rx="2.5"><animate attributeName="height" values="34;10;36;18;34"  dur="1.18s" repeatCount="indefinite" begin="0.78s"/><animate attributeName="y" values="-3;21;-5;13;-3" dur="1.18s" repeatCount="indefinite" begin="0.78s"/></rect>
+    <rect x="126" width="5" height="8"  rx="2.5"><animate attributeName="height" values="8;32;16;36;8"    dur="1.05s" repeatCount="indefinite" begin="0.84s"/><animate attributeName="y" values="23;-1;15;-5;23" dur="1.05s" repeatCount="indefinite" begin="0.84s"/></rect>
+    <rect x="135" width="5" height="26" rx="2.5"><animate attributeName="height" values="26;8;36;12;26"   dur="0.96s" repeatCount="indefinite" begin="0.90s"/><animate attributeName="y" values="5;23;-5;19;5"  dur="0.96s" repeatCount="indefinite" begin="0.90s"/></rect>
+    <rect x="144" width="5" height="36" rx="2.5"><animate attributeName="height" values="36;20;28;8;36"   dur="1.12s" repeatCount="indefinite" begin="0.96s"/><animate attributeName="y" values="-5;11;3;23;-5" dur="1.12s" repeatCount="indefinite" begin="0.96s"/></rect>
+    <rect x="153" width="5" height="14" rx="2.5"><animate attributeName="height" values="14;36;22;30;14"  dur="0.86s" repeatCount="indefinite" begin="1.02s"/><animate attributeName="y" values="17;-5;9;1;17"  dur="0.86s" repeatCount="indefinite" begin="0.86s"/></rect>
+    <rect x="162" width="5" height="32" rx="2.5"><animate attributeName="height" values="32;12;36;16;32"  dur="1.25s" repeatCount="indefinite" begin="1.08s"/><animate attributeName="y" values="0;19;-5;15;0"  dur="1.25s" repeatCount="indefinite" begin="1.08s"/></rect>
+    <rect x="171" width="5" height="20" rx="2.5"><animate attributeName="height" values="20;36;8;28;20"   dur="0.94s" repeatCount="indefinite" begin="1.14s"/><animate attributeName="y" values="11;-5;23;3;11"  dur="0.94s" repeatCount="indefinite" begin="1.14s"/></rect>
+    <rect x="180" width="5" height="36" rx="2.5"><animate attributeName="height" values="36;10;18;30;36"  dur="1.06s" repeatCount="indefinite" begin="1.20s"/><animate attributeName="y" values="-5;21;13;1;-5" dur="1.06s" repeatCount="indefinite" begin="1.20s"/></rect>
+    <rect x="189" width="5" height="28" rx="2.5"><animate attributeName="height" values="28;36;14;22;28"  dur="0.90s" repeatCount="indefinite" begin="1.26s"/><animate attributeName="y" values="3;-5;17;9;3"   dur="0.90s" repeatCount="indefinite" begin="1.26s"/></rect>
+  </g>
+</g>
+
+<!-- ═══ RIGHT: TERMINAL CARD ═══ -->
+<rect x="652" y="28" width="508" height="312" rx="14" fill="#080814" opacity="0.94"/>
+<rect x="652" y="28" width="508" height="312" rx="14" fill="none" stroke="url(#termBorder)" stroke-width="1.2"/>
+
+<rect x="652" y="28" width="508" height="42" rx="14" fill="#0d0d1f"/>
+<rect x="652" y="52" width="508" height="18" fill="#0d0d1f"/>
+
+<circle cx="680" cy="49" r="6" fill="#ff5f57" opacity="0.9"/>
+<circle cx="700" cy="49" r="6" fill="#febc2e" opacity="0.9"/>
+<circle cx="720" cy="49" r="6" fill="#28c840" opacity="0.9"/>
+
+<text x="900" y="54" text-anchor="middle"
+      font-family="'Courier New', monospace" font-size="12" fill="#334155" letter-spacing="0.5">api.babiesiq.tech</text>
+
+<line x1="652" y1="70" x2="1160" y2="70" stroke="#1a1a3e" stroke-width="1"/>
+
+<g font-family="'Courier New', 'Fira Code', monospace" font-size="12.5" filter="url(#termGlow)">
+  <text x="672" y="90" fill="#4b5563" clip-path="url(#tc1)">$ curl -X POST api.babiesiq.tech/api/search</text>
+  <text x="672" y="112" clip-path="url(#tc2)">
+    <tspan fill="#38bdf8" font-weight="bold">&gt;</tspan>
+    <tspan fill="#22c55e"> POST </tspan>
+    <tspan fill="#94a3b8">/api/search</tspan>
+  </text>
+  <text x="672" y="134" clip-path="url(#tc3)">
+    <tspan fill="#64748b">  </tspan>
+    <tspan fill="#94a3b8">{"</tspan><tspan fill="#fbbf24">query</tspan><tspan fill="#94a3b8">": "</tspan><tspan fill="#a78bfa">Tum Hi Ho</tspan><tspan fill="#94a3b8">"}</tspan>
+  </text>
+  <text x="672" y="156" clip-path="url(#tc4)">
+    <tspan fill="#38bdf8" font-weight="bold">&lt;</tspan>
+    <tspan fill="#22c55e" font-weight="bold"> 200 OK</tspan>
+    <tspan fill="#475569"> · 38ms</tspan>
+  </text>
+  <text x="672" y="178" clip-path="url(#tc5)">
+    <tspan fill="#475569">  </tspan>
+    <tspan fill="#38bdf8">"status"</tspan>
+    <tspan fill="#94a3b8">: </tspan>
+    <tspan fill="#22c55e">"ok"</tspan>
+    <tspan fill="#475569">,</tspan>
+  </text>
+  <text x="672" y="200" clip-path="url(#tc6)">
+    <tspan fill="#475569">  </tspan>
+    <tspan fill="#38bdf8">"type"</tspan>
+    <tspan fill="#94a3b8">: </tspan>
+    <tspan fill="#22c55e">"audio"</tspan>
+    <tspan fill="#475569">,  </tspan>
+    <tspan fill="#38bdf8">"stream_id"</tspan>
+    <tspan fill="#94a3b8">: </tspan>
+    <tspan fill="#fbbf24">"t7x9k2"</tspan>
+  </text>
+  <text x="672" y="222" clip-path="url(#tc7)">
+    <tspan fill="#475569">  </tspan>
+    <tspan fill="#38bdf8">"stream"</tspan>
+    <tspan fill="#94a3b8">: </tspan>
+    <tspan fill="#a78bfa">"https://api.babiesiq.tech/..."</tspan>
+  </text>
+</g>
+
+<text x="672" y="244"
+      font-family="'Courier New', monospace" font-size="12.5" fill="#6366f1">
+  <tspan>▋</tspan>
+  <animate attributeName="opacity"
+           values="0;0;1;0;1;0;1;0;0"
+           keyTimes="0;0.700;0.714;0.742;0.757;0.785;0.800;0.850;1"
+           dur="14s" repeatCount="indefinite"/>
+</text>
+
+<line x1="652" y1="272" x2="1160" y2="272" stroke="#0f0f2a" stroke-width="1"/>
+<text x="672" y="288" font-family="'Courier New', monospace" font-size="11" fill="#1e3a5f">
+  eq presets: bass_boost · nightcore · 8d_audio · lofi · slowed_reverb
+</text>
+<text x="672" y="306" font-family="'Courier New', monospace" font-size="11" fill="#1e3a5f">
+  seek · download · one-time tokens · Telegram CDN delivery
+</text>
+<text x="672" y="324" font-family="'Courier New', monospace" font-size="11" fill="#1e3a5f">
+  JS · Python · Go · PHP SDKs · 3M+ users · 50M+ streams
+</text>
+
+<!-- ═══ API LIVE BADGE ═══ -->
+<g transform="translate(1048, 16)">
+  <rect width="112" height="28" rx="14" fill="#031a0e" stroke="#22c55e" stroke-width="1.2"/>
+  <circle cx="18" cy="14" r="5" fill="#22c55e" filter="url(#liveDot)">
+    <animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="62" y="19" text-anchor="middle"
+        font-family="Inter, sans-serif" font-size="12" font-weight="700"
+        fill="#22c55e" letter-spacing="1.5">API LIVE</text>
+</g>
+
+<!-- ═══ BOTTOM SDK BADGE ROW ═══ -->
+<g transform="translate(0, 358)" font-family="Inter, sans-serif" font-size="11.5" font-weight="600">
+  <rect x="222" y="0" width="82" height="24" rx="12" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1" opacity="0.9"/>
+  <text x="263" y="16" text-anchor="middle" fill="#93c5fd">Python SDK</text>
+  <rect x="314" y="0" width="100" height="24" rx="12" fill="#3f2a00" stroke="#ca8a04" stroke-width="1" opacity="0.9"/>
+  <text x="364" y="16" text-anchor="middle" fill="#fcd34d">JavaScript SDK</text>
+  <rect x="424" y="0" width="66" height="24" rx="12" fill="#052e1c" stroke="#16a34a" stroke-width="1" opacity="0.9"/>
+  <text x="457" y="16" text-anchor="middle" fill="#86efac">Go SDK</text>
+  <rect x="500" y="0" width="72" height="24" rx="12" fill="#2d1b6e" stroke="#7c3aed" stroke-width="1" opacity="0.9"/>
+  <text x="536" y="16" text-anchor="middle" fill="#c4b5fd">PHP SDK</text>
+  <rect x="582" y="0" width="58" height="24" rx="12" fill="#0f0f2a" stroke="#6366f1" stroke-width="1" opacity="0.9"/>
+  <text x="611" y="16" text-anchor="middle" fill="#818cf8">CLI Tool</text>
+</g>
+
+<!-- ═══ FOOTER LABEL ═══ -->
+<text x="600" y="402" text-anchor="middle"
+      font-family="Inter, sans-serif" font-size="11" letter-spacing="0.8">
+  <tspan fill="#334155">babiesiq.tech</tspan>
+  <tspan fill="#1e293b"> · </tspan>
+  <tspan fill="#334155">api.babiesiq.tech</tspan>
+  <tspan fill="#1e293b"> · </tspan>
+  <tspan fill="#2CA5E0">t.me/BabiesIQ</tspan>
+</text>
+
+<!-- ═══ OUTER BORDER ═══ -->
+<rect width="1200" height="420" fill="none" stroke="url(#borderGrad)" stroke-width="1.5" rx="18" opacity="0.6"/>
+
+</svg>
