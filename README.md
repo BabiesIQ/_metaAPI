@@ -94,7 +94,7 @@ curl -X POST "https://api.babiesiq.tech/api/search" \
 ### 2. Get an audio stream
 
 ```bash
-curl "https://api.babiesiq.tech/api/song?query=Tum+Hi+Ho" \
+curl "https://api.babiesiq.tech/api/song?query={vidid}" \
   -H "X-API-Key: biq_YOUR_KEY"
 ```
 
@@ -103,7 +103,7 @@ curl "https://api.babiesiq.tech/api/song?query=Tum+Hi+Ho" \
 {
   "status": "ok",
   "type": "audio",
-  "query": "Tum Hi Ho",
+  "query": "{vidid}",
   "stream_id": "abc123xyz",
   "stream": "https://api.babiesiq.tech/api/stream/abc123xyz?token=ONE_TIME_TOKEN&download=false"
 }
@@ -114,14 +114,14 @@ curl "https://api.babiesiq.tech/api/song?query=Tum+Hi+Ho" \
 **With EQ preset** (bass boost, nightcore, lofi, 8d_audio, slowed_reverb …):
 
 ```bash
-curl "https://api.babiesiq.tech/api/song?query=Tum+Hi+Ho&eq=bass_boost" \
+curl "https://api.babiesiq.tech/api/song?query={vidid}&eq=bass_boost" \
   -H "X-API-Key: biq_YOUR_KEY"
 ```
 
 **Start from timestamp** (seek to 90 seconds):
 
 ```bash
-curl "https://api.babiesiq.tech/api/song?query=Tum+Hi+Ho&seek=90" \
+curl "https://api.babiesiq.tech/api/song?query={vidid}&seek=90" \
   -H "X-API-Key: biq_YOUR_KEY"
 ```
 
@@ -139,7 +139,7 @@ curl "https://api.babiesiq.tech/api/song?query=Tum+Hi+Ho&download=true" \
 Works identically to audio — returns a one-time stream URL:
 
 ```bash
-curl "https://api.babiesiq.tech/api/video?query=https://youtu.be/dQw4w9WgXcQ" \
+curl "https://api.babiesiq.tech/api/video?query={vidid}" \
   -H "X-API-Key: biq_YOUR_KEY"
 ```
 
@@ -401,30 +401,6 @@ Upgrade anytime → [babiesiq.tech/pricing](https://babiesiq.tech/pricing)
 
 ---
 
-## Repository Structure
-
-```
-_metaAPI/
-├── src/                        # React 19 + TypeScript developer portal
-│   ├── api.ts                  # REST client (auth, profile, billing, keys)
-│   ├── components/             # Shared UI (header, dashboard layouts, modals)
-│   └── App.tsx                 # Root router
-│
-├── sdk/                        # Official client SDKs
-│   ├── javascript/             # @babiesiq/sdk — TypeScript/JS (npm)
-│   ├── python/                 # biq-api — Python (PyPI)
-│   ├── go/                     # Go SDK
-│   └── php/                    # PHP SDK (Composer)
-│
-├── cli/                        # Go CLI tool (terminal downloader)
-├── assets/                     # Banner and static assets
-├── public/                     # Fonts, icons, SPA redirects
-├── .github/workflows/          # CI: Netlify deploy + Python SDK publish to PyPI
-└── package.json                # Vite + React 19 build config
-```
-
----
-
 ## Portal Tech Stack
 
 | Layer | Technology |
@@ -490,25 +466,6 @@ SPA routing: handled by [`netlify.toml`](./netlify.toml) and [`public/_redirects
 npm run build
 # Upload dist/ to Vercel, Cloudflare Pages, GitHub Pages, nginx, etc.
 ```
-
----
-
-## Backend Architecture
-
-The streaming backend is at **[BabiesIQ/BabiesIQ_API](https://github.com/BabiesIQ/BabiesIQ_API)**:
-
-| Component | Technology |
-|---|---|
-| API server | Go + Gin (release mode) |
-| YouTube processing | yt-dlp + ffmpeg |
-| Media CDN | Telegram Bot API (audio + video storage) |
-| Database | MongoDB (users, keys, usage) + MySQL (billing) |
-| Cache / sessions | Redis |
-| Payments | Razorpay (INR) |
-| Email | Brevo (OTP, welcome, billing) |
-| Admin | Telegram Bot (disk/RAM/DB commands) |
-| Thumbnails | Python script, 20 designs |
-| Deployment | Railway |
 
 ---
 
