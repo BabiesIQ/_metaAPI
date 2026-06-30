@@ -19,7 +19,7 @@
 
 ## What is BabiesIQ?
 
-**BabiesIQ** is a **developer-first tech & coding community** founded in **2025**, focused on building modern developer tools, open-source projects, and high-performance APIs.
+**BabiesIQ** is a **developer-first tech & coding community** founded in **2019**, focused on building modern developer tools, open-source projects, and high-performance APIs.
 
 Our flagship product, **_metaAPI**, is a powerful streaming platform that provides fast media streaming, secure delivery, and developer-friendly REST APIs. Alongside our products, BabiesIQ regularly shares coding tips, backend architecture guides, API integrations, DevOps practices, and real-world engineering knowledge to help developers build scalable applications.
 
