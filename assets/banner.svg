@@ -101,135 +101,100 @@
       <animate attributeName="cy" values="100;80;100" dur="4.5s" repeatCount="indefinite"/>
       <animate attributeName="opacity" values="0.5;1;0.5" dur="4.5s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="1080" cy="240" r="1.5" fill="#818cf8">
-      <animate attributeName="cy" values="240;220;240" dur="3.8s" repeatCount="indefinite"/>
+    <circle cx="1080" cy="220" r="1.5" fill="#818cf8">
+      <animate attributeName="cy" values="220;200;220" dur="3.8s" repeatCount="indefinite"/>
     </circle>
     <circle cx="1160" cy="280" r="1" fill="#a78bfa">
-      <animate attributeName="cy" values="280;260;280" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="280;260;280" dur="5.2s" repeatCount="indefinite"/>
     </circle>
   </g>
-
-  <!-- Left decorative code text -->
-  <g font-family="JetBrains Mono, Consolas, monospace" font-size="11" fill="#4f46e5" opacity="0.35">
-    <text x="28" y="130">GET /api/song</text>
-    <text x="28" y="150">X-API-Key: biq_***</text>
-    <text x="28" y="170">→ stream_url</text>
-  </g>
-
-  <!-- Right decorative code text -->
-  <g font-family="JetBrains Mono, Consolas, monospace" font-size="11" fill="#0369a1" opacity="0.35" text-anchor="end">
-    <text x="1172" y="130">POST /api/search</text>
-    <text x="1172" y="150">{"query": "..."}</text>
-    <text x="1172" y="170">→ results[]</text>
-  </g>
-
-  <!-- API LIVE badge (top right) -->
-  <g>
-    <rect x="1060" y="22" width="108" height="26" rx="13" fill="#052e16" stroke="#16a34a" stroke-width="1"/>
-    <circle cx="1081" cy="35" r="4" fill="#22c55e">
-      <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
-    </circle>
-    <text x="1091" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#22c55e" letter-spacing="1">API LIVE</text>
-  </g>
-
-  <!-- Version badge (top left) -->
-  <rect x="26" y="22" width="72" height="26" rx="13" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
-  <text x="62" y="40" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#818cf8">v 1.0.0</text>
 
   <!-- Main title: BabiesIQ -->
-  <text x="600" y="138"
-    font-family="Inter, SF Pro Display, -apple-system, sans-serif"
-    font-size="72"
-    font-weight="800"
-    text-anchor="middle"
-    letter-spacing="-1"
-    fill="url(#titleGrad)"
-    filter="url(#glow)">BabiesIQ</text>
+  <text x="600" y="118" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif"
+        font-size="64" font-weight="800" letter-spacing="-2"
+        fill="url(#titleGrad)" filter="url(#glow)">BabiesIQ</text>
 
   <!-- Subtitle -->
-  <text x="600" y="173"
-    font-family="Inter, sans-serif"
-    font-size="17"
-    font-weight="500"
-    text-anchor="middle"
-    letter-spacing="3"
-    fill="#94a3b8">YOUTUBE MEDIA STREAMING API</text>
+  <text x="600" y="152" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif"
+        font-size="16" font-weight="400" letter-spacing="3"
+        fill="#64748b">DEVELOPER API · STREAM · SEARCH · DOWNLOAD</text>
 
-  <!-- Divider line -->
-  <line x1="460" y1="190" x2="740" y2="190" stroke="#312e81" stroke-width="1" opacity="0.8"/>
-
-  <!-- Waveform bars (animated) — row of bars below subtitle -->
-  <g filter="url(#barGlow)" transform="translate(296, 205)">
-    <!-- 37 bars, centered, animated with staggered timing -->
-    <g fill="#6366f1" opacity="0.9">
-      <rect x="0"   y="0" width="7" height="40" rx="3.5"><animate attributeName="height" values="8;40;16;32;8"  dur="1.2s" repeatCount="indefinite" begin="0s"/><animate attributeName="y" values="32;0;24;8;32" dur="1.2s" repeatCount="indefinite" begin="0s"/></rect>
-      <rect x="11"  y="0" width="7" height="30" rx="3.5"><animate attributeName="height" values="30;10;40;18;30" dur="1.1s" repeatCount="indefinite" begin="0.08s"/><animate attributeName="y" values="10;30;0;22;10" dur="1.1s" repeatCount="indefinite" begin="0.08s"/></rect>
-      <rect x="22"  y="0" width="7" height="22" rx="3.5"><animate attributeName="height" values="22;38;12;40;22" dur="1.3s" repeatCount="indefinite" begin="0.16s"/><animate attributeName="y" values="18;2;28;0;18"  dur="1.3s" repeatCount="indefinite" begin="0.16s"/></rect>
-      <rect x="33"  y="0" width="7" height="36" rx="3.5" fill="#818cf8"><animate attributeName="height" values="36;14;40;10;36" dur="0.9s" repeatCount="indefinite" begin="0.24s"/><animate attributeName="y" values="4;26;0;30;4"   dur="0.9s" repeatCount="indefinite" begin="0.24s"/></rect>
-      <rect x="44"  y="0" width="7" height="14" rx="3.5"><animate attributeName="height" values="14;40;8;36;14"  dur="1.4s" repeatCount="indefinite" begin="0.32s"/><animate attributeName="y" values="26;0;32;4;26"  dur="1.4s" repeatCount="indefinite" begin="0.32s"/></rect>
-      <rect x="55"  y="0" width="7" height="40" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="40;12;32;16;40" dur="1.0s" repeatCount="indefinite" begin="0.40s"/><animate attributeName="y" values="0;28;8;24;0"   dur="1.0s" repeatCount="indefinite" begin="0.40s"/></rect>
-      <rect x="66"  y="0" width="7" height="18" rx="3.5"><animate attributeName="height" values="18;36;10;38;18" dur="1.2s" repeatCount="indefinite" begin="0.48s"/><animate attributeName="y" values="22;4;30;2;22"  dur="1.2s" repeatCount="indefinite" begin="0.48s"/></rect>
-      <rect x="77"  y="0" width="7" height="32" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="32;8;40;14;32"  dur="1.1s" repeatCount="indefinite" begin="0.56s"/><animate attributeName="y" values="8;32;0;26;8"   dur="1.1s" repeatCount="indefinite" begin="0.56s"/></rect>
-      <rect x="88"  y="0" width="7" height="24" rx="3.5"><animate attributeName="height" values="24;40;16;36;24" dur="1.3s" repeatCount="indefinite" begin="0.64s"/><animate attributeName="y" values="16;0;24;4;16"  dur="1.3s" repeatCount="indefinite" begin="0.64s"/></rect>
-      <rect x="99"  y="0" width="7" height="40" rx="3.5" fill="#818cf8"><animate attributeName="height" values="40;16;36;8;40"  dur="0.95s" repeatCount="indefinite" begin="0.72s"/><animate attributeName="y" values="0;24;4;32;0"   dur="0.95s" repeatCount="indefinite" begin="0.72s"/></rect>
-      <rect x="110" y="0" width="7" height="12" rx="3.5"><animate attributeName="height" values="12;38;20;40;12" dur="1.15s" repeatCount="indefinite" begin="0.80s"/><animate attributeName="y" values="28;2;20;0;28"  dur="1.15s" repeatCount="indefinite" begin="0.80s"/></rect>
-      <rect x="121" y="0" width="7" height="38" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="38;10;40;18;38" dur="1.25s" repeatCount="indefinite" begin="0.88s"/><animate attributeName="y" values="2;30;0;22;2"   dur="1.25s" repeatCount="indefinite" begin="0.88s"/></rect>
-      <rect x="132" y="0" width="7" height="20" rx="3.5"><animate attributeName="height" values="20;40;10;34;20" dur="1.05s" repeatCount="indefinite" begin="0.96s"/><animate attributeName="y" values="20;0;30;6;20"  dur="1.05s" repeatCount="indefinite" begin="0.96s"/></rect>
-      <rect x="143" y="0" width="7" height="34" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="34;12;40;20;34" dur="1.35s" repeatCount="indefinite" begin="1.04s"/><animate attributeName="y" values="6;28;0;20;6"   dur="1.35s" repeatCount="indefinite" begin="1.04s"/></rect>
-      <rect x="154" y="0" width="7" height="40" rx="3.5"><animate attributeName="height" values="40;18;28;10;40" dur="1.0s" repeatCount="indefinite" begin="1.12s"/><animate attributeName="y" values="0;22;12;30;0"  dur="1.0s" repeatCount="indefinite" begin="1.12s"/></rect>
-      <rect x="165" y="0" width="7" height="16" rx="3.5" fill="#818cf8"><animate attributeName="height" values="16;40;24;36;16" dur="1.2s" repeatCount="indefinite" begin="1.20s"/><animate attributeName="y" values="24;0;16;4;24"  dur="1.2s" repeatCount="indefinite" begin="1.20s"/></rect>
-      <!-- CENTER PEAK -->
-      <rect x="176" y="0" width="7" height="40" rx="3.5" fill="#c084fc"><animate attributeName="height" values="40;20;40;24;40" dur="0.85s" repeatCount="indefinite" begin="0s"/><animate attributeName="y" values="0;20;0;16;0"   dur="0.85s" repeatCount="indefinite" begin="0s"/></rect>
-      <!-- Mirror second half -->
-      <rect x="187" y="0" width="7" height="16" rx="3.5" fill="#818cf8"><animate attributeName="height" values="16;40;24;36;16" dur="1.2s" repeatCount="indefinite" begin="1.20s"/><animate attributeName="y" values="24;0;16;4;24"  dur="1.2s" repeatCount="indefinite" begin="1.20s"/></rect>
-      <rect x="198" y="0" width="7" height="40" rx="3.5"><animate attributeName="height" values="40;18;28;10;40" dur="1.0s" repeatCount="indefinite" begin="1.12s"/><animate attributeName="y" values="0;22;12;30;0"  dur="1.0s" repeatCount="indefinite" begin="1.12s"/></rect>
-      <rect x="209" y="0" width="7" height="34" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="34;12;40;20;34" dur="1.35s" repeatCount="indefinite" begin="1.04s"/><animate attributeName="y" values="6;28;0;20;6"   dur="1.35s" repeatCount="indefinite" begin="1.04s"/></rect>
-      <rect x="220" y="0" width="7" height="20" rx="3.5"><animate attributeName="height" values="20;40;10;34;20" dur="1.05s" repeatCount="indefinite" begin="0.96s"/><animate attributeName="y" values="20;0;30;6;20"  dur="1.05s" repeatCount="indefinite" begin="0.96s"/></rect>
-      <rect x="231" y="0" width="7" height="38" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="38;10;40;18;38" dur="1.25s" repeatCount="indefinite" begin="0.88s"/><animate attributeName="y" values="2;30;0;22;2"   dur="1.25s" repeatCount="indefinite" begin="0.88s"/></rect>
-      <rect x="242" y="0" width="7" height="12" rx="3.5"><animate attributeName="height" values="12;38;20;40;12" dur="1.15s" repeatCount="indefinite" begin="0.80s"/><animate attributeName="y" values="28;2;20;0;28"  dur="1.15s" repeatCount="indefinite" begin="0.80s"/></rect>
-      <rect x="253" y="0" width="7" height="40" rx="3.5" fill="#818cf8"><animate attributeName="height" values="40;16;36;8;40"  dur="0.95s" repeatCount="indefinite" begin="0.72s"/><animate attributeName="y" values="0;24;4;32;0"   dur="0.95s" repeatCount="indefinite" begin="0.72s"/></rect>
-      <rect x="264" y="0" width="7" height="24" rx="3.5"><animate attributeName="height" values="24;40;16;36;24" dur="1.3s" repeatCount="indefinite" begin="0.64s"/><animate attributeName="y" values="16;0;24;4;16"  dur="1.3s" repeatCount="indefinite" begin="0.64s"/></rect>
-      <rect x="275" y="0" width="7" height="32" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="32;8;40;14;32"  dur="1.1s" repeatCount="indefinite" begin="0.56s"/><animate attributeName="y" values="8;32;0;26;8"   dur="1.1s" repeatCount="indefinite" begin="0.56s"/></rect>
-      <rect x="286" y="0" width="7" height="18" rx="3.5"><animate attributeName="height" values="18;36;10;38;18" dur="1.2s" repeatCount="indefinite" begin="0.48s"/><animate attributeName="y" values="22;4;30;2;22"  dur="1.2s" repeatCount="indefinite" begin="0.48s"/></rect>
-      <rect x="297" y="0" width="7" height="40" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="40;12;32;16;40" dur="1.0s" repeatCount="indefinite" begin="0.40s"/><animate attributeName="y" values="0;28;8;24;0"   dur="1.0s" repeatCount="indefinite" begin="0.40s"/></rect>
-      <rect x="308" y="0" width="7" height="14" rx="3.5"><animate attributeName="height" values="14;40;8;36;14"  dur="1.4s" repeatCount="indefinite" begin="0.32s"/><animate attributeName="y" values="26;0;32;4;26"  dur="1.4s" repeatCount="indefinite" begin="0.32s"/></rect>
-      <rect x="319" y="0" width="7" height="36" rx="3.5" fill="#818cf8"><animate attributeName="height" values="36;14;40;10;36" dur="0.9s" repeatCount="indefinite" begin="0.24s"/><animate attributeName="y" values="4;26;0;30;4"   dur="0.9s" repeatCount="indefinite" begin="0.24s"/></rect>
-      <rect x="330" y="0" width="7" height="22" rx="3.5"><animate attributeName="height" values="22;38;12;40;22" dur="1.3s" repeatCount="indefinite" begin="0.16s"/><animate attributeName="y" values="18;2;28;0;18"  dur="1.3s" repeatCount="indefinite" begin="0.16s"/></rect>
-      <rect x="341" y="0" width="7" height="30" rx="3.5"><animate attributeName="height" values="30;10;40;18;30" dur="1.1s" repeatCount="indefinite" begin="0.08s"/><animate attributeName="y" values="10;30;0;22;10" dur="1.1s" repeatCount="indefinite" begin="0.08s"/></rect>
-      <rect x="352" y="0" width="7" height="40" rx="3.5"><animate attributeName="height" values="8;40;16;32;8"  dur="1.2s" repeatCount="indefinite" begin="0s"/><animate attributeName="y" values="32;0;24;8;32" dur="1.2s" repeatCount="indefinite" begin="0s"/></rect>
-      <rect x="363" y="0" width="7" height="20" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="20;36;8;40;20" dur="1.15s" repeatCount="indefinite" begin="0.28s"/><animate attributeName="y" values="20;4;32;0;20"  dur="1.15s" repeatCount="indefinite" begin="0.28s"/></rect>
-      <rect x="374" y="0" width="7" height="38" rx="3.5" fill="#818cf8"><animate attributeName="height" values="38;14;40;10;38" dur="1.0s" repeatCount="indefinite" begin="0.52s"/><animate attributeName="y" values="2;26;0;30;2"   dur="1.0s" repeatCount="indefinite" begin="0.52s"/></rect>
-      <rect x="385" y="0" width="7" height="10" rx="3.5"><animate attributeName="height" values="10;38;22;36;10" dur="1.25s" repeatCount="indefinite" begin="0.76s"/><animate attributeName="y" values="30;2;18;4;30"  dur="1.25s" repeatCount="indefinite" begin="0.76s"/></rect>
-      <rect x="396" y="0" width="7" height="30" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="30;8;40;16;30"  dur="1.35s" repeatCount="indefinite" begin="1.0s"/><animate attributeName="y" values="10;32;0;24;10"  dur="1.35s" repeatCount="indefinite" begin="1.0s"/></rect>
+  <!-- Animated waveform bars -->
+  <g transform="translate(600,190)" filter="url(#barGlow)">
+    <g transform="translate(-220,0)" fill="#6366f1" opacity="0.85">
+      <rect x="0"   y="0" width="7" height="28" rx="3.5"><animate attributeName="height" values="28;12;36;8;28"  dur="1.1s" repeatCount="indefinite" begin="0s"/><animate attributeName="y" values="12;28;4;32;12" dur="1.1s" repeatCount="indefinite" begin="0s"/></rect>
+      <rect x="11"  y="0" width="7" height="40" rx="3.5" fill="#818cf8"><animate attributeName="height" values="40;16;28;10;40" dur="0.9s" repeatCount="indefinite" begin="0.1s"/><animate attributeName="y" values="0;24;12;30;0"  dur="0.9s" repeatCount="indefinite" begin="0.1s"/></rect>
+      <rect x="22"  y="0" width="7" height="20" rx="3.5"><animate attributeName="height" values="20;38;10;36;20" dur="1.3s" repeatCount="indefinite" begin="0.2s"/><animate attributeName="y" values="20;2;30;4;20"  dur="1.3s" repeatCount="indefinite" begin="0.2s"/></rect>
+      <rect x="33"  y="0" width="7" height="36" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="36;10;40;14;36" dur="1.0s" repeatCount="indefinite" begin="0.3s"/><animate attributeName="y" values="4;30;0;26;4"   dur="1.0s" repeatCount="indefinite" begin="0.3s"/></rect>
+      <rect x="44"  y="0" width="7" height="16" rx="3.5"><animate attributeName="height" values="16;36;8;40;16"  dur="1.2s" repeatCount="indefinite" begin="0.4s"/><animate attributeName="y" values="24;4;32;0;24"  dur="1.2s" repeatCount="indefinite" begin="0.4s"/></rect>
+      <rect x="55"  y="0" width="7" height="32" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="32;14;40;10;32" dur="0.85s" repeatCount="indefinite" begin="0.5s"/><animate attributeName="y" values="8;26;0;30;8"   dur="0.85s" repeatCount="indefinite" begin="0.5s"/></rect>
+      <rect x="66"  y="0" width="7" height="24" rx="3.5"><animate attributeName="height" values="24;40;12;36;24" dur="1.15s" repeatCount="indefinite" begin="0.6s"/><animate attributeName="y" values="16;0;28;4;16"  dur="1.15s" repeatCount="indefinite" begin="0.6s"/></rect>
+      <rect x="77"  y="0" width="7" height="40" rx="3.5" fill="#818cf8"><animate attributeName="height" values="40;18;32;8;40"  dur="1.0s" repeatCount="indefinite" begin="0.7s"/><animate attributeName="y" values="0;22;8;32;0"   dur="1.0s" repeatCount="indefinite" begin="0.7s"/></rect>
+      <rect x="88"  y="0" width="7" height="14" rx="3.5"><animate attributeName="height" values="14;36;6;40;14"  dur="1.3s" repeatCount="indefinite" begin="0.8s"/><animate attributeName="y" values="26;4;34;0;26"  dur="1.3s" repeatCount="indefinite" begin="0.8s"/></rect>
+      <rect x="99"  y="0" width="7" height="38" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="38;12;40;16;38" dur="0.95s" repeatCount="indefinite" begin="0.9s"/><animate attributeName="y" values="2;28;0;24;2"   dur="0.95s" repeatCount="indefinite" begin="0.9s"/></rect>
+      <rect x="110" y="0" width="7" height="22" rx="3.5"><animate attributeName="height" values="22;40;10;34;22" dur="1.1s" repeatCount="indefinite" begin="1.0s"/><animate attributeName="y" values="18;0;30;6;18"  dur="1.1s" repeatCount="indefinite" begin="1.0s"/></rect>
+      <rect x="121" y="0" width="7" height="36" rx="3.5" fill="#6366f1"><animate attributeName="height" values="36;8;40;20;36"  dur="1.25s" repeatCount="indefinite" begin="1.1s"/><animate attributeName="y" values="4;32;0;20;4"   dur="1.25s" repeatCount="indefinite" begin="1.1s"/></rect>
+      <rect x="132" y="0" width="7" height="18" rx="3.5"><animate attributeName="height" values="18;38;8;36;18"  dur="0.9s" repeatCount="indefinite" begin="1.2s"/><animate attributeName="y" values="22;2;32;4;22"  dur="0.9s" repeatCount="indefinite" begin="1.2s"/></rect>
+      <rect x="143" y="0" width="7" height="40" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="40;14;36;10;40" dur="1.05s" repeatCount="indefinite" begin="1.3s"/><animate attributeName="y" values="0;26;4;30;0"   dur="1.05s" repeatCount="indefinite" begin="1.3s"/></rect>
+      <rect x="154" y="0" width="7" height="26" rx="3.5"><animate attributeName="height" values="26;40;14;38;26" dur="1.2s" repeatCount="indefinite" begin="1.4s"/><animate attributeName="y" values="14;0;26;2;14"  dur="1.2s" repeatCount="indefinite" begin="1.4s"/></rect>
+      <rect x="165" y="0" width="7" height="12" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="12;40;8;36;12"  dur="1.0s" repeatCount="indefinite" begin="1.5s"/><animate attributeName="y" values="28;0;32;4;28"  dur="1.0s" repeatCount="indefinite" begin="1.5s"/></rect>
+      <rect x="176" y="0" width="7" height="34" rx="3.5"><animate attributeName="height" values="34;10;40;18;34" dur="0.88s" repeatCount="indefinite" begin="1.6s"/><animate attributeName="y" values="6;30;0;22;6"   dur="0.88s" repeatCount="indefinite" begin="1.6s"/></rect>
+      <rect x="187" y="0" width="7" height="40" rx="3.5" fill="#818cf8"><animate attributeName="height" values="40;20;30;10;40" dur="1.15s" repeatCount="indefinite" begin="1.7s"/><animate attributeName="y" values="0;20;10;30;0"  dur="1.15s" repeatCount="indefinite" begin="1.7s"/></rect>
+      <rect x="198" y="0" width="7" height="20" rx="3.5" fill="#6366f1"><animate attributeName="height" values="20;38;10;40;20" dur="1.3s" repeatCount="indefinite" begin="1.8s"/><animate attributeName="y" values="20;2;30;0;20"  dur="1.3s" repeatCount="indefinite" begin="1.8s"/></rect>
+      <rect x="209" y="0" width="7" height="30" rx="3.5"><animate attributeName="height" values="30;10;40;18;30" dur="1.1s" repeatCount="indefinite" begin="1.9s"/><animate attributeName="y" values="10;30;0;22;10" dur="1.1s" repeatCount="indefinite" begin="1.9s"/></rect>
+      <rect x="220" y="0" width="7" height="40" rx="3.5"><animate attributeName="height" values="8;40;16;32;8"   dur="1.2s" repeatCount="indefinite" begin="0s"/><animate attributeName="y" values="32;0;24;8;32"  dur="1.2s" repeatCount="indefinite" begin="0s"/></rect>
+      <rect x="231" y="0" width="7" height="20" rx="3.5" fill="#38bdf8"><animate attributeName="height" values="20;36;8;40;20"  dur="1.15s" repeatCount="indefinite" begin="0.28s"/><animate attributeName="y" values="20;4;32;0;20"  dur="1.15s" repeatCount="indefinite" begin="0.28s"/></rect>
+      <rect x="242" y="0" width="7" height="38" rx="3.5" fill="#818cf8"><animate attributeName="height" values="38;14;40;10;38" dur="1.0s" repeatCount="indefinite" begin="0.52s"/><animate attributeName="y" values="2;26;0;30;2"   dur="1.0s" repeatCount="indefinite" begin="0.52s"/></rect>
+      <rect x="253" y="0" width="7" height="10" rx="3.5"><animate attributeName="height" values="10;38;22;36;10"  dur="1.25s" repeatCount="indefinite" begin="0.76s"/><animate attributeName="y" values="30;2;18;4;30"  dur="1.25s" repeatCount="indefinite" begin="0.76s"/></rect>
+      <rect x="264" y="0" width="7" height="30" rx="3.5" fill="#a78bfa"><animate attributeName="height" values="30;8;40;16;30"  dur="1.35s" repeatCount="indefinite" begin="1.0s"/><animate attributeName="y" values="10;32;0;24;10" dur="1.35s" repeatCount="indefinite" begin="1.0s"/></rect>
     </g>
   </g>
 
-  <!-- Bottom badge row -->
-  <g transform="translate(0, 270)" font-family="Inter, sans-serif" font-size="12" font-weight="600">
-    <!-- Python -->
-    <rect x="362" y="0" width="82" height="24" rx="12" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1" opacity="0.85"/>
-    <text x="403" y="16" text-anchor="middle" fill="#93c5fd">Python SDK</text>
-
-    <!-- JavaScript -->
-    <rect x="454" y="0" width="100" height="24" rx="12" fill="#3f2a00" stroke="#ca8a04" stroke-width="1" opacity="0.85"/>
-    <text x="504" y="16" text-anchor="middle" fill="#fcd34d">JavaScript SDK</text>
-
-    <!-- Go -->
-    <rect x="564" y="0" width="66" height="24" rx="12" fill="#052e1c" stroke="#16a34a" stroke-width="1" opacity="0.85"/>
-    <text x="597" y="16" text-anchor="middle" fill="#86efac">Go SDK</text>
-
-    <!-- PHP -->
-    <rect x="640" y="0" width="72" height="24" rx="12" fill="#2d1b6e" stroke="#7c3aed" stroke-width="1" opacity="0.85"/>
-    <text x="676" y="16" text-anchor="middle" fill="#c4b5fd">PHP SDK</text>
-
-    <!-- CLI -->
-    <rect x="722" y="0" width="58" height="24" rx="12" fill="#1a1a2e" stroke="#6366f1" stroke-width="1" opacity="0.85"/>
-    <text x="751" y="16" text-anchor="middle" fill="#818cf8">CLI Tool</text>
+  <!-- API LIVE badge (top right) -->
+  <g transform="translate(1060, 28)">
+    <rect width="112" height="28" rx="14" fill="#052e1c" stroke="#22c55e" stroke-width="1.5"/>
+    <circle cx="18" cy="14" r="5" fill="#22c55e">
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <text x="58" y="19" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#22c55e" letter-spacing="1">API LIVE</text>
   </g>
 
-  <!-- Bottom label -->
-  <text x="600" y="318" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#475569" letter-spacing="1">
-    babiesiq.tech · api.babiesiq.tech · babyapi.pro
+  <!-- Bottom badge row: SDK language badges -->
+  <g transform="translate(0, 270)" font-family="Inter, sans-serif" font-size="12" font-weight="600">
+    <!-- Python -->
+    <rect x="310" y="0" width="82" height="24" rx="12" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1" opacity="0.85"/>
+    <text x="351" y="16" text-anchor="middle" fill="#93c5fd">Python SDK</text>
+
+    <!-- JavaScript -->
+    <rect x="402" y="0" width="100" height="24" rx="12" fill="#3f2a00" stroke="#ca8a04" stroke-width="1" opacity="0.85"/>
+    <text x="452" y="16" text-anchor="middle" fill="#fcd34d">JavaScript SDK</text>
+
+    <!-- Go -->
+    <rect x="512" y="0" width="66" height="24" rx="12" fill="#052e1c" stroke="#16a34a" stroke-width="1" opacity="0.85"/>
+    <text x="545" y="16" text-anchor="middle" fill="#86efac">Go SDK</text>
+
+    <!-- PHP -->
+    <rect x="588" y="0" width="72" height="24" rx="12" fill="#2d1b6e" stroke="#7c3aed" stroke-width="1" opacity="0.85"/>
+    <text x="624" y="16" text-anchor="middle" fill="#c4b5fd">PHP SDK</text>
+
+    <!-- CLI -->
+    <rect x="670" y="0" width="58" height="24" rx="12" fill="#1a1a2e" stroke="#6366f1" stroke-width="1" opacity="0.85"/>
+    <text x="699" y="16" text-anchor="middle" fill="#818cf8">CLI Tool</text>
+
+    <!-- Telegram -->
+    <rect x="738" y="0" width="110" height="24" rx="12" fill="#0a1628" stroke="#2CA5E0" stroke-width="1" opacity="0.85"/>
+    <text x="793" y="16" text-anchor="middle" fill="#7dd3fc">@BabiesIQ</text>
+  </g>
+
+  <!-- Bottom label: removed babyapi.pro, kept only core links -->
+  <text x="600" y="318" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" letter-spacing="1">
+    <tspan fill="#475569">babiesiq.tech</tspan>
+    <tspan fill="#334155"> · </tspan>
+    <tspan fill="#475569">api.babiesiq.tech</tspan>
+    <tspan fill="#334155"> · </tspan>
+    <tspan fill="#2CA5E0">t.me/BabiesIQ</tspan>
   </text>
 
   <!-- Border -->
