@@ -13,7 +13,7 @@ from .errors import AuthError, BabiesIQError, NotFoundError, RateLimitError, Tim
 from .models import SearchResult, SongResult, ThumbnailResult, VideoResult
 
 DEFAULT_BASE_URL = "https://api.babiesiq.tech"
-SDK_VERSION = "2.0.0"
+SDK_VERSION = "2.0.1"
 
 
 class BabiesIQ:
