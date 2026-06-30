@@ -6,12 +6,12 @@
 
 <div align="center">
 
-[![API Status](https://img.shields.io/badge/API-Live-22c55e?style=flat-square)](https://babyapi.pro)
+[![API Status](https://img.shields.io/badge/API-Live-22c55e?style=flat-square)](https://api.babiesiq.tech)
 [![Version](https://img.shields.io/badge/Portal-v1.0-6366f1?style=flat-square)](https://babiesiq.tech)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-[![Telegram](https://img.shields.io/badge/Community-Telegram-2CA5E0?style=flat-square&logo=telegram)](https://t.me/babiesiq)
+[![Telegram](https://img.shields.io/badge/Support-@BabiesIQ-2CA5E0?style=flat-square&logo=telegram&logoColor=white)](https://t.me/BabiesIQ)
 
-**Portal:** [babiesiq.tech](https://babiesiq.tech) &nbsp;·&nbsp; **API Base:** `https://api.babiesiq.tech` &nbsp;·&nbsp; **Docs:** [babiesiq.tech/docs](https://babiesiq.tech/docs) &nbsp;·&nbsp; **Status:** [babyapi.pro](https://babyapi.pro)
+**Portal:** [babiesiq.tech](https://babiesiq.tech) &nbsp;·&nbsp; **API Base:** `https://api.babiesiq.tech` &nbsp;·&nbsp; **Docs:** [babiesiq.tech/docs](https://babiesiq.tech/docs)
 
 </div>
 
@@ -31,16 +31,16 @@ The backend API server lives at → [`BabiesIQ/BabiesIQ_API`](https://github.com
 
 | | |
 |---|---|
-| 🎵 **Audio Streaming** | MP3 / M4A / Opus / WebM · search query or YouTube URL |
-| 🎬 **Video Streaming** | HD / 4K · search query or YouTube URL |
-| 🔍 **Search** | Structured JSON results from any YouTube search |
-| 🎛️ **EQ Presets** | 30+ presets — bass boost, nightcore, 8D, lofi, slowed + reverb … |
-| ⏩ **Seek** | Start audio/video from any timestamp (seconds) |
-| 🔐 **Secure Tokens** | Every stream URL is one-time-use and user-scoped |
-| 🖼️ **Thumbnail Generator** | 20 stylised designs, Python-powered |
-| 📊 **Usage Dashboard** | Real-time request tracking, daily limits, plan overview |
-| 💳 **Billing** | Plan upgrades via Razorpay (INR) |
-| 📦 **4 Official SDKs** | JavaScript/TypeScript, Python, Go, PHP |
+| <img src="https://cdn.simpleicons.org/soundcloud/ff7700" height="16" align="absmiddle"/> **Audio Streaming** | MP3 / M4A / Opus / WebM · search query or YouTube URL |
+| <img src="https://cdn.simpleicons.org/youtube/FF0000" height="16" align="absmiddle"/> **Video Streaming** | HD / 4K · search query or YouTube URL |
+| <img src="https://cdn.simpleicons.org/algolia/003DFF" height="16" align="absmiddle"/> **Search** | Structured JSON results from any YouTube search |
+| <img src="https://cdn.simpleicons.org/audacity/0000CC" height="16" align="absmiddle"/> **EQ Presets** | 30+ presets — bass boost, nightcore, 8D, lofi, slowed + reverb … |
+| <img src="https://cdn.simpleicons.org/ffmpeg/007808" height="16" align="absmiddle"/> **Seek** | Start audio/video from any timestamp (seconds) |
+| <img src="https://cdn.simpleicons.org/letsencrypt/003A70" height="16" align="absmiddle"/> **Secure Tokens** | Every stream URL is one-time-use and user-scoped |
+| <img src="https://cdn.simpleicons.org/canva/00C4CC" height="16" align="absmiddle"/> **Thumbnail Generator** | 20 stylised designs, Python-powered |
+| <img src="https://cdn.simpleicons.org/grafana/F46800" height="16" align="absmiddle"/> **Usage Dashboard** | Real-time request tracking, daily limits, plan overview |
+| <img src="https://cdn.simpleicons.org/razorpay/02042B" height="16" align="absmiddle"/> **Billing** | Plan upgrades via Razorpay (INR) |
+| <img src="https://cdn.simpleicons.org/npm/CB3837" height="16" align="absmiddle"/> **4 Official SDKs** | JavaScript/TypeScript, Python, Go, PHP |
 
 ---
 
@@ -222,96 +222,61 @@ JSON body: `{ "query": "..." }`
 |-------|------|----------|-------------|
 | `vidid` | string | ✅ | YouTube video ID |
 | `title` | string | ❌ | Video title |
-| `duration` | string | ❌ | Duration label |
-| `views` | string | ❌ | Views count label |
 | `channel` | string | ❌ | Channel name |
-| `brand` | string | ❌ | Brand/watermark text |
-
-### EQ Presets
-
-`bass_boost` · `treble_boost` · `nightcore` · `8d_audio` · `lofi` · `slowed_reverb` · `vaporwave` · `pop` · `rock` · `acoustic` · `classical` · `jazz` · `metal` · `r&b` · `electronic` · and more — full list at [babiesiq.tech/docs](https://babiesiq.tech/docs)
-
-### Response — Audio / Video
-
-```json
-{
-  "status": "ok",
-  "type": "audio",
-  "query": "...",
-  "stream_id": "...",
-  "stream": "https://api.babiesiq.tech/api/stream/ID?token=...&download=false"
-}
-```
-
-For live streams: `"type": "live"` — the `stream` field returns the stream ID directly.
-
-### Error Format
-
-```json
-{ "error": "Description of what went wrong" }
-```
-
-Common HTTP codes: `400` bad params · `401` missing/invalid key · `403` key not active · `429` daily limit hit · `5xx` server error (auto-retried by SDKs)
+| `duration` | string | ❌ | Duration label |
+| `views` | string | ❌ | View count label |
+| `brand` | string | ❌ | Brand/watermark override |
 
 ---
 
 ## SDKs
 
-All official SDKs live in `sdk/` in this repo.
-
-### JavaScript / TypeScript
+### <img src="https://cdn.simpleicons.org/javascript/F7DF1E" height="18" align="absmiddle"/> <img src="https://cdn.simpleicons.org/typescript/3178C6" height="18" align="absmiddle"/> JavaScript / TypeScript
 
 ```bash
 npm install @babiesiq/sdk
 ```
 
-```typescript
-import { BabiesIQ } from "@babiesiq/sdk";
+```ts
+import { BabiesIQ } from '@babiesiq/sdk';
 
-const client = new BabiesIQ({ apiKey: "biq_YOUR_KEY" });
+const client = new BabiesIQ('biq_YOUR_KEY');
 
 // Search
-const results = await client.search.query("Tum Hi Ho");
+const results = await client.search.query('Tum Hi Ho');
 
-// Audio
-const song = await client.songs.search("Tum Hi Ho");
-console.log(song.stream_url);   // ready-to-play URL
+// Audio stream
+const song = await client.songs.search('Tum Hi Ho');
+console.log(song.streamUrl);
 
-// Audio with EQ + seek
-const bass = await client.songs.get("VIDEO_ID", { eq: "bass_boost" });
-
-// Video
-const video = await client.videos.get("VIDEO_ID");
+// Video stream
+const video = await client.videos.get('VIDEO_ID');
 
 // Thumbnail
-const thumb = await client.thumbnails.get("VIDEO_ID");
-console.log(thumb.url);
+const thumb = await client.thumbnails.get('VIDEO_ID');
 ```
 
-> Source: [`sdk/javascript/`](./sdk/javascript/) · [README](./sdk/javascript/README.md)
+> Source: [`sdk/js/`](./sdk/js/) · [README](./sdk/js/README.md)
 
 ---
 
-### Python
+### <img src="https://cdn.simpleicons.org/python/3776AB" height="18" align="absmiddle"/> Python
 
 ```bash
 pip install biq-api
 ```
 
 ```python
-from biq_api import BabiesIQ
+from babiesiq import BabiesIQ
 
-client = BabiesIQ(api_key="biq_YOUR_KEY")
+client = BabiesIQ("biq_YOUR_KEY")
 
 # Search
 results = client.search.query("Tum Hi Ho")
 
-# Audio stream
+# Audio
 song = client.songs.search("Tum Hi Ho")
 print(song.stream_url)
-
-# Audio with EQ
-bass = client.songs.get("VIDEO_ID", eq="bass_boost")
 
 # Video
 video = client.videos.get("VIDEO_ID")
@@ -324,10 +289,10 @@ thumb = client.thumbnails.get("VIDEO_ID")
 
 ---
 
-### Go
+### <img src="https://cdn.simpleicons.org/go/00ADD8" height="18" align="absmiddle"/> Go
 
 ```bash
-go get github.com/BabiesIQ/sdk-go
+go get github.com/babiesiq/sdk-go
 ```
 
 ```go
@@ -335,15 +300,11 @@ package main
 
 import (
     "fmt"
-    babiesiq "github.com/BabiesIQ/sdk-go"
+    biq "github.com/babiesiq/sdk-go"
 )
 
 func main() {
-    client := babiesiq.NewClient("biq_YOUR_KEY")
-
-    // Search
-    results, _ := client.Search.Query("Tum Hi Ho")
-    fmt.Println(results)
+    client := biq.NewClient("biq_YOUR_KEY")
 
     // Audio
     song, _ := client.Songs.Search("Tum Hi Ho")
@@ -359,7 +320,7 @@ func main() {
 
 ---
 
-### PHP
+### <img src="https://cdn.simpleicons.org/php/777BB4" height="18" align="absmiddle"/> PHP
 
 ```bash
 composer require babiesiq/sdk
@@ -449,23 +410,42 @@ npm run fix         # Biome auto-fix
 
 ---
 
-## Deployment
+## Deploy
 
-**Netlify (automatic)** — every push to `main` triggers a build:
+One-click deploy to your preferred platform:
 
-```
-Build command : npm run build
-Publish dir   : dist/
-```
+<div align="center">
 
-SPA routing: handled by [`netlify.toml`](./netlify.toml) and [`public/_redirects`](./public/_redirects).
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/BabiesIQ/_metaAPI)
+&nbsp;&nbsp;
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBabiesIQ%2F_metaAPI)
+&nbsp;&nbsp;
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/BabiesIQ/_metaAPI)
+&nbsp;&nbsp;
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/BabiesIQ/_metaAPI)
 
-**Other platforms** — this is a standard Vite static build:
+<br/>
 
-```bash
-npm run build
-# Upload dist/ to Vercel, Cloudflare Pages, GitHub Pages, nginx, etc.
-```
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/BabiesIQ/_metaAPI)
+&nbsp;&nbsp;
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/BabiesIQ/_metaAPI&branch=main&name=babiesiq-portal)
+
+</div>
+
+> **Note:** This is the **developer portal** (React + Vite frontend). For the backend API server, see [`BabiesIQ/BabiesIQ_API`](https://github.com/BabiesIQ/BabiesIQ_API).
+
+**Platform notes:**
+
+| Platform | Build Command | Publish Dir | Notes |
+|---|---|---|---|
+| **Netlify** | `npm run build` | `dist/` | Auto-deploys on push to `main` · SPA via `netlify.toml` |
+| **Vercel** | `npm run build` | `dist/` | Set Framework preset = Vite |
+| **Railway** | `npm run build` | `dist/` | Add static file server |
+| **Render** | `npm run build` | `dist/` | Choose Static Site type |
+| **Heroku** | `npm run build` | — | Use `heroku-buildpack-static` |
+| **Koyeb** | `npm run build` | `dist/` | Static deployment |
+
+SPA routing is handled by [`netlify.toml`](./netlify.toml) and [`public/_redirects`](./public/_redirects) — copy the `_redirects` rule to your platform's equivalent if needed.
 
 ---
 
@@ -479,7 +459,7 @@ npm run typecheck    # type check
 # open a PR against main
 ```
 
-For SDK contributions see individual READMEs in `sdk/`. For bugs and feature requests, open an [issue](https://github.com/BabiesIQ/_metaAPI/issues) or reach out on [Telegram](https://t.me/babiesiq).
+For SDK contributions see individual READMEs in `sdk/`. For bugs and feature requests, open an [issue](https://github.com/BabiesIQ/_metaAPI/issues) or reach out on [Telegram](https://t.me/BabiesIQ).
 
 ---
 
@@ -487,14 +467,13 @@ For SDK contributions see individual READMEs in `sdk/`. For bugs and feature req
 
 | | |
 |---|---|
-| 🌐 **Portal** | [babiesiq.tech](https://babiesiq.tech) |
-| 📚 **API Docs** | [babiesiq.tech/docs](https://babiesiq.tech/docs) |
-| 📦 **SDK Page** | [babiesiq.tech/sdk](https://babiesiq.tech/sdk) |
-| 💰 **Pricing** | [babiesiq.tech/pricing](https://babiesiq.tech/pricing) |
-| 📡 **API Status** | [babyapi.pro](https://babyapi.pro) |
-| 💬 **Telegram** | [@babiesiq](https://t.me/babiesiq) |
-| 🐛 **Issues** | [github.com/BabiesIQ/_metaAPI/issues](https://github.com/BabiesIQ/_metaAPI/issues) |
-| ⚙️ **API Server** | [github.com/BabiesIQ/BabiesIQ_API](https://github.com/BabiesIQ/BabiesIQ_API) |
+| <img src="https://cdn.simpleicons.org/googlechrome/4285F4" height="16" align="absmiddle"/> **Portal** | [babiesiq.tech](https://babiesiq.tech) |
+| <img src="https://cdn.simpleicons.org/gitbook/3884FF" height="16" align="absmiddle"/> **API Docs** | [babiesiq.tech/docs](https://babiesiq.tech/docs) |
+| <img src="https://cdn.simpleicons.org/npm/CB3837" height="16" align="absmiddle"/> **SDK Page** | [babiesiq.tech/sdk](https://babiesiq.tech/sdk) |
+| <img src="https://cdn.simpleicons.org/razorpay/02042B" height="16" align="absmiddle"/> **Pricing** | [babiesiq.tech/pricing](https://babiesiq.tech/pricing) |
+| <img src="https://cdn.simpleicons.org/telegram/2CA5E0" height="16" align="absmiddle"/> **Telegram** | [@BabiesIQ](https://t.me/BabiesIQ) |
+| <img src="https://cdn.simpleicons.org/github/181717" height="16" align="absmiddle"/> **Issues** | [github.com/BabiesIQ/_metaAPI/issues](https://github.com/BabiesIQ/_metaAPI/issues) |
+| <img src="https://cdn.simpleicons.org/go/00ADD8" height="16" align="absmiddle"/> **API Server** | [github.com/BabiesIQ/BabiesIQ_API](https://github.com/BabiesIQ/BabiesIQ_API) |
 
 ---
 
@@ -502,8 +481,7 @@ For SDK contributions see individual READMEs in `sdk/`. For bugs and feature req
 
 Made with ❤️ by the BabiesIQ team &nbsp;·&nbsp; MIT License
 
-[![API](https://img.shields.io/badge/babyapi.pro-Live-22c55e?style=flat-square)](https://babyapi.pro)
-[![Telegram](https://img.shields.io/badge/@BabiesIQ-2CA5E0?style=flat-square&logo=telegram&logoColor=white)](https://t.me/babiesiq)
+[![Telegram](https://img.shields.io/badge/@BabiesIQ-2CA5E0?style=flat-square&logo=telegram&logoColor=white)](https://t.me/BabiesIQ)
 [![GitHub](https://img.shields.io/badge/BabiesIQ%2F__metaAPI-181717?style=flat-square&logo=github)](https://github.com/BabiesIQ/_metaAPI)
 
 </div>
