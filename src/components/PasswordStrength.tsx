@@ -12,7 +12,7 @@ function getStrength(password: string): number {
   if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
   if (/\d/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
-  return Math.min(4, Math.ceil(score * 0.8));
+  return Math.max(1, Math.min(4, Math.ceil(score * 0.8)));
 }
 
 const STRENGTH_CONFIG = [
@@ -28,7 +28,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
 
   if (!password) return null;
 
-  const config = STRENGTH_CONFIG[strength - 1];
+  const config = STRENGTH_CONFIG[strength - 1] ?? STRENGTH_CONFIG[0];
 
   return (
     <div className="space-y-1.5" data-ocid="password_strength.indicator">
