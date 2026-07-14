@@ -1106,7 +1106,6 @@ echo $song->streamUrl;`,
                     link: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/php",
                     download: "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/php",
                   },
-                ]
                 ].map((sdk, i) => {
                   const [codeOpen, setCodeOpen] = [false, () => {}];
                   return (
