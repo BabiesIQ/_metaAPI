@@ -1,5 +1,4 @@
 import { Layout } from "@/components/Layout";
-// TryItWidget is extracted to its own component file
 import { TryItWidget } from "@/components/TryItWidget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -610,7 +609,7 @@ export function DocsPage() {
   return (
     <Layout>
       <div className="min-h-screen bg-background" data-ocid="docs.page">
-        {/* Hero bar */}
+        {/* Hero baar */}
         <motion.div
           className="bg-card border-b border-border px-4 py-8"
           initial={{ opacity: 0, y: -20 }}
