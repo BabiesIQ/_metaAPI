@@ -17,15 +17,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build
         run: npm run build
 
-      - name: Package dist
+      - name: Package for deployment
         run: |
           tar -czf deploy.tar.gz \
             --exclude='node_modules' \
@@ -41,11 +40,13 @@ jobs:
             -H "x-appwrite-key: ${{ secrets.APPWRITE_API_KEY }}" \
             -F "code=@deploy.tar.gz;type=application/x-gzip" \
             -F "activate=true")
-
           echo "Response: $RESPONSE"
-
-          STATUS=$(echo $RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status', d.get('message','unknown')))" 2>/dev/null || echo "uploaded")
-          echo "Deploy status: $STATUS"
-
-          DEPLOY_ID=$(echo $RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('\$id',''))" 2>/dev/null || echo "")
-          echo "Deployment ID: $DEPLOY_ID"
+          echo "$RESPONSE" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          status = d.get('status', d.get('message', 'unknown'))
+          print(f'Deploy status: {status}')
+          if 'message' in d and d.get('code'):
+            print(f'ERROR: {d[\"message\"]}')
+            sys.exit(1)
+          "
