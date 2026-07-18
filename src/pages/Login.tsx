@@ -28,7 +28,7 @@ type FormValues = z.infer<typeof schema>;
 export function LoginPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { isAuthenticated, setUser } = useAuth();
+  const { isAuthenticated, setUser, setBannedUser } = useAuth();
   const [showPwd, setShowPwd] = useState(false);
 
   const {
@@ -46,6 +46,19 @@ export function LoginPage() {
     try {
       const res = await login(values.email, values.password);
       if (!res.success) {
+        // Security: banned account — show full banned page instead of toast
+        const data = res.data as Record<string, unknown> | null | undefined;
+        if (data && typeof data === 'object' && data['banned'] === true) {
+          const bannedUserRaw = data['user'] as Record<string, unknown> | undefined;
+          setBannedUser({
+            first_name: bannedUserRaw?.['first_name'] as string | undefined,
+            last_name: bannedUserRaw?.['last_name'] as string | undefined,
+            email: bannedUserRaw?.['email'] as string | undefined,
+            avatar: bannedUserRaw?.['avatar'] as string | null | undefined,
+          });
+          router.navigate({ to: '/banned' });
+          return;
+        }
         toast.error(res.error ?? t("auth.login_failed"), {
           description: res.error ? undefined : t("auth.check_credentials"),
         });

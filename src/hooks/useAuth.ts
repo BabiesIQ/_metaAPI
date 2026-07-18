@@ -1,8 +1,9 @@
 import { logout as apiLogout } from "@/lib/api";
+import type { BannedUserInfo } from "@/store/auth";
 import { useAuthStore } from "@/store/auth";
 
 export function useAuth() {
-  const { user, isLoading, isAuthenticated, setUser, initialize } =
+  const { user, isLoading, isAuthenticated, setUser, initialize, setBannedUser } =
     useAuthStore();
 
   const logout = async () => {
@@ -20,6 +21,7 @@ export function useAuth() {
     isLoading,
     isAuthenticated,
     setUser,
+    setBannedUser,
     initialize,
     logout,
   };

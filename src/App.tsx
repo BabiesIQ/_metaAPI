@@ -24,6 +24,9 @@ import { ResetPasswordPage } from "@/pages/ResetPassword";
 import { SignupPage } from "@/pages/Signup";
 import { TermsPage } from "@/pages/Terms";
 
+// Banned page
+import { BannedPage } from "@/pages/BannedPage";
+
 // Auth flow pages
 import { CreatePasswordPage } from "@/pages/auth/CreatePassword";
 import { PasswordSuccessPage } from "@/pages/auth/PasswordSuccess";
@@ -90,6 +93,7 @@ const refundRoute = createRoute({ getParentRoute: () => rootRoute, path: "/refun
 
 // ── Auth routes ───────────────────────────────────────────────────────────────
 const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: "/login", component: LoginPage });
+const bannedRoute = createRoute({ getParentRoute: () => rootRoute, path: "/banned", component: BannedPage });
 const signupRoute = createRoute({ getParentRoute: () => rootRoute, path: "/signup", component: SignupPage });
 const forgotPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: "/forgot-password", component: ForgotPasswordPage });
 const resetPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: "/reset-password", component: ResetPasswordPage });
@@ -157,6 +161,7 @@ const routeTree = rootRoute.addChildren([
   resetPasswordRoute,
   verifyOtpRoute,
   createPasswordRoute,
+  bannedRoute,
   passwordSuccessRoute,
   panelDashboardRoute,
   panelApiKeysRoute,
