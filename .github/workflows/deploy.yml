@@ -1,46 +1,48 @@
 name: Deploy to Appwrite Sites
 
-  on:
-    push:
-      branches:
-        - main
+on:
+  push:
+    branches:
+      - main
 
-  jobs:
-    deploy:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Package source for deployment
-          run: |
-            tar -czf deploy.tar.gz \
-              --exclude='node_modules' \
-              --exclude='.git' \
-              --exclude='deploy.tar.gz' \
-              .
+      - name: Package source for deployment
+        run: |
+          tar -czf deploy.tar.gz \
+            --exclude='node_modules' \
+            --exclude='.git' \
+            --exclude='deploy.tar.gz' \
+            .
 
-        - name: Deploy to Appwrite Sites
-          env:
-            APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
-            APPWRITE_SITE_ID: ${{ secrets.APPWRITE_SITE_ID }}
-            APPWRITE_PROJECT_ID: ${{ secrets.APPWRITE_PROJECT_ID }}
-            APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
-          run: |
-            RESPONSE=$(curl -s -X POST \
-              "$APPWRITE_ENDPOINT/sites/$APPWRITE_SITE_ID/deployments" \
-              -H "x-appwrite-project: $APPWRITE_PROJECT_ID" \
-              -H "x-appwrite-key: $APPWRITE_API_KEY" \
-              -F "code=@deploy.tar.gz;type=application/x-gzip" \
-              -F "activate=true")
-            echo "Appwrite Response: $RESPONSE"
-            echo "$RESPONSE" | python3 -c "
-  import sys, json
-  d = json.load(sys.stdin)
-  status = d.get('status', d.get('message', 'unknown'))
-  print('Deploy status:', status)
-  if d.get('code'):
-      print('ERROR:', d.get('message'))
-      sys.exit(1)
-  "
-  
+      - name: Deploy to Appwrite Sites
+        env:
+          APPWRITE_ENDPOINT: ${{ secrets.APPWRITE_ENDPOINT }}
+          APPWRITE_SITE_ID: ${{ secrets.APPWRITE_SITE_ID }}
+          APPWRITE_PROJECT_ID: ${{ secrets.APPWRITE_PROJECT_ID }}
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "$APPWRITE_ENDPOINT/sites/$APPWRITE_SITE_ID/deployments" \
+            -H "x-appwrite-project: $APPWRITE_PROJECT_ID" \
+            -H "x-appwrite-key: $APPWRITE_API_KEY" \
+            -F "code=@deploy.tar.gz;type=application/x-gzip" \
+            -F "activate=true")
+          echo "Appwrite Response: $RESPONSE"
+          STATUS=$(echo "$RESPONSE" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+code = d.get('code', 0)
+msg = d.get('message', '')
+status = d.get('status', 'unknown')
+print(status)
+if code:
+    print('ERROR:', msg, file=sys.stderr)
+    sys.exit(1)
+")
+          echo "Deploy status: $STATUS"
