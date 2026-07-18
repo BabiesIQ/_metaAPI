@@ -6,7 +6,7 @@ export type PlanCode = "free" | "pro" | "pro_plus" | "business";
 export type UsageStatus = "safe" | "warning" | "exceeded" | "restricted" | "banned";
 export type NotificationLevel = "info" | "success" | "warning";
 export type InvoiceStatus = "pending" | "paid" | "failed";
-export type ApiKeyStatus = "active" | "revoked";
+export type ApiKeyStatus = "active" | "revoked" | "paused";
 
 export interface UserProfile {
   id: number;
@@ -48,6 +48,8 @@ export interface ApiKey {
   application_name?: string;
   /** ISO 8601 timestamp — null/undefined means no expiry */
   expires_at?: string | null;
+  /** null/undefined = plan default; -1 = unlimited; >0 = custom daily limit */
+  request_limit?: number | null;
 }
 
 export interface UsageDay {

@@ -244,12 +244,17 @@ export function getApiKeys() {
   return protectedApiClient<ApiKey[]>("/api/v1/api-keys");
 }
 
-export function generateApiKey(applicationName: string, expiresAt?: string | null) {
+export function generateApiKey(
+  applicationName: string,
+  expiresAt?: string | null,
+  requestLimit?: number | null,
+) {
   return protectedApiClient<ApiKey>("/api/v1/api-keys/generate", {
     method: "POST",
     body: JSON.stringify({
       application_name: applicationName,
       ...(expiresAt ? { expires_at: expiresAt } : {}),
+      ...(requestLimit !== undefined && requestLimit !== null ? { request_limit: requestLimit } : {}),
     }),
   });
 }
@@ -258,6 +263,20 @@ export function revokeApiKey(keyId: number, applicationName: string) {
   return protectedApiClient<null>("/api/v1/api-keys/revoke", {
     method: "POST",
     body: JSON.stringify({ key_id: keyId, application_name: applicationName }),
+  });
+}
+
+export function pauseApiKey(keyId: number) {
+  return protectedApiClient<null>("/api/v1/api-keys/pause", {
+    method: "POST",
+    body: JSON.stringify({ key_id: keyId }),
+  });
+}
+
+export function resumeApiKey(keyId: number) {
+  return protectedApiClient<null>("/api/v1/api-keys/resume", {
+    method: "POST",
+    body: JSON.stringify({ key_id: keyId }),
   });
 }
 
