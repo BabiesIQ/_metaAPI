@@ -20,7 +20,7 @@ export function useAuth() {
     isLoading,
     isAuthenticated,
     setUser,
-    initialize,
+    
     logout,
   };
 }
