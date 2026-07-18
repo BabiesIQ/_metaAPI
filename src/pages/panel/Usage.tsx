@@ -326,32 +326,34 @@ export function UsagePage() {
 
             {/* Status Banner */}
             {!usageLoading && (
-              <motion.div
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.32 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bannerInfo.bg}`}
-                data-ocid="usage.status.banner"
-              >
-                <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    usageStatus === "safe"
-                      ? "bg-emerald-400"
-                      : usageStatus === "restricted"
-                        ? "bg-amber-400"
-                        : "bg-destructive"
-                  }`}
-                />
-                <p className={`text-sm font-medium ${bannerInfo.text}`}>
-                  {t(bannerInfo.key)}
-                </p>
-              </motion.div>
+              <>
+                <motion.div
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.32 }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bannerInfo.bg}`}
+                  data-ocid="usage.status.banner"
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      usageStatus === "safe"
+                        ? "bg-emerald-400"
+                        : usageStatus === "restricted"
+                          ? "bg-amber-400"
+                          : "bg-destructive"
+                    }`}
+                  />
+                  <p className={`text-sm font-medium ${bannerInfo.text}`}>
+                    {t(bannerInfo.key)}
+                  </p>
+                </motion.div>
 
-            {/* Reset time chip */}
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-1" data-ocid="usage.reset_time">
-              <Clock className="w-3 h-3 flex-shrink-0" />
-              <span>Daily quota resets in <span className="font-semibold text-foreground">{resetCountdown}</span> ({IST_RESET_TIME_LABEL})</span>
-            </div>
+                {/* Reset time chip */}
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-1" data-ocid="usage.reset_time">
+                  <Clock className="w-3 h-3 flex-shrink-0" />
+                  <span>Daily quota resets in <span className="font-semibold text-foreground">{resetCountdown}</span> ({IST_RESET_TIME_LABEL})</span>
+                </div>
+              </>
             )}
 
             {/* Period selector */}
