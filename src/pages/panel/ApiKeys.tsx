@@ -16,11 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateApiKey, getApiKeys } from "@/lib/api";
+import { countdownToReset, IST_RESET_TIME_LABEL } from "@/types/index";
 import type { ApiKey } from "@/types/index";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
+  CalendarDays,
   Check,
+  Clock,
   Copy,
   Eye,
   EyeOff,
@@ -58,6 +61,8 @@ export function ApiKeysPage() {
   const [revealTimer, setRevealTimer] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string>("");
+  const [resetCountdown, setResetCountdown] = useState(() => countdownToReset());
 
   const { data: keys, isLoading } = useQuery<ApiKey[]>({
     queryKey: ["api-keys"],
@@ -71,7 +76,7 @@ export function ApiKeysPage() {
   const revokedKeys = keys?.filter((k) => k.status === "revoked") ?? [];
 
   const generateMut = useMutation({
-    mutationFn: (name: string) => generateApiKey(name),
+    mutationFn: (name: string) => generateApiKey(name, expiresAt || null),
     onSuccess: (res) => {
       if (!res.success) {
         toast.error(res.error ?? "Could not generate API key.");
@@ -91,6 +96,7 @@ export function ApiKeysPage() {
     if (!open) {
       setAppName("");
       setAppNameError("");
+      setExpiresAt("");
     }
     setConfirmOpen(open);
   };
@@ -127,6 +133,12 @@ export function ApiKeysPage() {
       if (revealTimer) clearTimeout(revealTimer);
     };
   }, [revealTimer]);
+
+  // update reset countdown every minute
+  useEffect(() => {
+    const id = setInterval(() => setResetCountdown(countdownToReset()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -270,6 +282,17 @@ export function ApiKeysPage() {
                           {t("api_keys.generated_on")}{" "}
                           {formatDate(activeKey.created_at)}
                         </span>
+                        {activeKey.expires_at && (
+                          <span className="flex items-center gap-1 text-xs text-amber-400">
+                            <CalendarDays className="w-3 h-3" />
+                            Expires {formatDate(activeKey.expires_at)}
+                          </span>
+                        )}
+                      </div>
+                      {/* Reset time */}
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        Resets in {resetCountdown} ({IST_RESET_TIME_LABEL})
                       </div>
 
                       {showKey && (
@@ -441,6 +464,28 @@ export function ApiKeysPage() {
                 )}
                 <p className="text-xs text-muted-foreground">
                   {appName.trim().length}/100 {t("api_keys.chars_limit")}
+                </p>
+              </div>
+
+              {/* Optional key expiry */}
+              <div className="space-y-2">
+                <Label htmlFor="api_keys_expires_at" className="text-sm font-medium flex items-center gap-1.5">
+                  <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+                  Key Expiry Date
+                  <span className="text-xs text-muted-foreground font-normal ml-1">(optional)</span>
+                </Label>
+                <Input
+                  id="api_keys_expires_at"
+                  type="date"
+                  value={expiresAt}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  min={new Date(Date.now() + 86_400_000).toISOString().split("T")[0]}
+                  className="bg-background border-border h-11"
+                  data-ocid="api_keys.expires_at.input"
+                  disabled={generateMut.isPending}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank for a key that never expires.
                 </p>
               </div>
 

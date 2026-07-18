@@ -244,10 +244,13 @@ export function getApiKeys() {
   return protectedApiClient<ApiKey[]>("/api/v1/api-keys");
 }
 
-export function generateApiKey(applicationName: string) {
+export function generateApiKey(applicationName: string, expiresAt?: string | null) {
   return protectedApiClient<ApiKey>("/api/v1/api-keys/generate", {
     method: "POST",
-    body: JSON.stringify({ application_name: applicationName }),
+    body: JSON.stringify({
+      application_name: applicationName,
+      ...(expiresAt ? { expires_at: expiresAt } : {}),
+    }),
   });
 }
 

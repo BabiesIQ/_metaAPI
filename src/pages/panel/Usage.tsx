@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getMe, getUsage } from "@/lib/api";
+import { countdownToReset, IST_RESET_TIME_LABEL } from "@/types/index";
 import type { MeResponse, UsageDay } from "@/types/index";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
@@ -13,12 +14,13 @@ import {
   Activity,
   BarChart2,
   CheckCircle,
+  Clock,
   RefreshCw,
   TrendingUp,
   Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Bar,
@@ -152,6 +154,13 @@ const STAT_CARDS = (
 export function UsagePage() {
   const { t } = useTranslation();
   const [selectedDays, setSelectedDays] = useState(7);
+  const [resetCountdown, setResetCountdown] = useState(() => countdownToReset());
+
+  useEffect(() => {
+    const id = setInterval(() => setResetCountdown(countdownToReset()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
 
   const {
     data: me,
@@ -337,6 +346,12 @@ export function UsagePage() {
                   {t(bannerInfo.key)}
                 </p>
               </motion.div>
+
+            {/* Reset time chip */}
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-1" data-ocid="usage.reset_time">
+              <Clock className="w-3 h-3 flex-shrink-0" />
+              <span>Daily quota resets in <span className="font-semibold text-foreground">{resetCountdown}</span> ({IST_RESET_TIME_LABEL})</span>
+            </div>
             )}
 
             {/* Period selector */}
