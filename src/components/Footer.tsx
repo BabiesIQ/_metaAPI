@@ -136,37 +136,64 @@ function NewsletterStrip() {
 }
 
 // ─── Back to top button ───────────────────────────────────────────────────────
-function BackToTop() {
-  const [visible, setVisible] = useState(false);
-  const { scrollY } = useScroll();
+  function BackToTop() {
+    const [visible, setVisible] = useState(false);
+    const { scrollY } = useScroll();
 
-  useEffect(() => {
-    return scrollY.on("change", (v) => setVisible(v > 300));
-  }, [scrollY]);
+    useEffect(() => {
+      return scrollY.on("change", (v) => setVisible(v > 300));
+    }, [scrollY]);
 
-  return (
-    <AnimatePresence>
-      {visible && (
-        <motion.button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          aria-label="Back to top"
-          initial={{ opacity: 0, scale: 0.6, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.6, y: 16 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.92 }}
-          className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full gradient-primary text-white shadow-elevated flex items-center justify-center hover:opacity-95 transition-opacity duration-200"
-          data-ocid="back_to_top.button"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </motion.button>
-      )}
-    </AnimatePresence>
-  );
-}
+    return (
+      <AnimatePresence>
+        {visible && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center"
+            data-ocid="back_to_top.wrapper"
+          >
+            {/* Left glow beam */}
+            <div
+              className="h-[2px] w-14 rounded-full"
+              style={{
+                background: "linear-gradient(to right, transparent, rgba(99,102,241,0.8))",
+                boxShadow: "0 0 10px 3px rgba(99,102,241,0.35)",
+              }}
+            />
 
+            {/* Main pill button */}
+            <motion.button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              aria-label="Back to top"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.93 }}
+              data-ocid="back_to_top.button"
+              className="flex items-center justify-center px-6 py-2.5 rounded-full gradient-primary text-white"
+              style={{
+                boxShadow:
+                  "0 0 28px 8px rgba(99,102,241,0.5), 0 4px 16px rgba(99,102,241,0.3)",
+              }}
+            >
+              <ArrowUp className="w-4 h-4" />
+            </motion.button>
+
+            {/* Right glow beam */}
+            <div
+              className="h-[2px] w-14 rounded-full"
+              style={{
+                background: "linear-gradient(to left, transparent, rgba(139,92,246,0.8))",
+                boxShadow: "0 0 10px 3px rgba(139,92,246,0.35)",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
 // ─── Footer ───────────────────────────────────────────────────────────────────
 export function Footer() {
   const { t } = useTranslation();
