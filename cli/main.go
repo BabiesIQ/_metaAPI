@@ -1,7 +1,6 @@
 // babiesiq — Official CLI for the BabiesIQ platform
 //
 // Usage: babiesiq <command> [flags]
-//
 // Commands:
 //   status      Show API and service health
 //   whoami      Show the current authenticated user
