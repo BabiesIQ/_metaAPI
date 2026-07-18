@@ -6,6 +6,7 @@
 
 <div align="center">
 
+[![Deploy Status](https://github.com/BabiesIQ/_metaAPI/actions/workflows/deploy.yml/badge.svg)](https://github.com/BabiesIQ/_metaAPI/actions/workflows/deploy.yml)
 [![API Status](https://img.shields.io/badge/API-Live-22c55e?style=flat-square)](https://api.babiesiq.tech)
 [![Version](https://img.shields.io/badge/Portal-v1.0-6366f1?style=flat-square)](https://babiesiq.tech)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
