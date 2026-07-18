@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const SOCIAL_LINKS = [
   {
-    href: "https://github.com/BabiesIQ/BabyAPI",
+    href: "https://github.com/BabiesIQ/_metaAPI",
     label: "GitHub",
     icon: SiGithub,
     hoverClass: "social-icon-github",
@@ -331,7 +331,7 @@ export function Footer() {
             transition={{ duration: 0.4, delay: 0.3 }}
           >
             <div className="flex items-center gap-1.5">
-              <span>© {year} BabiesIQ. Made with ❤️ for developers.</span>
+              <span>© {year} BabiesIQ.Tech || Support Devs</span>
             </div>
             <div className="flex items-center gap-4">
               <Link
