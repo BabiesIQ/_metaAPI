@@ -79,7 +79,7 @@ Calls go to: api.babiesiq.tech  (hidden in minified code)
 
 ### ✅ Method 2 — Reverse Proxy (Recommended · Most Professional)
 
-Set up a proxy so all traffic appears to come from **your own domain**. CORS works perfectly, cookies are forwarded, and `api.babiesiq.tech` is completely invisible.
+Set up a proxy so all traffic appears to come from **your own domain**. CORS works perfectly, cookies are forwarded, stream URLs are rewritten to your domain, and `api.babiesiq.tech` is completely invisible.
 
 **How it looks to the user:**
 ```
@@ -87,13 +87,19 @@ User sees:  api.mymusic.com  ← your domain
 Reality:    api.babiesiq.tech ← silently behind it
 ```
 
+**What the proxy does automatically:**
+- `/api/song` and `/api/video` responses → `stream` URL rewritten to your domain
+- Google Sign-In → after login, redirect goes to your domain (not api.babiesiq.tech)
+- Audio/video streaming → zero-buffer pass-through
+- All cookies, headers, IP — forwarded as-is
+
 ---
 
 #### Option A — Nginx (VPS / Linux server)
 
 ```nginx
 # /etc/nginx/sites-available/api.mymusic.com
-# Setup: sudo certbot --nginx -d api.mymusic.com
+# First run: sudo certbot --nginx -d api.mymusic.com
 
 server {
     listen 80;
@@ -105,45 +111,84 @@ server {
     listen 443 ssl http2;
     server_name api.mymusic.com;
 
-    # SSL — auto-filled by certbot
     ssl_certificate     /etc/letsencrypt/live/api.mymusic.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/api.mymusic.com/privkey.pem;
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_session_cache   shared:SSL:10m;
 
-    location / {
-        proxy_pass          https://api.babiesiq.tech;
-        proxy_http_version  1.1;
-
-        # Backend sees request as coming from api.babiesiq.tech
-        proxy_set_header    Host              api.babiesiq.tech;
-
-        # Forward real client identity (IP, fingerprint)
-        proxy_set_header    X-Real-IP         $remote_addr;
-        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Forwarded-Proto $scheme;
-
-        # Forward all original headers (User-Agent, Authorization, X-API-Key, etc.)
+    # ── Route 1: Audio/Video stream bytes — zero-buffer pass-through ──────────
+    location ~ ^/api/stream/ {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
         proxy_pass_request_headers on;
 
-        # Forward request body (POST, PUT, PATCH)
-        proxy_pass_request_body on;
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
+    }
 
-        # Forward & rewrite cookies so they work on your domain
-        proxy_pass_header   Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.mymusic.com;
+    # ── Route 2: Song & Video — rewrite stream URL to your domain ─────────────
+    location ~ ^/api/(song|video) {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.mymusic.com;
 
-        # CORS — allows your frontend to call this without errors
+        # Disable compression so sub_filter can read the JSON body
+        proxy_set_header        Accept-Encoding "";
+
+        # Rewrite api.babiesiq.tech → your domain in the JSON stream URL
+        sub_filter              'api.babiesiq.tech' 'api.mymusic.com';
+        sub_filter_once         off;
+        sub_filter_types        application/json text/plain;
+
+        # Rewrite Location header (Google OAuth redirects back to your domain)
+        proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.com/;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) {
-            return 204;
-        }
+        if ($request_method = OPTIONS) { return 204; }
+    }
 
-        # Streaming support (audio/video)
+    # ── Route 3: Everything else (auth, Google OAuth, health, etc.) ───────────
+    location / {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.mymusic.com;
+
+        # Rewrite Location header — after Google login, user lands on your domain
+        proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.com/;
+
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) { return 204; }
+
         proxy_buffering             off;
         proxy_cache                 off;
         proxy_read_timeout          3600s;
@@ -175,29 +220,69 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 app.set('trust proxy', true);
 
+const BACKEND       = 'https://api.babiesiq.tech';
+const YOUR_DOMAIN   = 'api.mymusic.com';          // ← change this
+const SONG_VIDEO_RE = /^\/api\/(song|video)/;
+
 app.use('/', createProxyMiddleware({
-  target:      'https://api.babiesiq.tech',
-  changeOrigin: true,   // sets Host: api.babiesiq.tech
-  secure:       true,
-  cookieDomainRewrite: {
-    'api.babiesiq.tech': 'api.mymusic.com'
-  },
+  target:            BACKEND,
+  changeOrigin:      true,
+  secure:            true,
+  selfHandleResponse: true,   // we write the response manually so we can rewrite bodies
+  cookieDomainRewrite: { 'api.babiesiq.tech': YOUR_DOMAIN },
+
   on: {
     proxyReq: (proxyReq, req) => {
-      // Forward real IP and fingerprint headers
       const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
+
+      // Remove Accept-Encoding on song/video so we get plain JSON (not gzip)
+      if (SONG_VIDEO_RE.test(req.url)) {
+        proxyReq.removeHeader('Accept-Encoding');
+      }
     },
+
     proxyRes: (proxyRes, req, res) => {
-      // CORS — allow your frontend origin
+      const userHost = req.headers.host || YOUR_DOMAIN;
+
+      // ── CORS headers ──────────────────────────────────────────────────────
       const origin = req.headers['origin'] || '*';
-      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Origin',      origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+      res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+      // ── Rewrite Location header (Google OAuth redirect after login) ────────
+      const location = proxyRes.headers['location'];
+      if (location) {
+        res.setHeader('Location', location.replace('https://api.babiesiq.tech', `https://${userHost}`));
+        delete proxyRes.headers['location'];
+      }
+
+      // Copy remaining headers
+      Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
+      res.statusCode = proxyRes.statusCode;
+
+      // ── Song / Video: buffer body and replace stream URL ──────────────────
+      if (SONG_VIDEO_RE.test(req.url)) {
+        const chunks = [];
+        proxyRes.on('data', chunk => chunks.push(chunk));
+        proxyRes.on('end', () => {
+          let body = Buffer.concat(chunks).toString('utf8');
+          // Replace backend domain in the "stream" URL with your domain
+          body = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userHost}`);
+          res.setHeader('Content-Length', Buffer.byteLength(body));
+          res.end(body);
+        });
+        return;
+      }
+
+      // ── All other routes: pipe response directly (streaming safe) ─────────
+      proxyRes.pipe(res);
     },
+
     error: (err, req, res) => {
       res.status(502).json({ success: false, error: 'Gateway error' });
     }
@@ -222,10 +307,11 @@ pm2 save
 // Cloudflare Worker — paste this in Workers dashboard
 export default {
   async fetch(request) {
-    const url = new URL(request.url);
-    url.hostname = 'api.babiesiq.tech';  // redirect to real backend
+    const incomingUrl = new URL(request.url);
+    const userDomain  = incomingUrl.hostname;    // e.g. api.mymusic.com
+    incomingUrl.hostname = 'api.babiesiq.tech';
 
-    // Handle CORS preflight
+    // ── CORS preflight ────────────────────────────────────────────────────────
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
@@ -239,23 +325,43 @@ export default {
       });
     }
 
-    // Forward request with all original headers + body
-    const proxyRequest = new Request(url.toString(), {
+    // ── Forward request ────────────────────────────────────────────────────────
+    const proxyReq = new Request(incomingUrl.toString(), {
       method:  request.method,
       headers: request.headers,
       body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-      redirect: 'follow',
+      redirect: 'manual',   // intercept 302 so we can rewrite Location header
     });
 
-    const response = await fetch(proxyRequest);
+    const response = await fetch(proxyReq);
 
-    // Return response with CORS headers added
+    // ── Build response headers ─────────────────────────────────────────────────
     const newHeaders = new Headers(response.headers);
     newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
     newHeaders.set('Access-Control-Allow-Credentials', 'true');
     newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
 
+    // ── Rewrite Location header (Google OAuth redirect after login) ────────────
+    const location = response.headers.get('location');
+    if (location) {
+      newHeaders.set('location', location.replace('https://api.babiesiq.tech', `https://${userDomain}`));
+    }
+
+    // ── Song / Video: rewrite stream URL in JSON body ──────────────────────────
+    const path = incomingUrl.pathname;
+    if (/^\/api\/(song|video)/.test(path)) {
+      const body    = await response.text();
+      const rewritten = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userDomain}`);
+      newHeaders.set('Content-Length', new TextEncoder().encode(rewritten).length.toString());
+      return new Response(rewritten, {
+        status:     response.status,
+        statusText: response.statusText,
+        headers:    newHeaders,
+      });
+    }
+
+    // ── All other routes: stream response as-is ────────────────────────────────
     return new Response(response.body, {
       status:     response.status,
       statusText: response.statusText,
@@ -295,12 +401,12 @@ We will add your domain to the trusted list within **24 hours**.
 
 ```bash
 # Replace with your actual domain
-curl -I https://api.mymusic.com/health
+curl -s https://api.mymusic.com/api/song?query=Tl4bQBfOtbg | jq .stream
+# Expected: "https://api.mymusic.com/api/stream/audio_xxx?token=..."
+#           ↑ your domain, NOT api.babiesiq.tech
 
-# Expected response
-HTTP/2 200
-access-control-allow-origin: https://mymusic.com
-x-powered-by: BabiesIQ (hidden from user)
+curl -I https://api.mymusic.com/health
+# Expected: HTTP/2 200
 ```
 
 ---
@@ -373,7 +479,13 @@ cd mera-music-api
 
 ### ✅ तरीका 2 — Reverse Proxy (सबसे Professional)
 
-एक proxy layer लगाओ जो आपके domain से आने वाला सब request `api.babiesiq.tech` को silently forward करे। CORS, cookies, fingerprint — सब कुछ सही तरीके से forward होगा।
+एक proxy layer लगाओ जो आपके domain से आने वाला सब request `api.babiesiq.tech` को silently forward करे।
+
+**Proxy automatically यह करेगा:**
+- `/api/song` और `/api/video` response में `stream` URL → आपका domain
+- Google Sign-In के बाद redirect → आपके domain पर (api.babiesiq.tech नहीं)
+- Audio/video streaming → zero-buffer pass-through
+- सभी cookies, headers, IP → as-is forward
 
 ```
 User देखता है:  api.meramusic.com  ← आपका domain
@@ -402,39 +514,77 @@ server {
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_session_cache   shared:SSL:10m;
 
-    location / {
-        proxy_pass          https://api.babiesiq.tech;
-        proxy_http_version  1.1;
-
-        # Backend को लगेगा request सीधे api.babiesiq.tech पे आई
-        proxy_set_header    Host              api.babiesiq.tech;
-
-        # User का असली IP और fingerprint forward करो
-        proxy_set_header    X-Real-IP         $remote_addr;
-        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Forwarded-Proto $scheme;
-
-        # सभी original headers forward (User-Agent, Authorization, X-API-Key, etc.)
+    # ── Route 1: Audio/Video stream bytes ─────────────────────────────────────
+    location ~ ^/api/stream/ {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
         proxy_pass_request_headers on;
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
+    }
 
-        # Request body भी forward (POST, PUT, PATCH के लिए)
-        proxy_pass_request_body on;
+    # ── Route 2: Song & Video — stream URL rewrite ────────────────────────────
+    location ~ ^/api/(song|video) {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.meramusic.com;
 
-        # Cookies bilkul as-is forward (session, auth सब)
-        proxy_pass_header   Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.meramusic.com;
+        proxy_set_header        Accept-Encoding "";
 
-        # CORS — आपके frontend को errors नहीं आएंगे
+        # JSON mein stream URL rewrite
+        sub_filter              'api.babiesiq.tech' 'api.meramusic.com';
+        sub_filter_once         off;
+        sub_filter_types        application/json text/plain;
+
+        # Google login ke baad Location header rewrite
+        proxy_redirect          https://api.babiesiq.tech/ https://api.meramusic.com/;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) {
-            return 204;
-        }
+        if ($request_method = OPTIONS) { return 204; }
+    }
 
-        # Streaming support (audio/video के लिए)
+    # ── Route 3: Baaki sab (auth, Google OAuth, health, etc.) ─────────────────
+    location / {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.meramusic.com;
+
+        # Google login ke baad Location header rewrite
+        proxy_redirect          https://api.babiesiq.tech/ https://api.meramusic.com/;
+
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) { return 204; }
+
         proxy_buffering             off;
         proxy_cache                 off;
         proxy_read_timeout          3600s;
@@ -465,32 +615,72 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 app.set('trust proxy', true);
 
+const BACKEND       = 'https://api.babiesiq.tech';
+const YOUR_DOMAIN   = 'api.meramusic.com';       // ← apna domain yahan
+const SONG_VIDEO_RE = /^\/api\/(song|video)/;
+
 app.use('/', createProxyMiddleware({
-  target:       'https://api.babiesiq.tech',
-  changeOrigin: true,
-  secure:       true,
-  cookieDomainRewrite: { 'api.babiesiq.tech': 'api.meramusic.com' },
+  target:             BACKEND,
+  changeOrigin:       true,
+  secure:             true,
+  selfHandleResponse: true,
+  cookieDomainRewrite: { 'api.babiesiq.tech': YOUR_DOMAIN },
+
   on: {
     proxyReq: (proxyReq, req) => {
       const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
+      if (SONG_VIDEO_RE.test(req.url)) {
+        proxyReq.removeHeader('Accept-Encoding');
+      }
     },
+
     proxyRes: (proxyRes, req, res) => {
+      const userHost = req.headers.host || YOUR_DOMAIN;
+
+      // CORS
       const origin = req.headers['origin'] || '*';
-      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Origin',      origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+      res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+      // Google login ke baad Location header rewrite
+      const location = proxyRes.headers['location'];
+      if (location) {
+        res.setHeader('Location', location.replace('https://api.babiesiq.tech', `https://${userHost}`));
+        delete proxyRes.headers['location'];
+      }
+
+      // Remaining headers copy
+      Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
+      res.statusCode = proxyRes.statusCode;
+
+      // Song/Video: JSON body mein stream URL rewrite
+      if (SONG_VIDEO_RE.test(req.url)) {
+        const chunks = [];
+        proxyRes.on('data', chunk => chunks.push(chunk));
+        proxyRes.on('end', () => {
+          let body = Buffer.concat(chunks).toString('utf8');
+          body = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userHost}`);
+          res.setHeader('Content-Length', Buffer.byteLength(body));
+          res.end(body);
+        });
+        return;
+      }
+
+      proxyRes.pipe(res);
     },
+
     error: (err, req, res) => {
       res.status(502).json({ success: false, error: 'Gateway error' });
     }
   }
 }));
 
-app.listen(3000, () => console.log('Proxy :3000 pe chal raha hai'));
+app.listen(3000, () => console.log('Proxy chal raha hai :3000 pe'));
 ```
 
 ```bash
@@ -504,13 +694,14 @@ pm2 save
 #### Cloudflare Worker (Free — कोई server नहीं चाहिए)
 
 ```js
-// Cloudflare Workers dashboard में paste करो
+// Cloudflare Workers dashboard mein paste karo
 export default {
   async fetch(request) {
-    const url = new URL(request.url);
-    url.hostname = 'api.babiesiq.tech';
+    const incomingUrl = new URL(request.url);
+    const userDomain  = incomingUrl.hostname;   // api.meramusic.com
+    incomingUrl.hostname = 'api.babiesiq.tech';
 
-    // OPTIONS preflight handle करो
+    // OPTIONS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
@@ -524,21 +715,38 @@ export default {
       });
     }
 
-    // सभी headers और body silently forward करो
-    const proxyRequest = new Request(url.toString(), {
+    const proxyReq = new Request(incomingUrl.toString(), {
       method:  request.method,
       headers: request.headers,
       body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-      redirect: 'follow',
+      redirect: 'manual',  // 302 khud handle karo taaki Location rewrite ho sake
     });
 
-    const response = await fetch(proxyRequest);
+    const response = await fetch(proxyReq);
 
     const newHeaders = new Headers(response.headers);
     newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
     newHeaders.set('Access-Control-Allow-Credentials', 'true');
     newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+    // Google login ke baad Location header rewrite
+    const location = response.headers.get('location');
+    if (location) {
+      newHeaders.set('location', location.replace('https://api.babiesiq.tech', `https://${userDomain}`));
+    }
+
+    // Song/Video: JSON body mein stream URL rewrite
+    if (/^\/api\/(song|video)/.test(incomingUrl.pathname)) {
+      const body = await response.text();
+      const rewritten = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userDomain}`);
+      newHeaders.set('Content-Length', new TextEncoder().encode(rewritten).length.toString());
+      return new Response(rewritten, {
+        status:     response.status,
+        statusText: response.statusText,
+        headers:    newHeaders,
+      });
+    }
 
     return new Response(response.body, {
       status:     response.status,
@@ -549,7 +757,7 @@ export default {
 };
 ```
 
-> Cloudflare dashboard में Route को `api.meramusic.com/*` पर set करो।
+> Cloudflare dashboard mein Route ko `api.meramusic.com/*` par set karo।
 
 ---
 
@@ -578,6 +786,10 @@ Method: [Nginx / Node / Cloudflare / Direct]
 ## ✅ Step 4 — Test करो
 
 ```bash
+curl -s https://api.meramusic.com/api/song?query=Tl4bQBfOtbg | grep stream
+# Expected: "stream": "https://api.meramusic.com/api/stream/..."
+#                                ↑ aapka domain, api.babiesiq.tech nahi
+
 curl -I https://api.meramusic.com/health
 # Expected: HTTP/2 200
 ```
@@ -652,7 +864,13 @@ cd moy-music-api
 
 ### ✅ Метод 2 — Обратный прокси (рекомендуется)
 
-Настройте прокси, чтобы весь трафик выглядел как трафик с **вашего домена**. CORS работает идеально, куки передаются, а `api.babiesiq.tech` полностью невидим.
+Настройте прокси — весь трафик выглядит как с вашего домена, `api.babiesiq.tech` полностью невидим.
+
+**Прокси делает автоматически:**
+- В `/api/song` и `/api/video` ответах URL стрима → ваш домен
+- После входа через Google → редирект на ваш домен (не api.babiesiq.tech)
+- Аудио/видео стриминг → без буферизации
+- Все куки, заголовки, IP → передаются как есть
 
 ```
 Пользователь видит:  api.mymusic.ru  ← ваш домен
@@ -681,39 +899,77 @@ server {
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_session_cache   shared:SSL:10m;
 
-    location / {
-        proxy_pass          https://api.babiesiq.tech;
-        proxy_http_version  1.1;
-
-        # Бэкенд воспринимает запрос как прямой вызов к api.babiesiq.tech
-        proxy_set_header    Host              api.babiesiq.tech;
-
-        # Передаём реальный IP и fingerprint пользователя
-        proxy_set_header    X-Real-IP         $remote_addr;
-        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Forwarded-Proto $scheme;
-
-        # Все оригинальные заголовки (User-Agent, Authorization, X-API-Key и др.)
+    # ── Маршрут 1: Байты аудио/видео — без буферизации ────────────────────────
+    location ~ ^/api/stream/ {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
         proxy_pass_request_headers on;
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
+    }
 
-        # Тело запроса (для POST, PUT, PATCH)
-        proxy_pass_request_body on;
+    # ── Маршрут 2: Song & Video — перезапись URL стрима ───────────────────────
+    location ~ ^/api/(song|video) {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.mymusic.ru;
 
-        # Куки передаём и перезаписываем домен
-        proxy_pass_header   Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.mymusic.ru;
+        proxy_set_header        Accept-Encoding "";
 
-        # CORS — фронтенд работает без ошибок
+        # Перезаписать домен бэкенда в JSON ответе
+        sub_filter              'api.babiesiq.tech' 'api.mymusic.ru';
+        sub_filter_once         off;
+        sub_filter_types        application/json text/plain;
+
+        # Перезапись Location после Google OAuth
+        proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.ru/;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) {
-            return 204;
-        }
+        if ($request_method = OPTIONS) { return 204; }
+    }
 
-        # Поддержка стриминга (аудио/видео)
+    # ── Маршрут 3: Всё остальное (auth, Google OAuth, health и др.) ───────────
+    location / {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.mymusic.ru;
+
+        # Перезапись Location после Google OAuth
+        proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.ru/;
+
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) { return 204; }
+
         proxy_buffering             off;
         proxy_cache                 off;
         proxy_read_timeout          3600s;
@@ -740,25 +996,63 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 app.set('trust proxy', true);
 
+const BACKEND       = 'https://api.babiesiq.tech';
+const YOUR_DOMAIN   = 'api.mymusic.ru';           // ← ваш домен
+const SONG_VIDEO_RE = /^\/api\/(song|video)/;
+
 app.use('/', createProxyMiddleware({
-  target:       'https://api.babiesiq.tech',
-  changeOrigin: true,
-  secure:       true,
-  cookieDomainRewrite: { 'api.babiesiq.tech': 'api.mymusic.ru' },
+  target:             BACKEND,
+  changeOrigin:       true,
+  secure:             true,
+  selfHandleResponse: true,
+  cookieDomainRewrite: { 'api.babiesiq.tech': YOUR_DOMAIN },
+
   on: {
     proxyReq: (proxyReq, req) => {
       const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
+      if (SONG_VIDEO_RE.test(req.url)) {
+        proxyReq.removeHeader('Accept-Encoding');
+      }
     },
+
     proxyRes: (proxyRes, req, res) => {
+      const userHost = req.headers.host || YOUR_DOMAIN;
+
       const origin = req.headers['origin'] || '*';
-      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Origin',      origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+      res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+      // Перезапись Location после Google OAuth
+      const location = proxyRes.headers['location'];
+      if (location) {
+        res.setHeader('Location', location.replace('https://api.babiesiq.tech', `https://${userHost}`));
+        delete proxyRes.headers['location'];
+      }
+
+      Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
+      res.statusCode = proxyRes.statusCode;
+
+      // Song/Video: перезапись URL стрима в JSON теле
+      if (SONG_VIDEO_RE.test(req.url)) {
+        const chunks = [];
+        proxyRes.on('data', chunk => chunks.push(chunk));
+        proxyRes.on('end', () => {
+          let body = Buffer.concat(chunks).toString('utf8');
+          body = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userHost}`);
+          res.setHeader('Content-Length', Buffer.byteLength(body));
+          res.end(body);
+        });
+        return;
+      }
+
+      proxyRes.pipe(res);
     },
+
     error: (err, req, res) => {
       res.status(502).json({ success: false, error: 'Gateway error' });
     }
@@ -779,13 +1073,12 @@ pm2 save
 #### Cloudflare Worker (Бесплатно — без сервера)
 
 ```js
-// Вставьте в панель Cloudflare Workers
 export default {
   async fetch(request) {
-    const url = new URL(request.url);
-    url.hostname = 'api.babiesiq.tech';
+    const incomingUrl = new URL(request.url);
+    const userDomain  = incomingUrl.hostname;
+    incomingUrl.hostname = 'api.babiesiq.tech';
 
-    // Обработка preflight OPTIONS
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
@@ -799,21 +1092,38 @@ export default {
       });
     }
 
-    // Передаём все заголовки и тело запроса
-    const proxyRequest = new Request(url.toString(), {
+    const proxyReq = new Request(incomingUrl.toString(), {
       method:  request.method,
       headers: request.headers,
       body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-      redirect: 'follow',
+      redirect: 'manual',  // перехватываем 302 для перезаписи Location
     });
 
-    const response = await fetch(proxyRequest);
+    const response = await fetch(proxyReq);
 
     const newHeaders = new Headers(response.headers);
     newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
     newHeaders.set('Access-Control-Allow-Credentials', 'true');
     newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+    // Перезапись Location после Google OAuth
+    const location = response.headers.get('location');
+    if (location) {
+      newHeaders.set('location', location.replace('https://api.babiesiq.tech', `https://${userDomain}`));
+    }
+
+    // Song/Video: перезапись URL стрима в JSON теле
+    if (/^\/api\/(song|video)/.test(incomingUrl.pathname)) {
+      const body = await response.text();
+      const rewritten = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userDomain}`);
+      newHeaders.set('Content-Length', new TextEncoder().encode(rewritten).length.toString());
+      return new Response(rewritten, {
+        status:     response.status,
+        statusText: response.statusText,
+        headers:    newHeaders,
+      });
+    }
 
     return new Response(response.body, {
       status:     response.status,
@@ -853,6 +1163,10 @@ Domain Registration Request
 ## ✅ Шаг 4 — Тестирование
 
 ```bash
+curl -s https://api.mymusic.ru/api/song?query=Tl4bQBfOtbg | grep stream
+# Ожидается: "stream": "https://api.mymusic.ru/api/stream/..."
+#                                ↑ ваш домен, не api.babiesiq.tech
+
 curl -I https://api.mymusic.ru/health
 # Ожидаемый ответ: HTTP/2 200
 ```
@@ -927,7 +1241,12 @@ cd yene-music-api
 
 ### ✅ ዘዴ 2 — Reverse Proxy (ምርጥ ዘዴ)
 
-Proxy ያዋቅሩ። ሁሉም ትራፊክ **ከእርስዎ ዶሜን** የሚመጣ ይመስላል። CORS ትክክለኛ ይሠራል፣ cookies ይተላለፋሉ፣ `api.babiesiq.tech` ሙሉ በሙሉ የማይታይ ይሆናል።
+Proxy ያዋቅሩ — ሁሉም ትራፊክ ከእርስዎ ዶሜን የሚመጣ ይመስላል።
+
+**Proxy በራስሱ የሚሠራው:**
+- `/api/song` እና `/api/video` JSON ውስጥ stream URL → የእርስዎ ዶሜን
+- Google Sign-In በኋላ redirect → የእርስዎ ዶሜን (api.babiesiq.tech አይደለም)
+- Audio/video streaming → zero-buffer pass-through
 
 ```
 ተጠቃሚ ይሄን ያያል:  api.yenemusic.com  ← የእርስዎ ዶሜን
@@ -956,31 +1275,74 @@ server {
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_session_cache   shared:SSL:10m;
 
-    location / {
-        proxy_pass          https://api.babiesiq.tech;
-        proxy_http_version  1.1;
+    # ── Route 1: Audio/Video stream bytes ─────────────────────────────────────
+    location ~ ^/api/stream/ {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
+    }
 
-        proxy_set_header    Host              api.babiesiq.tech;
-        proxy_set_header    X-Real-IP         $remote_addr;
-        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Forwarded-Proto $scheme;
-
+    # ── Route 2: Song & Video — stream URL rewrite ────────────────────────────
+    location ~ ^/api/(song|video) {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.yenemusic.com;
 
-        proxy_pass_header   Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.yenemusic.com;
+        proxy_set_header        Accept-Encoding "";
+
+        sub_filter              'api.babiesiq.tech' 'api.yenemusic.com';
+        sub_filter_once         off;
+        sub_filter_types        application/json text/plain;
+
+        proxy_redirect          https://api.babiesiq.tech/ https://api.yenemusic.com/;
 
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) {
-            return 204;
-        }
+        if ($request_method = OPTIONS) { return 204; }
+    }
 
-        # Streaming (audio/video)
+    # ── Route 3: ሌሎች (auth, Google OAuth, health, ወዘተ) ───────────────────────
+    location / {
+        proxy_pass              https://api.babiesiq.tech;
+        proxy_http_version      1.1;
+        proxy_set_header        Host              api.babiesiq.tech;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+        proxy_pass_header       Set-Cookie;
+        proxy_cookie_domain     api.babiesiq.tech api.yenemusic.com;
+
+        proxy_redirect          https://api.babiesiq.tech/ https://api.yenemusic.com/;
+
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) { return 204; }
+
         proxy_buffering             off;
         proxy_cache                 off;
         proxy_read_timeout          3600s;
@@ -1001,25 +1363,61 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 app.set('trust proxy', true);
 
+const BACKEND       = 'https://api.babiesiq.tech';
+const YOUR_DOMAIN   = 'api.yenemusic.com';        // ← ዶሜንዎ
+const SONG_VIDEO_RE = /^\/api\/(song|video)/;
+
 app.use('/', createProxyMiddleware({
-  target:       'https://api.babiesiq.tech',
-  changeOrigin: true,
-  secure:       true,
-  cookieDomainRewrite: { 'api.babiesiq.tech': 'api.yenemusic.com' },
+  target:             BACKEND,
+  changeOrigin:       true,
+  secure:             true,
+  selfHandleResponse: true,
+  cookieDomainRewrite: { 'api.babiesiq.tech': YOUR_DOMAIN },
+
   on: {
     proxyReq: (proxyReq, req) => {
       const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
+      if (SONG_VIDEO_RE.test(req.url)) {
+        proxyReq.removeHeader('Accept-Encoding');
+      }
     },
+
     proxyRes: (proxyRes, req, res) => {
+      const userHost = req.headers.host || YOUR_DOMAIN;
+
       const origin = req.headers['origin'] || '*';
-      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Origin',      origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+      res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+      const location = proxyRes.headers['location'];
+      if (location) {
+        res.setHeader('Location', location.replace('https://api.babiesiq.tech', `https://${userHost}`));
+        delete proxyRes.headers['location'];
+      }
+
+      Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
+      res.statusCode = proxyRes.statusCode;
+
+      if (SONG_VIDEO_RE.test(req.url)) {
+        const chunks = [];
+        proxyRes.on('data', chunk => chunks.push(chunk));
+        proxyRes.on('end', () => {
+          let body = Buffer.concat(chunks).toString('utf8');
+          body = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userHost}`);
+          res.setHeader('Content-Length', Buffer.byteLength(body));
+          res.end(body);
+        });
+        return;
+      }
+
+      proxyRes.pipe(res);
     },
+
     error: (err, req, res) => {
       res.status(502).json({ success: false, error: 'Gateway error' });
     }
@@ -1036,8 +1434,9 @@ app.listen(3000);
 ```js
 export default {
   async fetch(request) {
-    const url = new URL(request.url);
-    url.hostname = 'api.babiesiq.tech';
+    const incomingUrl = new URL(request.url);
+    const userDomain  = incomingUrl.hostname;
+    incomingUrl.hostname = 'api.babiesiq.tech';
 
     if (request.method === 'OPTIONS') {
       return new Response(null, {
@@ -1052,20 +1451,36 @@ export default {
       });
     }
 
-    const proxyRequest = new Request(url.toString(), {
+    const proxyReq = new Request(incomingUrl.toString(), {
       method:  request.method,
       headers: request.headers,
       body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-      redirect: 'follow',
+      redirect: 'manual',
     });
 
-    const response = await fetch(proxyRequest);
+    const response = await fetch(proxyReq);
 
     const newHeaders = new Headers(response.headers);
     newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
     newHeaders.set('Access-Control-Allow-Credentials', 'true');
     newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+    const location = response.headers.get('location');
+    if (location) {
+      newHeaders.set('location', location.replace('https://api.babiesiq.tech', `https://${userDomain}`));
+    }
+
+    if (/^\/api\/(song|video)/.test(incomingUrl.pathname)) {
+      const body = await response.text();
+      const rewritten = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userDomain}`);
+      newHeaders.set('Content-Length', new TextEncoder().encode(rewritten).length.toString());
+      return new Response(rewritten, {
+        status:     response.status,
+        statusText: response.statusText,
+        headers:    newHeaders,
+      });
+    }
 
     return new Response(response.body, {
       status:     response.status,
@@ -1105,6 +1520,9 @@ Domain Registration Request
 ## ✅ ደረጃ 4 — ይሞክሩ
 
 ```bash
+curl -s https://api.yenemusic.com/api/song?query=Tl4bQBfOtbg | grep stream
+# Expected: "stream": "https://api.yenemusic.com/api/stream/..."
+
 curl -I https://api.yenemusic.com/health
 # Expected: HTTP/2 200
 ```
