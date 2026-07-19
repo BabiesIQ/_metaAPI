@@ -37,7 +37,6 @@ export default defineConfig({
     port: 5173,
 
     // VITE_EXTRA_HOSTS: comma-separated partner domains — set in .env, no code change needed
-    // Example: VITE_EXTRA_HOSTS=yt.protech.eu.org,other.partner.com
     allowedHosts: [
       "babiesiq.tech",
       "www.babiesiq.tech",
