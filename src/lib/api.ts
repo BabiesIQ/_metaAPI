@@ -212,7 +212,11 @@ export function createPassword(password: string) {
  * which sets a session cookie and redirects to /panel/dashboard.
  */
 export function googleOAuth() {
-  window.location.href = `${BASE_URL()}/api/v1/auth/google`;
+  // Pass current origin explicitly so the backend can route the OAuth session
+  // back to the correct partner frontend — more reliable than relying on Referer,
+  // which can be stripped by browser privacy settings or partner proxies.
+  const returnTo = encodeURIComponent(window.location.origin);
+  window.location.href = `${BASE_URL()}/api/v1/auth/google?return_to=${returnTo}`;
 }
 
 // ── Auth — PROTECTED (requires session cookie) ────────────────────────────────

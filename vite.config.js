@@ -36,6 +36,8 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 5173,
 
+    // VITE_EXTRA_HOSTS: comma-separated list of extra domains to allow (for partner deployments)
+    // e.g. VITE_EXTRA_HOSTS=yt.protech.eu.org,other.partner.com
     allowedHosts: [
       "babiesiq.tech",
       "www.babiesiq.tech",
@@ -44,6 +46,9 @@ export default defineConfig({
       "www.babyapi.pro",
       "localhost",
       "127.0.0.1",
+      ...(process.env.VITE_EXTRA_HOSTS
+        ? process.env.VITE_EXTRA_HOSTS.split(",").map((h) => h.trim()).filter(Boolean)
+        : []),
     ],
 
     proxy: {
