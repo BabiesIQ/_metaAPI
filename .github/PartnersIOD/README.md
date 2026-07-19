@@ -93,36 +93,63 @@ Reality:    api.babiesiq.tech ← silently behind it
 
 ```nginx
 # /etc/nginx/sites-available/api.mymusic.com
+# Setup: sudo certbot --nginx -d api.mymusic.com
 
 server {
-    listen 443 ssl;
+    listen 80;
+    server_name api.mymusic.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
     server_name api.mymusic.com;
 
-    # Your SSL cert (use certbot: sudo certbot --nginx -d api.mymusic.com)
+    # SSL — auto-filled by certbot
+    ssl_certificate     /etc/letsencrypt/live/api.mymusic.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.mymusic.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
 
     location / {
-        proxy_pass         https://api.babiesiq.tech;
-        proxy_http_version 1.1;
+        proxy_pass          https://api.babiesiq.tech;
+        proxy_http_version  1.1;
 
-        # Forward real client identity
-        proxy_set_header   Host              api.babiesiq.tech;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
+        # Backend sees request as coming from api.babiesiq.tech
+        proxy_set_header    Host              api.babiesiq.tech;
+
+        # Forward real client identity (IP, fingerprint)
+        proxy_set_header    X-Real-IP         $remote_addr;
+        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto $scheme;
+
+        # Forward all original headers (User-Agent, Authorization, X-API-Key, etc.)
+        proxy_pass_request_headers on;
+
+        # Forward request body (POST, PUT, PATCH)
+        proxy_pass_request_body on;
 
         # Forward & rewrite cookies so they work on your domain
-        proxy_pass_header  Set-Cookie;
+        proxy_pass_header   Set-Cookie;
         proxy_cookie_domain api.babiesiq.tech api.mymusic.com;
 
         # CORS — allows your frontend to call this without errors
-        add_header Access-Control-Allow-Origin  $http_origin always;
+        add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
-        add_header Access-Control-Allow-Methods "GET, POST, OPTIONS" always;
-        add_header Access-Control-Allow-Headers "Authorization, Content-Type" always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
         if ($request_method = OPTIONS) {
             return 204;
         }
+
+        # Streaming support (audio/video)
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
     }
 }
 ```
@@ -146,23 +173,33 @@ const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
+app.set('trust proxy', true);
 
 app.use('/', createProxyMiddleware({
-  target: 'https://api.babiesiq.tech',
-  changeOrigin: true,        // sets Host header to api.babiesiq.tech
-  secure: true,
+  target:      'https://api.babiesiq.tech',
+  changeOrigin: true,   // sets Host: api.babiesiq.tech
+  secure:       true,
   cookieDomainRewrite: {
-    'api.babiesiq.tech': 'api.mymusic.com'   // rewrite cookie domain
+    'api.babiesiq.tech': 'api.mymusic.com'
   },
   on: {
     proxyReq: (proxyReq, req) => {
-      proxyReq.setHeader('X-Real-IP', req.ip);
-      proxyReq.setHeader('X-Forwarded-For', req.ip);
+      // Forward real IP and fingerprint headers
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      proxyReq.setHeader('X-Real-IP', ip);
+      proxyReq.setHeader('X-Forwarded-For', ip);
+      proxyReq.setHeader('X-Forwarded-Proto', 'https');
     },
     proxyRes: (proxyRes, req, res) => {
-      // Allow CORS from your frontend
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+      // CORS — allow your frontend origin
+      const origin = req.headers['origin'] || '*';
+      res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+    },
+    error: (err, req, res) => {
+      res.status(502).json({ success: false, error: 'Gateway error' });
     }
   }
 }));
@@ -183,28 +220,49 @@ pm2 save
 
 ```js
 // Cloudflare Worker — paste this in Workers dashboard
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    url.hostname = 'api.babiesiq.tech';  // redirect to real backend
 
-async function handleRequest(request) {
-  const url = new URL(request.url);
-  url.hostname = 'api.babiesiq.tech';       // redirect to real backend
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin':      request.headers.get('Origin') || '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Methods':     'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers':     'Authorization, Content-Type, X-API-Key, X-Request-ID',
+          'Access-Control-Max-Age':           '86400',
+        },
+      });
+    }
 
-  const modifiedRequest = new Request(url.toString(), {
-    method:  request.method,
-    headers: request.headers,
-    body:    request.method !== 'GET' ? request.body : undefined,
-  });
+    // Forward request with all original headers + body
+    const proxyRequest = new Request(url.toString(), {
+      method:  request.method,
+      headers: request.headers,
+      body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+      redirect: 'follow',
+    });
 
-  const response = await fetch(modifiedRequest);
+    const response = await fetch(proxyRequest);
 
-  const modifiedResponse = new Response(response.body, response);
-  modifiedResponse.headers.set('Access-Control-Allow-Origin', request.headers.get('Origin') || '*');
-  modifiedResponse.headers.set('Access-Control-Allow-Credentials', 'true');
+    // Return response with CORS headers added
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
+    newHeaders.set('Access-Control-Allow-Credentials', 'true');
+    newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
 
-  return modifiedResponse;
-}
+    return new Response(response.body, {
+      status:     response.status,
+      statusText: response.statusText,
+      headers:    newHeaders,
+    });
+  }
+};
 ```
 
 > Set your Worker's **Route** to `api.mymusic.com/*` in the Cloudflare dashboard. No server costs.
@@ -318,7 +376,7 @@ cd mera-music-api
 एक proxy layer लगाओ जो आपके domain से आने वाला सब request `api.babiesiq.tech` को silently forward करे। CORS, cookies, fingerprint — सब कुछ सही तरीके से forward होगा।
 
 ```
-User देखता है:  api.mermusic.com  ← आपका domain
+User देखता है:  api.meramusic.com  ← आपका domain
 असलियत:        api.babiesiq.tech ← पर्दे के पीछे
 ```
 
@@ -327,24 +385,68 @@ User देखता है:  api.mermusic.com  ← आपका domain
 #### Nginx (VPS / Linux server)
 
 ```nginx
+# Setup: sudo certbot --nginx -d api.meramusic.com
+
 server {
-    listen 443 ssl;
+    listen 80;
+    server_name api.meramusic.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
     server_name api.meramusic.com;
 
-    location / {
-        proxy_pass         https://api.babiesiq.tech;
-        proxy_http_version 1.1;
-        proxy_set_header   Host              api.babiesiq.tech;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_pass_header  Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.meramusic.com;
-        add_header Access-Control-Allow-Origin  $http_origin always;
-        add_header Access-Control-Allow-Credentials true always;
+    ssl_certificate     /etc/letsencrypt/live/api.meramusic.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.meramusic.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
 
-        if ($request_method = OPTIONS) { return 204; }
+    location / {
+        proxy_pass          https://api.babiesiq.tech;
+        proxy_http_version  1.1;
+
+        # Backend को लगेगा request सीधे api.babiesiq.tech पे आई
+        proxy_set_header    Host              api.babiesiq.tech;
+
+        # User का असली IP और fingerprint forward करो
+        proxy_set_header    X-Real-IP         $remote_addr;
+        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto $scheme;
+
+        # सभी original headers forward (User-Agent, Authorization, X-API-Key, etc.)
+        proxy_pass_request_headers on;
+
+        # Request body भी forward (POST, PUT, PATCH के लिए)
+        proxy_pass_request_body on;
+
+        # Cookies bilkul as-is forward (session, auth सब)
+        proxy_pass_header   Set-Cookie;
+        proxy_cookie_domain api.babiesiq.tech api.meramusic.com;
+
+        # CORS — आपके frontend को errors नहीं आएंगे
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) {
+            return 204;
+        }
+
+        # Streaming support (audio/video के लिए)
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
     }
 }
+```
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ---
@@ -356,23 +458,45 @@ npm install http-proxy-middleware express
 ```
 
 ```js
+// proxy-server.js
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+
 const app = express();
+app.set('trust proxy', true);
 
 app.use('/', createProxyMiddleware({
-  target: 'https://api.babiesiq.tech',
+  target:       'https://api.babiesiq.tech',
   changeOrigin: true,
+  secure:       true,
   cookieDomainRewrite: { 'api.babiesiq.tech': 'api.meramusic.com' },
   on: {
+    proxyReq: (proxyReq, req) => {
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      proxyReq.setHeader('X-Real-IP', ip);
+      proxyReq.setHeader('X-Forwarded-For', ip);
+      proxyReq.setHeader('X-Forwarded-Proto', 'https');
+    },
     proxyRes: (proxyRes, req, res) => {
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+      const origin = req.headers['origin'] || '*';
+      res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+    },
+    error: (err, req, res) => {
+      res.status(502).json({ success: false, error: 'Gateway error' });
     }
   }
 }));
 
-app.listen(3000);
+app.listen(3000, () => console.log('Proxy :3000 pe chal raha hai'));
+```
+
+```bash
+npm install -g pm2
+pm2 start proxy-server.js --name mera-api-proxy
+pm2 save
 ```
 
 ---
@@ -380,20 +504,49 @@ app.listen(3000);
 #### Cloudflare Worker (Free — कोई server नहीं चाहिए)
 
 ```js
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
+// Cloudflare Workers dashboard में paste करो
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    url.hostname = 'api.babiesiq.tech';
 
-async function handleRequest(request) {
-  const url = new URL(request.url);
-  url.hostname = 'api.babiesiq.tech';
+    // OPTIONS preflight handle करो
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin':      request.headers.get('Origin') || '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Methods':     'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers':     'Authorization, Content-Type, X-API-Key, X-Request-ID',
+          'Access-Control-Max-Age':           '86400',
+        },
+      });
+    }
 
-  const response = await fetch(new Request(url.toString(), request));
-  const res = new Response(response.body, response);
-  res.headers.set('Access-Control-Allow-Origin', request.headers.get('Origin') || '*');
-  res.headers.set('Access-Control-Allow-Credentials', 'true');
-  return res;
-}
+    // सभी headers और body silently forward करो
+    const proxyRequest = new Request(url.toString(), {
+      method:  request.method,
+      headers: request.headers,
+      body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+      redirect: 'follow',
+    });
+
+    const response = await fetch(proxyRequest);
+
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
+    newHeaders.set('Access-Control-Allow-Credentials', 'true');
+    newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+    return new Response(response.body, {
+      status:     response.status,
+      statusText: response.statusText,
+      headers:    newHeaders,
+    });
+  }
+};
 ```
 
 > Cloudflare dashboard में Route को `api.meramusic.com/*` पर set करो।
@@ -511,22 +664,62 @@ cd moy-music-api
 #### Nginx (VPS / Linux)
 
 ```nginx
+# Setup: sudo certbot --nginx -d api.mymusic.ru
+
 server {
-    listen 443 ssl;
+    listen 80;
+    server_name api.mymusic.ru;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
     server_name api.mymusic.ru;
 
-    location / {
-        proxy_pass         https://api.babiesiq.tech;
-        proxy_http_version 1.1;
-        proxy_set_header   Host              api.babiesiq.tech;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_pass_header  Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.mymusic.ru;
-        add_header Access-Control-Allow-Origin  $http_origin always;
-        add_header Access-Control-Allow-Credentials true always;
+    ssl_certificate     /etc/letsencrypt/live/api.mymusic.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.mymusic.ru/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
 
-        if ($request_method = OPTIONS) { return 204; }
+    location / {
+        proxy_pass          https://api.babiesiq.tech;
+        proxy_http_version  1.1;
+
+        # Бэкенд воспринимает запрос как прямой вызов к api.babiesiq.tech
+        proxy_set_header    Host              api.babiesiq.tech;
+
+        # Передаём реальный IP и fingerprint пользователя
+        proxy_set_header    X-Real-IP         $remote_addr;
+        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto $scheme;
+
+        # Все оригинальные заголовки (User-Agent, Authorization, X-API-Key и др.)
+        proxy_pass_request_headers on;
+
+        # Тело запроса (для POST, PUT, PATCH)
+        proxy_pass_request_body on;
+
+        # Куки передаём и перезаписываем домен
+        proxy_pass_header   Set-Cookie;
+        proxy_cookie_domain api.babiesiq.tech api.mymusic.ru;
+
+        # CORS — фронтенд работает без ошибок
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) {
+            return 204;
+        }
+
+        # Поддержка стриминга (аудио/видео)
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
     }
 }
 ```
@@ -540,23 +733,45 @@ sudo nginx -t && sudo systemctl reload nginx
 #### Node.js / Express
 
 ```js
+// proxy-server.js
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+
 const app = express();
+app.set('trust proxy', true);
 
 app.use('/', createProxyMiddleware({
-  target: 'https://api.babiesiq.tech',
+  target:       'https://api.babiesiq.tech',
   changeOrigin: true,
+  secure:       true,
   cookieDomainRewrite: { 'api.babiesiq.tech': 'api.mymusic.ru' },
   on: {
+    proxyReq: (proxyReq, req) => {
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      proxyReq.setHeader('X-Real-IP', ip);
+      proxyReq.setHeader('X-Forwarded-For', ip);
+      proxyReq.setHeader('X-Forwarded-Proto', 'https');
+    },
     proxyRes: (proxyRes, req, res) => {
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+      const origin = req.headers['origin'] || '*';
+      res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+    },
+    error: (err, req, res) => {
+      res.status(502).json({ success: false, error: 'Gateway error' });
     }
   }
 }));
 
-app.listen(3000);
+app.listen(3000, () => console.log('Прокси запущен на :3000'));
+```
+
+```bash
+npm install -g pm2
+pm2 start proxy-server.js --name my-api-proxy
+pm2 save
 ```
 
 ---
@@ -564,20 +779,49 @@ app.listen(3000);
 #### Cloudflare Worker (Бесплатно — без сервера)
 
 ```js
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
+// Вставьте в панель Cloudflare Workers
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    url.hostname = 'api.babiesiq.tech';
 
-async function handleRequest(request) {
-  const url = new URL(request.url);
-  url.hostname = 'api.babiesiq.tech';
+    // Обработка preflight OPTIONS
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin':      request.headers.get('Origin') || '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Methods':     'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers':     'Authorization, Content-Type, X-API-Key, X-Request-ID',
+          'Access-Control-Max-Age':           '86400',
+        },
+      });
+    }
 
-  const response = await fetch(new Request(url.toString(), request));
-  const res = new Response(response.body, response);
-  res.headers.set('Access-Control-Allow-Origin', request.headers.get('Origin') || '*');
-  res.headers.set('Access-Control-Allow-Credentials', 'true');
-  return res;
-}
+    // Передаём все заголовки и тело запроса
+    const proxyRequest = new Request(url.toString(), {
+      method:  request.method,
+      headers: request.headers,
+      body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+      redirect: 'follow',
+    });
+
+    const response = await fetch(proxyRequest);
+
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
+    newHeaders.set('Access-Control-Allow-Credentials', 'true');
+    newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+    return new Response(response.body, {
+      status:     response.status,
+      statusText: response.statusText,
+      headers:    newHeaders,
+    });
+  }
+};
 ```
 
 > В панели Cloudflare установите Route: `api.mymusic.ru/*`
@@ -695,22 +939,54 @@ Proxy ያዋቅሩ። ሁሉም ትራፊክ **ከእርስዎ ዶሜን** የ�
 #### Nginx (VPS / Linux)
 
 ```nginx
+# Setup: sudo certbot --nginx -d api.yenemusic.com
+
 server {
-    listen 443 ssl;
+    listen 80;
+    server_name api.yenemusic.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
     server_name api.yenemusic.com;
 
-    location / {
-        proxy_pass         https://api.babiesiq.tech;
-        proxy_http_version 1.1;
-        proxy_set_header   Host              api.babiesiq.tech;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_pass_header  Set-Cookie;
-        proxy_cookie_domain api.babiesiq.tech api.yenemusic.com;
-        add_header Access-Control-Allow-Origin  $http_origin always;
-        add_header Access-Control-Allow-Credentials true always;
+    ssl_certificate     /etc/letsencrypt/live/api.yenemusic.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.yenemusic.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
 
-        if ($request_method = OPTIONS) { return 204; }
+    location / {
+        proxy_pass          https://api.babiesiq.tech;
+        proxy_http_version  1.1;
+
+        proxy_set_header    Host              api.babiesiq.tech;
+        proxy_set_header    X-Real-IP         $remote_addr;
+        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto $scheme;
+
+        proxy_pass_request_headers on;
+        proxy_pass_request_body    on;
+
+        proxy_pass_header   Set-Cookie;
+        proxy_cookie_domain api.babiesiq.tech api.yenemusic.com;
+
+        add_header Access-Control-Allow-Origin      $http_origin always;
+        add_header Access-Control-Allow-Credentials true always;
+        add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+
+        if ($request_method = OPTIONS) {
+            return 204;
+        }
+
+        # Streaming (audio/video)
+        proxy_buffering             off;
+        proxy_cache                 off;
+        proxy_read_timeout          3600s;
+        proxy_send_timeout          3600s;
+        proxy_request_buffering     off;
+        chunked_transfer_encoding   on;
     }
 }
 ```
@@ -720,18 +996,32 @@ server {
 #### Node.js / Express
 
 ```js
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
+app.set('trust proxy', true);
 
 app.use('/', createProxyMiddleware({
-  target: 'https://api.babiesiq.tech',
+  target:       'https://api.babiesiq.tech',
   changeOrigin: true,
+  secure:       true,
   cookieDomainRewrite: { 'api.babiesiq.tech': 'api.yenemusic.com' },
   on: {
+    proxyReq: (proxyReq, req) => {
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      proxyReq.setHeader('X-Real-IP', ip);
+      proxyReq.setHeader('X-Forwarded-For', ip);
+      proxyReq.setHeader('X-Forwarded-Proto', 'https');
+    },
     proxyRes: (proxyRes, req, res) => {
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+      const origin = req.headers['origin'] || '*';
+      res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
+    },
+    error: (err, req, res) => {
+      res.status(502).json({ success: false, error: 'Gateway error' });
     }
   }
 }));
@@ -744,20 +1034,46 @@ app.listen(3000);
 #### Cloudflare Worker (ነፃ — ምንም server አያስፈልግ)
 
 ```js
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    url.hostname = 'api.babiesiq.tech';
 
-async function handleRequest(request) {
-  const url = new URL(request.url);
-  url.hostname = 'api.babiesiq.tech';
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin':      request.headers.get('Origin') || '*',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Methods':     'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers':     'Authorization, Content-Type, X-API-Key, X-Request-ID',
+          'Access-Control-Max-Age':           '86400',
+        },
+      });
+    }
 
-  const response = await fetch(new Request(url.toString(), request));
-  const res = new Response(response.body, response);
-  res.headers.set('Access-Control-Allow-Origin', request.headers.get('Origin') || '*');
-  res.headers.set('Access-Control-Allow-Credentials', 'true');
-  return res;
-}
+    const proxyRequest = new Request(url.toString(), {
+      method:  request.method,
+      headers: request.headers,
+      body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+      redirect: 'follow',
+    });
+
+    const response = await fetch(proxyRequest);
+
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
+    newHeaders.set('Access-Control-Allow-Credentials', 'true');
+    newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+
+    return new Response(response.body, {
+      status:     response.status,
+      statusText: response.statusText,
+      headers:    newHeaders,
+    });
+  }
+};
 ```
 
 > Cloudflare dashboard ውስጥ Route ን `api.yenemusic.com/*` ያዋቅሩ።
