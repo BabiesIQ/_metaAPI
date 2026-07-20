@@ -355,6 +355,12 @@
     animation: blink 1s step-end infinite;
   }
 
+  /* OAuth error page — progress bar shrinks from 100% to 0% over 3 s */
+  @keyframes shrink {
+    from { width: 100%; }
+    to   { width: 0%; }
+  }
+
   /* Plan card glow on hover */
   .plan-card-glow:hover {
     box-shadow: 0 0 32px -4px oklch(0.72 0.24 254 / 0.3), 0 12px 28px -8px

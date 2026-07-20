@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useRouter } from "@tanstack/react-router";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -25,11 +25,50 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+// Human-readable messages for every error code the backend can emit.
+const OAUTH_ERROR_MESSAGES: Record<string, { title: string; description?: string }> = {
+  session_failed:       { title: "Google sign-in failed", description: "Session could not be verified. Please try again." },
+  session_store_failed: { title: "Server error", description: "Could not save your session. Please try again in a moment." },
+  oauth_failed:         { title: "Google sign-in failed", description: "Something went wrong. Please try again." },
+  oauth_denied:         { title: "Sign-in cancelled", description: "Google sign-in was cancelled or denied." },
+  oauth_state:          { title: "Session expired", description: "Your sign-in session timed out. Please try again." },
+  oauth_exchange:       { title: "Google sign-in failed", description: "Could not complete the sign-in with Google. Please try again." },
+  oauth_userinfo:       { title: "Google sign-in failed", description: "Could not fetch your Google account info. Please try again." },
+  email_not_verified:   { title: "Email not verified", description: "Please verify your Google email address first." },
+  create_user:          { title: "Account setup failed", description: "Could not create your account. Please try again." },
+  fetch_user:           { title: "Account lookup failed", description: "Could not load your account. Please try again." },
+  network:              { title: "Connection error", description: "Could not reach the server. Check your internet connection and retry." },
+  invalid_session:      { title: "Session invalid", description: "Sign-in session was invalid or already used. Please try again." },
+};
+
 export function LoginPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { isAuthenticated, setUser, setBannedUser } = useAuth();
   const [showPwd, setShowPwd] = useState(false);
+
+  // Show a toast whenever the backend redirects back with ?error= in the URL.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorCode = params.get("error");
+    if (!errorCode) return;
+
+    const msg = OAUTH_ERROR_MESSAGES[errorCode] ?? {
+      title: "Sign-in failed",
+      description: `Error code: ${errorCode}. Please try again or contact support.`,
+    };
+
+    toast.error(msg.title, {
+      description: msg.description,
+      duration: 8000,
+    });
+
+    // Remove the error param from the URL so a refresh doesn't re-show the toast
+    const clean = new URL(window.location.href);
+    clean.searchParams.delete("error");
+    clean.searchParams.delete("reason");
+    window.history.replaceState({}, "", clean.toString());
+  }, []);
 
   const {
     register,
