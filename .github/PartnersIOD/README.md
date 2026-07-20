@@ -158,6 +158,7 @@ server {
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -173,6 +174,17 @@ server {
 
         # Rewrite Location header (Google OAuth redirects back to your domain)
         proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.com/;
+
+        # Strip the backend's CORS headers before adding our own.
+        # Without this, both Nginx (add_header) AND the backend set
+        # Access-Control-Allow-Origin → duplicate headers → Chrome/mobile
+        # throws "Failed to fetch" and Google login silently breaks.
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
 
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
@@ -190,6 +202,7 @@ server {
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -197,6 +210,17 @@ server {
 
         # Rewrite Location header — after Google login, user lands on your domain
         proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.com/;
+
+        # Strip the backend's CORS headers before adding our own.
+        # Without this, both Nginx (add_header) AND the backend set
+        # Access-Control-Allow-Origin → duplicate headers → Chrome/mobile
+        # throws "Failed to fetch" and Google login silently breaks.
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
 
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
@@ -578,6 +602,7 @@ server {
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -592,6 +617,16 @@ server {
 
         # Google login ke baad Location header rewrite
         proxy_redirect          https://api.babiesiq.tech/ https://api.meramusic.com/;
+
+        # Backend ke CORS headers strip karo — warna Nginx aur backend dono
+        # Access-Control-Allow-Origin add karte hain → duplicate headers →
+        # Chrome/mobile "Failed to fetch" throw karta hai → Google login toot jaata hai
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
 
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
@@ -609,6 +644,7 @@ server {
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -616,6 +652,16 @@ server {
 
         # Google login ke baad Location header rewrite
         proxy_redirect          https://api.babiesiq.tech/ https://api.meramusic.com/;
+
+        # Backend ke CORS headers strip karo — warna Nginx aur backend dono
+        # Access-Control-Allow-Origin add karte hain → duplicate headers →
+        # Chrome/mobile "Failed to fetch" throw karta hai → Google login toot jaata hai
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
 
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
