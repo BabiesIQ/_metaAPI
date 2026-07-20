@@ -59,6 +59,22 @@ Open the repo and replace these values with your brand:
 
 > ⚠️ **DO NOT** change `api.babiesiq.tech` anywhere in the code. That is the engine — it must stay hidden and untouched.
 
+### 🔑 Critical — Set Your Proxy URL in `public/config.json`
+
+**This step is mandatory if you are using Method 2 (your own proxy server).** Skip only if you are using Method 1 (Embedded, direct calls to api.babiesiq.tech).
+
+Open `public/config.json` and set `BACKEND_BASE_URL` to your **proxy server URL** (not `api.babiesiq.tech`):
+
+```json
+{
+  "BACKEND_BASE_URL": "https://api.yoursite.com"
+}
+```
+
+Replace `https://api.yoursite.com` with the actual URL of your proxy. This is how the frontend knows to route all API calls — including Google OAuth — through your proxy instead of calling `api.babiesiq.tech` directly.
+
+> If you skip this step, Google login will break: the OAuth session cookie will be set on `api.babiesiq.tech` (not your proxy domain), so `getMe()` will return 401 and users will be stuck in a login loop.
+
 ---
 
 ## 🔒 Step 2 — Hide the Backend (Two Methods)
@@ -237,6 +253,9 @@ app.use('/', createProxyMiddleware({
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
+      // Tell the backend which proxy host the request came through.
+      // Used by the OAuth flow to identify the partner when Referer is absent.
+      proxyReq.setHeader('X-Forwarded-Host', req.headers.host || YOUR_DOMAIN);
 
       // Remove Accept-Encoding on song/video so we get plain JSON (not gzip)
       if (SONG_VIDEO_RE.test(req.url)) {
@@ -254,14 +273,18 @@ app.use('/', createProxyMiddleware({
       res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
 
-      // ── Rewrite Location header (Google OAuth redirect after login) ────────
+      // ── Rewrite Location header ────────────────────────────────────────────
+      // Only rewrite if the Location starts with the backend URL (safe prefix match).
+      // Avoids accidentally corrupting the Google OAuth URL (which may contain
+      // api.babiesiq.tech URL-encoded inside a query param).
       const location = proxyRes.headers['location'];
-      if (location) {
-        res.setHeader('Location', location.replace('https://api.babiesiq.tech', `https://${userHost}`));
+      if (location && location.startsWith('https://api.babiesiq.tech')) {
+        res.setHeader('Location', `https://${userHost}` + location.slice('https://api.babiesiq.tech'.length));
         delete proxyRes.headers['location'];
       }
 
-      // Copy remaining headers
+      // Copy remaining headers (including Set-Cookie — forwarded as-is so the
+      // browser stores the session cookie on your proxy domain, not babiesiq.tech)
       Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
       res.statusCode = proxyRes.statusCode;
 
@@ -465,6 +488,22 @@ cd mera-music-api
 
 > ⚠️ **`api.babiesiq.tech` को कभी मत बदलो।** यह engine है — यह हमेशा hidden रहना चाहिए।
 
+### 🔑 ज़रूरी — `public/config.json` में Proxy URL सेट करो
+
+**यह step तब mandatory है जब आप Method 2 (अपना proxy server) use कर रहे हो।** Method 1 (Embedded) use करने वालों के लिए ज़रूरी नहीं।
+
+`public/config.json` खोलो और `BACKEND_BASE_URL` को अपने **proxy server URL** पर set करो (`api.babiesiq.tech` नहीं):
+
+```json
+{
+  "BACKEND_BASE_URL": "https://api.apnisite.com"
+}
+```
+
+`https://api.apnisite.com` की जगह अपना actual proxy URL डालो। इससे frontend सभी API calls — Google OAuth समेत — आपके proxy से करता है।
+
+> अगर यह step skip किया, तो Google login टूट जाएगा: session cookie `api.babiesiq.tech` पर set होगी (आपके proxy domain पर नहीं), जिससे `getMe()` 401 return करेगा और users login loop में फंस जाएंगे।
+
 ---
 
 ## 🔒 Step 2 — Backend छुपाओ (दो तरीके)
@@ -632,6 +671,8 @@ app.use('/', createProxyMiddleware({
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
+      // Backend ko batao ki request kis proxy host se aayi — OAuth flow ke liye zaroori
+      proxyReq.setHeader('X-Forwarded-Host', req.headers.host || YOUR_DOMAIN);
       if (SONG_VIDEO_RE.test(req.url)) {
         proxyReq.removeHeader('Accept-Encoding');
       }
@@ -647,14 +688,15 @@ app.use('/', createProxyMiddleware({
       res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
 
-      // Google login ke baad Location header rewrite
+      // Location header rewrite — sirf tab jab backend URL se shuru ho
+      // (safe prefix match — Google OAuth URL ke query params ko corrupt nahi karta)
       const location = proxyRes.headers['location'];
-      if (location) {
-        res.setHeader('Location', location.replace('https://api.babiesiq.tech', `https://${userHost}`));
+      if (location && location.startsWith('https://api.babiesiq.tech')) {
+        res.setHeader('Location', `https://${userHost}` + location.slice('https://api.babiesiq.tech'.length));
         delete proxyRes.headers['location'];
       }
 
-      // Remaining headers copy
+      // Baaki headers copy karo (Set-Cookie bhi — browser proxy domain par cookie store karega)
       Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
       res.statusCode = proxyRes.statusCode;
 

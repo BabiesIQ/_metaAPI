@@ -219,6 +219,18 @@ export function googleOAuth() {
   window.location.href = `${BASE_URL()}/api/v1/auth/google?return_to=${returnTo}`;
 }
 
+/**
+ * activateSession — called by OAuthCallbackPage (/auth/callback?t=TOKEN).
+ * Exchanges a one-time handoff token for a session cookie set on the proxy domain.
+ * Must use authApiClient (credentials:'include') so the browser stores the cookie.
+ */
+export function activateSession(token: string) {
+  return authApiClient<null>("/api/v1/auth/session-activate", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+}
+
 // ── Auth — PROTECTED (requires session cookie) ────────────────────────────────
 
 export function logout() {

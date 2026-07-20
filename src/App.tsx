@@ -29,6 +29,7 @@ import { BannedPage } from "@/pages/BannedPage";
 
 // Auth flow pages
 import { CreatePasswordPage } from "@/pages/auth/CreatePassword";
+import { OAuthCallbackPage } from "@/pages/auth/OAuthCallback";
 import { PasswordSuccessPage } from "@/pages/auth/PasswordSuccess";
 import { VerifyOtpPage } from "@/pages/auth/VerifyOtp";
 
@@ -100,6 +101,8 @@ const resetPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: 
 const verifyOtpRoute = createRoute({ getParentRoute: () => rootRoute, path: "/auth/verify-otp", component: VerifyOtpPage });
 const createPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: "/auth/create-password", component: CreatePasswordPage });
 const passwordSuccessRoute = createRoute({ getParentRoute: () => rootRoute, path: "/auth/password-success", component: PasswordSuccessPage });
+// Partner OAuth callback — exchanges ?t=TOKEN for a session cookie via proxy XHR
+const oauthCallbackRoute = createRoute({ getParentRoute: () => rootRoute, path: "/auth/callback", component: OAuthCallbackPage });
 
 // ── Panel routes ──────────────────────────────────────────────────────────────
 const panelDashboardRoute = createRoute({ getParentRoute: () => rootRoute, path: "/panel/dashboard", component: DashboardPage });
@@ -161,6 +164,7 @@ const routeTree = rootRoute.addChildren([
   resetPasswordRoute,
   verifyOtpRoute,
   createPasswordRoute,
+  oauthCallbackRoute,
   bannedRoute,
   passwordSuccessRoute,
   panelDashboardRoute,
