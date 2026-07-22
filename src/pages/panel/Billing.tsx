@@ -133,8 +133,6 @@ export default function BillingPage() {
     }
 
     // Main site fast flow — embedded one-click checkout
-    const loaded = await loadRazorpayScript();
-    if (!loaded) { toast.error("Could not load payment gateway."); setPaying(null); return; }
 
     const rzp = new window.Razorpay({
       key: key_id, amount: Math.round(amount * 100), currency,
