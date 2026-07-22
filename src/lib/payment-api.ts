@@ -75,6 +75,8 @@ export interface CreateOrderResponse {
   key_id: string;
   plan_name: string;
   months: number;
+  /** Set only for partner-proxy requests. If non-empty, redirect here instead of opening embedded checkout. */
+  payment_link_url?: string;
 }
 
 export interface VerifyPaymentRequest {

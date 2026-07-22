@@ -122,7 +122,19 @@ export default function BillingPage() {
     const res = await createOrder(planCode, effectiveDuration);
     if (!res.success || !res.data) { toast.error(res.error ?? "Could not create order"); setPaying(null); return; }
 
-    const { order_id, amount, currency, key_id, plan_name, months } = res.data;
+    const { order_id, amount, currency, key_id, plan_name, months, payment_link_url } = res.data;
+
+    // Partner proxy flow — open Razorpay's hosted payment page (no domain mismatch)
+    if (payment_link_url) {
+      setPaying(null);
+      window.open(payment_link_url, "_blank", "noopener,noreferrer");
+      toast.info("Payment page opened in a new tab. Come back once payment is complete.");
+      return;
+    }
+
+    // Main site fast flow — embedded one-click checkout
+    const loaded = await loadRazorpayScript();
+    if (!loaded) { toast.error("Could not load payment gateway."); setPaying(null); return; }
 
     const rzp = new window.Razorpay({
       key: key_id, amount: Math.round(amount * 100), currency,
