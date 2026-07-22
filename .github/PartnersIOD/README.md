@@ -135,11 +135,14 @@ server {
     # ── Route 1: Audio/Video stream bytes — zero-buffer pass-through ──────────
     location ~ ^/api/stream/ {
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
 
         proxy_buffering             off;
@@ -152,7 +155,18 @@ server {
 
     # ── Route 2: Song & Video — rewrite stream URL to your domain ─────────────
     location ~ ^/api/(song|video) {
+        # Handle CORS preflight first
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
@@ -190,13 +204,22 @@ server {
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
-
-        if ($request_method = OPTIONS) { return 204; }
     }
 
     # ── Route 3: Everything else (auth, Google OAuth, health, etc.) ───────────
     location / {
+        # Handle CORS preflight first — before proxy_pass
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
@@ -227,14 +250,10 @@ server {
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) { return 204; }
-
-        proxy_buffering             off;
-        proxy_cache                 off;
-        proxy_read_timeout          3600s;
-        proxy_send_timeout          3600s;
-        proxy_request_buffering     off;
-        chunked_transfer_encoding   on;
+        # Standard timeouts for JSON API (not streaming)
+        proxy_connect_timeout   10s;
+        proxy_read_timeout      60s;
+        proxy_send_timeout      60s;
     }
 }
 ```
@@ -580,11 +599,14 @@ server {
     # ── Route 1: Audio/Video stream bytes ─────────────────────────────────────
     location ~ ^/api/stream/ {
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_buffering             off;
         proxy_cache                 off;
@@ -596,7 +618,18 @@ server {
 
     # ── Route 2: Song & Video — stream URL rewrite ────────────────────────────
     location ~ ^/api/(song|video) {
+        # Handle CORS preflight first
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
@@ -632,13 +665,22 @@ server {
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
-
-        if ($request_method = OPTIONS) { return 204; }
     }
 
     # ── Route 3: Baaki sab (auth, Google OAuth, health, etc.) ─────────────────
     location / {
+        # Handle CORS preflight first — before proxy_pass
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
@@ -668,14 +710,10 @@ server {
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) { return 204; }
-
-        proxy_buffering             off;
-        proxy_cache                 off;
-        proxy_read_timeout          3600s;
-        proxy_send_timeout          3600s;
-        proxy_request_buffering     off;
-        chunked_transfer_encoding   on;
+        # Standard timeouts for JSON API (not streaming)
+        proxy_connect_timeout   10s;
+        proxy_read_timeout      60s;
+        proxy_send_timeout      60s;
     }
 }
 ```
@@ -990,11 +1028,14 @@ server {
     # ── Маршрут 1: Байты аудио/видео — без буферизации ────────────────────────
     location ~ ^/api/stream/ {
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_buffering             off;
         proxy_cache                 off;
@@ -1006,12 +1047,24 @@ server {
 
     # ── Маршрут 2: Song & Video — перезапись URL стрима ───────────────────────
     location ~ ^/api/(song|video) {
+        # Handle CORS preflight first
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -1027,22 +1080,40 @@ server {
         # Перезапись Location после Google OAuth
         proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.ru/;
 
+        # Strip backend CORS headers to prevent duplicates
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
-
-        if ($request_method = OPTIONS) { return 204; }
     }
 
     # ── Маршрут 3: Всё остальное (auth, Google OAuth, health и др.) ───────────
     location / {
+        # Handle CORS preflight first — before proxy_pass
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -1051,19 +1122,23 @@ server {
         # Перезапись Location после Google OAuth
         proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.ru/;
 
+        # Strip backend CORS headers to prevent duplicates
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) { return 204; }
-
-        proxy_buffering             off;
-        proxy_cache                 off;
-        proxy_read_timeout          3600s;
-        proxy_send_timeout          3600s;
-        proxy_request_buffering     off;
-        chunked_transfer_encoding   on;
+        # Standard timeouts for JSON API (not streaming)
+        proxy_connect_timeout   10s;
+        proxy_read_timeout      60s;
+        proxy_send_timeout      60s;
     }
 }
 ```
@@ -1366,11 +1441,14 @@ server {
     # ── Route 1: Audio/Video stream bytes ─────────────────────────────────────
     location ~ ^/api/stream/ {
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_buffering             off;
         proxy_cache                 off;
@@ -1382,12 +1460,24 @@ server {
 
     # ── Route 2: Song & Video — stream URL rewrite ────────────────────────────
     location ~ ^/api/(song|video) {
+        # Handle CORS preflight first
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -1401,22 +1491,40 @@ server {
 
         proxy_redirect          https://api.babiesiq.tech/ https://api.yenemusic.com/;
 
+        # Strip backend CORS headers to prevent duplicates
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
-
-        if ($request_method = OPTIONS) { return 204; }
     }
 
     # ── Route 3: ሌሎች (auth, Google OAuth, health, ወዘተ) ───────────────────────
     location / {
+        # Handle CORS preflight first — before proxy_pass
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin      $http_origin always;
+            add_header Access-Control-Allow-Credentials true always;
+            add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
+            return 204;
+        }
+
         proxy_pass              https://api.babiesiq.tech;
+        proxy_ssl_server_name   on;
+        proxy_ssl_name          api.babiesiq.tech;
         proxy_http_version      1.1;
         proxy_set_header        Host              api.babiesiq.tech;
         proxy_set_header        X-Real-IP         $remote_addr;
         proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
@@ -1424,19 +1532,23 @@ server {
 
         proxy_redirect          https://api.babiesiq.tech/ https://api.yenemusic.com/;
 
+        # Strip backend CORS headers to prevent duplicates
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Access-Control-Allow-Credentials;
+        proxy_hide_header Access-Control-Allow-Methods;
+        proxy_hide_header Access-Control-Allow-Headers;
+        proxy_hide_header Access-Control-Expose-Headers;
+        proxy_hide_header Access-Control-Max-Age;
+
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        if ($request_method = OPTIONS) { return 204; }
-
-        proxy_buffering             off;
-        proxy_cache                 off;
-        proxy_read_timeout          3600s;
-        proxy_send_timeout          3600s;
-        proxy_request_buffering     off;
-        chunked_transfer_encoding   on;
+        # Standard timeouts for JSON API (not streaming)
+        proxy_connect_timeout   10s;
+        proxy_read_timeout      60s;
+        proxy_send_timeout      60s;
     }
 }
 ```
