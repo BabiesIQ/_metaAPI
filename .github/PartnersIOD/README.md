@@ -131,8 +131,6 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/api.mymusic.com/privkey.pem;
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_session_cache   shared:SSL:10m;
-
-    # ── Route 1: Audio/Video stream bytes — zero-buffer pass-through ──────────
     location ~ ^/api/stream/ {
         proxy_pass              https://api.babiesiq.tech;
         proxy_ssl_server_name   on;
@@ -144,7 +142,6 @@ server {
         proxy_set_header        X-Forwarded-Proto $scheme;
         proxy_set_header        X-Forwarded-Host  $host;
         proxy_pass_request_headers on;
-
         proxy_buffering             off;
         proxy_cache                 off;
         proxy_read_timeout          3600s;
@@ -153,9 +150,7 @@ server {
         chunked_transfer_encoding   on;
     }
 
-    # ── Route 2: Song & Video — rewrite stream URL to your domain ─────────────
     location ~ ^/api/(song|video) {
-        # Handle CORS preflight first
         if ($request_method = OPTIONS) {
             add_header Access-Control-Allow-Origin      $http_origin always;
             add_header Access-Control-Allow-Credentials true always;
@@ -177,38 +172,24 @@ server {
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
         proxy_cookie_domain     api.babiesiq.tech api.mymusic.com;
-
-        # Disable compression so sub_filter can read the JSON body
         proxy_set_header        Accept-Encoding "";
-
-        # Rewrite api.babiesiq.tech → your domain in the JSON stream URL
         sub_filter              'api.babiesiq.tech' 'api.mymusic.com';
         sub_filter_once         off;
         sub_filter_types        application/json text/plain;
-
-        # Rewrite Location header (Google OAuth redirects back to your domain)
         proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.com/;
-
-        # Strip the backend's CORS headers before adding our own.
-        # Without this, both Nginx (add_header) AND the backend set
-        # Access-Control-Allow-Origin → duplicate headers → Chrome/mobile
-        # throws "Failed to fetch" and Google login silently breaks.
         proxy_hide_header Access-Control-Allow-Origin;
         proxy_hide_header Access-Control-Allow-Credentials;
         proxy_hide_header Access-Control-Allow-Methods;
         proxy_hide_header Access-Control-Allow-Headers;
         proxy_hide_header Access-Control-Expose-Headers;
         proxy_hide_header Access-Control-Max-Age;
-
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
     }
 
-    # ── Route 3: Everything else (auth, Google OAuth, health, etc.) ───────────
     location / {
-        # Handle CORS preflight first — before proxy_pass
         if ($request_method = OPTIONS) {
             add_header Access-Control-Allow-Origin      $http_origin always;
             add_header Access-Control-Allow-Credentials true always;
@@ -230,27 +211,18 @@ server {
         proxy_pass_request_body    on;
         proxy_pass_header       Set-Cookie;
         proxy_cookie_domain     api.babiesiq.tech api.mymusic.com;
-
-        # Rewrite Location header — after Google login, user lands on your domain
         proxy_redirect          https://api.babiesiq.tech/ https://api.mymusic.com/;
-
-        # Strip the backend's CORS headers before adding our own.
-        # Without this, both Nginx (add_header) AND the backend set
-        # Access-Control-Allow-Origin → duplicate headers → Chrome/mobile
-        # throws "Failed to fetch" and Google login silently breaks.
         proxy_hide_header Access-Control-Allow-Origin;
         proxy_hide_header Access-Control-Allow-Credentials;
         proxy_hide_header Access-Control-Allow-Methods;
         proxy_hide_header Access-Control-Allow-Headers;
         proxy_hide_header Access-Control-Expose-Headers;
         proxy_hide_header Access-Control-Max-Age;
-
         add_header Access-Control-Allow-Origin      $http_origin always;
         add_header Access-Control-Allow-Credentials true always;
         add_header Access-Control-Allow-Methods     "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers     "Authorization, Content-Type, X-API-Key, X-Request-ID, X-Requested-With" always;
 
-        # Standard timeouts for JSON API (not streaming)
         proxy_connect_timeout   10s;
         proxy_read_timeout      60s;
         proxy_send_timeout      60s;
