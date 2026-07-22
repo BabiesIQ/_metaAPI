@@ -251,15 +251,15 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 app.set('trust proxy', true);
 
-const BACKEND       = 'https://api.babiesiq.tech';
-const YOUR_DOMAIN   = 'api.mymusic.com';          // ← change this
+const BACKEND = 'https://api.babiesiq.tech';
+const YOUR_DOMAIN = 'api.mymusic.com';
 const SONG_VIDEO_RE = /^\/api\/(song|video)/;
 
 app.use('/', createProxyMiddleware({
-  target:            BACKEND,
-  changeOrigin:      true,
-  secure:            true,
-  selfHandleResponse: true,   // we write the response manually so we can rewrite bodies
+  target: BACKEND,
+  changeOrigin: true,
+  secure: true,
+  selfHandleResponse: true,
   cookieDomainRewrite: { 'api.babiesiq.tech': YOUR_DOMAIN },
 
   on: {
@@ -268,11 +268,8 @@ app.use('/', createProxyMiddleware({
       proxyReq.setHeader('X-Real-IP', ip);
       proxyReq.setHeader('X-Forwarded-For', ip);
       proxyReq.setHeader('X-Forwarded-Proto', 'https');
-      // Tell the backend which proxy host the request came through.
-      // Used by the OAuth flow to identify the partner when Referer is absent.
       proxyReq.setHeader('X-Forwarded-Host', req.headers.host || YOUR_DOMAIN);
 
-      // Remove Accept-Encoding on song/video so we get plain JSON (not gzip)
       if (SONG_VIDEO_RE.test(req.url)) {
         proxyReq.removeHeader('Accept-Encoding');
       }
@@ -281,35 +278,26 @@ app.use('/', createProxyMiddleware({
     proxyRes: (proxyRes, req, res) => {
       const userHost = req.headers.host || YOUR_DOMAIN;
 
-      // ── CORS headers ──────────────────────────────────────────────────────
       const origin = req.headers['origin'] || '*';
-      res.setHeader('Access-Control-Allow-Origin',      origin);
+      res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
 
-      // ── Rewrite Location header ────────────────────────────────────────────
-      // Only rewrite if the Location starts with the backend URL (safe prefix match).
-      // Avoids accidentally corrupting the Google OAuth URL (which may contain
-      // api.babiesiq.tech URL-encoded inside a query param).
       const location = proxyRes.headers['location'];
       if (location && location.startsWith('https://api.babiesiq.tech')) {
         res.setHeader('Location', `https://${userHost}` + location.slice('https://api.babiesiq.tech'.length));
-        delete proxyRes.headers['location'];
+        delete proxyReq.headers['location'];
       }
 
-      // Copy remaining headers (including Set-Cookie — forwarded as-is so the
-      // browser stores the session cookie on your proxy domain, not babiesiq.tech)
       Object.entries(proxyRes.headers).forEach(([k, v]) => res.setHeader(k, v));
       res.statusCode = proxyRes.statusCode;
 
-      // ── Song / Video: buffer body and replace stream URL ──────────────────
       if (SONG_VIDEO_RE.test(req.url)) {
         const chunks = [];
         proxyRes.on('data', chunk => chunks.push(chunk));
         proxyRes.on('end', () => {
           let body = Buffer.concat(chunks).toString('utf8');
-          // Replace backend domain in the "stream" URL with your domain
           body = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userHost}`);
           res.setHeader('Content-Length', Buffer.byteLength(body));
           res.end(body);
@@ -317,7 +305,6 @@ app.use('/', createProxyMiddleware({
         return;
       }
 
-      // ── All other routes: pipe response directly (streaming safe) ─────────
       proxyRes.pipe(res);
     },
 
@@ -346,64 +333,58 @@ pm2 save
 export default {
   async fetch(request) {
     const incomingUrl = new URL(request.url);
-    const userDomain  = incomingUrl.hostname;    // e.g. api.mymusic.com
+    const userDomain = incomingUrl.hostname;
     incomingUrl.hostname = 'api.babiesiq.tech';
 
-    // ── CORS preflight ────────────────────────────────────────────────────────
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
         headers: {
-          'Access-Control-Allow-Origin':      request.headers.get('Origin') || '*',
+          'Access-Control-Allow-Origin': request.headers.get('Origin') || '*',
           'Access-Control-Allow-Credentials': 'true',
-          'Access-Control-Allow-Methods':     'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers':     'Authorization, Content-Type, X-API-Key, X-Request-ID',
-          'Access-Control-Max-Age':           '86400',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Authorization, Content-Type, X-API-Key, X-Request-ID',
+          'Access-Control-Max-Age': '86400',
         },
       });
     }
 
-    // ── Forward request ────────────────────────────────────────────────────────
     const proxyReq = new Request(incomingUrl.toString(), {
-      method:  request.method,
+      method: request.method,
       headers: request.headers,
-      body:    ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-      redirect: 'manual',   // intercept 302 so we can rewrite Location header
+      body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
+      redirect: 'manual',
     });
 
     const response = await fetch(proxyReq);
 
-    // ── Build response headers ─────────────────────────────────────────────────
     const newHeaders = new Headers(response.headers);
-    newHeaders.set('Access-Control-Allow-Origin',      request.headers.get('Origin') || '*');
+    newHeaders.set('Access-Control-Allow-Origin', request.headers.get('Origin') || '*');
     newHeaders.set('Access-Control-Allow-Credentials', 'true');
-    newHeaders.set('Access-Control-Allow-Methods',     'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    newHeaders.set('Access-Control-Allow-Headers',     'Authorization, Content-Type, X-API-Key, X-Request-ID');
+    newHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    newHeaders.set('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-API-Key, X-Request-ID');
 
-    // ── Rewrite Location header (Google OAuth redirect after login) ────────────
     const location = response.headers.get('location');
     if (location) {
       newHeaders.set('location', location.replace('https://api.babiesiq.tech', `https://${userDomain}`));
     }
 
-    // ── Song / Video: rewrite stream URL in JSON body ──────────────────────────
     const path = incomingUrl.pathname;
     if (/^\/api\/(song|video)/.test(path)) {
-      const body    = await response.text();
+      const body = await response.text();
       const rewritten = body.replace(/https:\/\/api\.babiesiq\.tech/g, `https://${userDomain}`);
       newHeaders.set('Content-Length', new TextEncoder().encode(rewritten).length.toString());
       return new Response(rewritten, {
-        status:     response.status,
+        status: response.status,
         statusText: response.statusText,
-        headers:    newHeaders,
+        headers: newHeaders,
       });
     }
 
-    // ── All other routes: stream response as-is ────────────────────────────────
     return new Response(response.body, {
-      status:     response.status,
+      status: response.status,
       statusText: response.statusText,
-      headers:    newHeaders,
+      headers: newHeaders,
     });
   }
 };
