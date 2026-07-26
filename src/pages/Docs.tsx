@@ -595,6 +595,8 @@ export function DocsPage() {
       { id: "rate-limits", label: t("docs.nav_rate_limits"), icon: Gauge },
       { id: "eq-presets", label: t("docs.nav_eq_presets"), icon: Sliders },
       { id: "code-examples", label: t("docs.nav_code_examples"), icon: Music2 },
+      { id: "sdk", label: t("docs.nav_sdk"), icon: Package },
+      { id: "cli", label: t("docs.nav_cli"), icon: Terminal },
       { id: "try-it", label: t("docs.nav_try_it_live"), icon: PlayCircle },
     ],
     [t],
