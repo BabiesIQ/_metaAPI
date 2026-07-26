@@ -247,7 +247,9 @@ export function changePassword(current: string, newPwd: string) {
 // ── User — PROTECTED ──────────────────────────────────────────────────────────
 
 export function getMe() {
-  return protectedApiClient<MeResponse>("/api/v1/me");
+  // Use authApiClient (no 401-redirect) so unauthenticated users on public
+  // pages aren't forcibly sent to /login during the session check.
+  return authApiClient<MeResponse>("/api/v1/me");
 }
 
 export function updateProfile(formData: FormData) {
