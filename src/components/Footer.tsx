@@ -12,18 +12,21 @@ const SOCIAL_LINKS = [
     label: "GitHub",
     icon: SiGithub,
     hoverClass: "social-icon-github",
+    iconClass: "w-[17px] h-[17px] -translate-y-px",
   },
   {
     href: "https://x.com",
     label: "X / Twitter",
     icon: SiX,
     hoverClass: "social-icon-x",
+    iconClass: "w-3.5 h-3.5",
   },
   {
     href: "https://youtube.com",
     label: "YouTube",
     icon: SiYoutube,
     hoverClass: "social-icon-youtube",
+    iconClass: "w-3.5 h-3.5",
   },
 ];
 
@@ -271,7 +274,7 @@ export function Footer() {
                 ))}
               </div>
               <div className="flex items-center gap-3">
-                {SOCIAL_LINKS.map(({ href, label, icon: Icon, hoverClass }) => (
+                {SOCIAL_LINKS.map(({ href, label, icon: Icon, hoverClass, iconClass }) => (
                   <motion.a
                     key={label}
                     href={href}
@@ -283,7 +286,7 @@ export function Footer() {
                     className={`w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground transition-all duration-200 hover:bg-primary/10 ${hoverClass}`}
                     data-ocid={`footer.social.${label.toLowerCase().replace(/\s.*/, "")}.link`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className={iconClass} />
                   </motion.a>
                 ))}
               </div>
