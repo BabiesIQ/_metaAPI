@@ -152,41 +152,34 @@ function NewsletterStrip() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1.5"
             data-ocid="back_to_top.wrapper"
           >
-            {/* Left glow beam */}
-            <div
-              className="h-[2px] w-14 rounded-full"
-              style={{
-                background: "linear-gradient(to right, transparent, rgba(99,102,241,0.8))",
-                boxShadow: "0 0 10px 3px rgba(99,102,241,0.35)",
-              }}
-            />
-
-            {/* Main pill button */}
+            {/* Bare arrow — no box, no pill, no border */}
             <motion.button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               aria-label="Back to top"
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.93 }}
+              whileHover={{ scale: 1.15, y: -2 }}
+              whileTap={{ scale: 0.9 }}
               data-ocid="back_to_top.button"
-              className="flex items-center justify-center px-6 py-2.5 rounded-full gradient-primary text-white"
-              style={{
-                boxShadow:
-                  "0 0 28px 8px rgba(99,102,241,0.5), 0 4px 16px rgba(99,102,241,0.3)",
-              }}
+              className="flex items-center justify-center bg-transparent border-none p-0 cursor-pointer"
+              style={{ lineHeight: 1 }}
             >
-              <ArrowUp className="w-4 h-4" />
+              <ArrowUp className="w-5 h-5" style={{ color: "rgba(160,150,255,0.9)" }} />
             </motion.button>
 
-            {/* Right glow beam */}
+            {/* Water-drop puddle glow line */}
             <div
-              className="h-[2px] w-14 rounded-full"
               style={{
-                background: "linear-gradient(to left, transparent, rgba(139,92,246,0.8))",
-                boxShadow: "0 0 10px 3px rgba(139,92,246,0.35)",
+                width: 110,
+                height: 3,
+                borderRadius: 999,
+                background:
+                  "linear-gradient(90deg, transparent 0%, rgba(120,100,255,0.7) 30%, rgba(160,120,255,0.9) 50%, rgba(120,100,255,0.7) 70%, transparent 100%)",
+                boxShadow:
+                  "0 0 18px 6px rgba(120,100,255,0.35), 0 0 40px 12px rgba(120,100,255,0.12)",
+                filter: "blur(0.4px)",
               }}
             />
           </motion.div>
