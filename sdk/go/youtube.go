@@ -463,25 +463,80 @@ func (c *Client) ytRelated(ctx context.Context, videoID string, limit int) ([]Su
 		if !ok {
 			continue
 		}
-		cvr, ok := m["compactVideoRenderer"].(map[string]any)
-		if !ok {
-			// skip ads, mixes, playlists
+
+		// YouTube now returns lockupViewModel (newer API) or compactVideoRenderer (older)
+		var vid, title, channel, dur string
+
+		if lvm, ok := m["lockupViewModel"].(map[string]any); ok {
+			// ── New format: lockupViewModel ──────────────────────────
+			if lvm["contentType"] != "LOCKUP_CONTENT_TYPE_VIDEO" {
+				continue
+			}
+			vid = digStr(lvm, "contentId")
+
+			// title: metadata.lockupMetadataViewModel.title.content
+			title = digStr(lvm, "metadata", "lockupMetadataViewModel", "title", "content")
+
+			// channel: metadata.lockupMetadataViewModel.image.decoratedAvatarViewModel.a11yLabel
+			// label is "Go to channel <Name>" — strip the prefix
+			label := digStr(lvm, "metadata", "lockupMetadataViewModel", "image", "decoratedAvatarViewModel", "a11yLabel")
+			channel = strings.TrimPrefix(label, "Go to channel ")
+
+			// duration from overlay badge text
+			if ovs := digArr(lvm, "contentImage", "thumbnailViewModel", "overlays"); len(ovs) > 0 {
+				for _, ov := range ovs {
+					if t := digStr(ov, "thumbnailBottomOverlayViewModel", "badges", "0", "thumbnailBadgeViewModel", "text"); t != "" {
+						dur = t
+						break
+					}
+				}
+				// fallback: iterate badges array manually
+				if dur == "" {
+					for _, ov := range ovs {
+						om, ok := ov.(map[string]any)
+						if !ok {
+							continue
+						}
+						bov, ok := om["thumbnailBottomOverlayViewModel"].(map[string]any)
+						if !ok {
+							continue
+						}
+						badges, ok := bov["badges"].([]any)
+						if !ok || len(badges) == 0 {
+							continue
+						}
+						badge, ok := badges[0].(map[string]any)
+						if !ok {
+							continue
+						}
+						if bvm, ok := badge["thumbnailBadgeViewModel"].(map[string]any); ok {
+							dur, _ = bvm["text"].(string)
+						}
+					}
+				}
+			}
+
+		} else if cvr, ok := m["compactVideoRenderer"].(map[string]any); ok {
+			// ── Legacy format: compactVideoRenderer ──────────────────
+			vid = digStr(cvr, "videoId")
+			title = textRuns(cvr, "title")
+			channel = textRuns(cvr, "shortBylineText")
+			dur = textRuns(cvr, "lengthText")
+		} else {
+			continue // ad, mix, playlist — skip
+		}
+
+		if vid == "" || title == "" {
 			continue
 		}
-		vid := digStr(cvr, "videoId")
-		if vid == "" {
-			continue
-		}
-		s := Suggestion{
+		suggestions = append(suggestions, Suggestion{
 			VideoID:   vid,
-			Title:     textRuns(cvr, "title"),
-			Duration:  textRuns(cvr, "lengthText"),
-			ViewCount: textRuns(cvr, "shortViewCountText"),
-			Channel:   textRuns(cvr, "shortBylineText"),
+			Title:     title,
+			Duration:  dur,
+			Channel:   channel,
 			URL:       ytWatchURL(vid),
 			Thumbnail: ytThumbURL(vid),
-		}
-		suggestions = append(suggestions, s)
+		})
 		if len(suggestions) >= limit {
 			return suggestions, nil
 		}
