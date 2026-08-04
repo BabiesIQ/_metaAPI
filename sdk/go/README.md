@@ -2,7 +2,7 @@
 
 Official Go SDK for the [BabiesIQ API](https://babiesiq.tech).
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/BabiesIQ/biq-api-go.svg)](https://pkg.go.dev/github.com/BabiesIQ/biq-api-go)
+[![Go Reference](https://pkg.go.dev/badge/github.com/BabiesIQ/_metaAPI/sdk/go.svg)](https://pkg.go.dev/github.com/BabiesIQ/_metaAPI/sdk/go)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -10,20 +10,7 @@ Official Go SDK for the [BabiesIQ API](https://babiesiq.tech).
 ## Installation
 
 ```bash
-go get github.com/BabiesIQ/biq-api-go
-```
-
-## Manual Download
-
-You can also clone or download this SDK directly from GitHub:
-
-**→ <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go>**
-
-```bash
-# Clone just the SDK folder (sparse checkout)
-git clone --filter=blob:none --sparse https://github.com/BabiesIQ/_metaAPI.git
-cd web
-git sparse-checkout set sdk/go
+go get github.com/BabiesIQ/_metaAPI/sdk/go@latest
 ```
 
 ---
@@ -38,14 +25,14 @@ import (
 	"fmt"
 	"log"
 
-	babiesiq "github.com/BabiesIQ/biq-api-go"
+	babiesiq "github.com/BabiesIQ/_metaAPI/sdk/go"
 )
 
 func main() {
 	// ── SDK info ───────────────────────────────
-	fmt.Println(babiesiq.Metadata.Name)     // biq-api
-	fmt.Println(babiesiq.Metadata.Version)  // 2.0.0
-	fmt.Println(babiesiq.Metadata.Docs)     // https://babiesiq.tech/docs
+	fmt.Println(babiesiq.Metadata.Name)    // biq-api
+	fmt.Println(babiesiq.Metadata.Version) // 2.0.0
+	fmt.Println(babiesiq.Metadata.Docs)    // https://babiesiq.tech/docs
 
 	// ── Create client ──────────────────────────
 	client, err := babiesiq.New("biq_YOUR_KEY")
@@ -97,7 +84,9 @@ fmt.Println(song.StreamURL, song.Title)
 ### `client.Videos.Search(ctx, query, opts)`
 
 ```go
-video, err := client.Videos.Search(ctx, "Gangnam Style", nil)
+video, err := client.Videos.Search(ctx, "Gangnam Style", &babiesiq.VideoOptions{
+	Quality: "720p",
+})
 fmt.Println(video.StreamURL, video.Quality)
 ```
 
@@ -105,6 +94,9 @@ fmt.Println(video.StreamURL, video.Quality)
 
 ```go
 results, err := client.Search.Query(ctx, "Taylor Swift")
+for _, r := range results {
+	fmt.Println(r.Type, r.Title)
+}
 ```
 
 ### `client.Thumbnails.Get(ctx, videoID, design)`
@@ -116,20 +108,33 @@ fmt.Println(thumb.URL)
 
 ---
 
+## Custom Configuration
+
+```go
+client, err := babiesiq.New("biq_YOUR_KEY", babiesiq.Config{
+	MaxRetries: 3,
+	Timeout:    15 * time.Second,
+})
+```
+
+---
+
 ## Error Handling
 
 ```go
-import babiesiq "github.com/BabiesIQ/biq-api-go"
-
 song, err := client.Songs.Search(ctx, "test", nil)
 if err != nil {
 	switch e := err.(type) {
 	case *babiesiq.RateLimitError:
-		fmt.Println("Rate limited")
+		fmt.Println("Rate limited:", e.Message)
 	case *babiesiq.AuthError:
 		fmt.Println("Invalid API key:", e.Message)
+	case *babiesiq.NotFoundError:
+		fmt.Println("Not found:", e.Message)
 	case *babiesiq.APIError:
 		fmt.Printf("API error %d: %s\n", e.Status, e.Message)
+	case *babiesiq.NetworkError:
+		fmt.Println("Network error:", e.Err)
 	default:
 		fmt.Println("Error:", err)
 	}
@@ -140,12 +145,11 @@ if err != nil {
 
 ## Links
 
-| Resource | URL |
-|----------|-----|
-| API Docs | <https://babiesiq.tech/docs> |
-| pkg.go.dev | <https://pkg.go.dev/github.com/BabiesIQ/biq-api-go> |
-| Source | <https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go> |
-| Dashboard | <https://babiesiq.tech/panel/api-keys> |
+| Resource  | URL                                          |
+|-----------|----------------------------------------------|
+| API Docs  | <https://babiesiq.tech/docs>                 |
+| pkg.go.dev | <https://pkg.go.dev/github.com/BabiesIQ/_metaAPI/sdk/go> |
+| Dashboard | <https://babiesiq.tech/panel/api-keys>       |
 
 ## License
 
