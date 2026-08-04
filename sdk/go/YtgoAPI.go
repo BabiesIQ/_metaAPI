@@ -12,7 +12,7 @@
 //	    log.Fatal(err)
 //	}
 //	fmt.Println(song.StreamURL)
-package babiesiq
+package YtgoAPI
 
 import (
 	"bytes"
