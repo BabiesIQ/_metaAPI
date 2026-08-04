@@ -1,17 +1,20 @@
 // Package babiesiq provides the official Go SDK for the BabiesIQ API.
 //
-// Usage:
+// # Quick Start
 //
 //	client, err := babiesiq.New("biq_your_api_key")
 //	if err != nil {
 //	    log.Fatal(err)
 //	}
 //
+//	// Search a song (BabiesIQ API)
 //	song, err := client.Songs.Search(ctx, "Shape of You", nil)
-//	if err != nil {
-//	    log.Fatal(err)
-//	}
-//	fmt.Println(song.StreamURL)
+//
+//	// Smart YouTube search
+//	results, err := client.Search.Query(ctx, "Shape of You", 10)
+//
+//	// Autoplay suggestions for a video
+//	related, err := client.Suggestions.ForVideo(ctx, "dQw4w9WgXcQ", 10)
 package babiesiq
 
 import (
@@ -33,7 +36,8 @@ const (
 )
 
 // Metadata contains SDK package information.
-// Usage: fmt.Println(babiesiq.Metadata.Version)
+//
+//	fmt.Println(babiesiq.Metadata.Version) // "2.0.0"
 var Metadata = struct {
 	Name     string
 	Version  string
@@ -48,31 +52,42 @@ var Metadata = struct {
 	Author:   "BabiesIQ Team",
 	Homepage: "https://babiesiq.tech",
 	Docs:     "https://babiesiq.tech/docs",
-	Source:   "https://github.com/BabiesIQ/_metaAPI/sdk/go",
+	Source:   "https://github.com/BabiesIQ/_metaAPI/tree/main/sdk/go",
 	Language: "go",
 }
 
+// ─── Client ───────────────────────────────────────────────────────────────────
+
 // Client is the BabiesIQ API client.
+// Create one with New() and reuse it across requests.
 type Client struct {
 	apiKey     string
 	baseURL    string
 	maxRetries int
 	httpClient *http.Client
 
+	// BabiesIQ API services
 	Songs      *SongsService
 	Videos     *VideosService
-	Search     *SearchService
 	Thumbnails *ThumbnailsService
+
+	// YouTube direct services (no API key required)
+	Search      *SearchService
+	Suggestions *SuggestionsService
 }
 
 // Config holds optional client configuration.
 type Config struct {
-	BaseURL    string
+	// BaseURL overrides the BabiesIQ API base URL (default: https://api.babiesiq.tech).
+	BaseURL string
+	// MaxRetries sets the number of retries on transient 5xx errors (default: 2).
 	MaxRetries int
-	Timeout    time.Duration
+	// Timeout sets the HTTP client timeout (default: 30s).
+	Timeout time.Duration
 }
 
 // New creates a new BabiesIQ API client.
+// apiKey must be a valid BabiesIQ API key (obtain from https://babiesiq.tech/panel/api-keys).
 func New(apiKey string, cfgs ...Config) (*Client, error) {
 	if apiKey == "" {
 		return nil, &AuthError{Message: "apiKey is required"}
@@ -103,13 +118,13 @@ func New(apiKey string, cfgs ...Config) (*Client, error) {
 	}
 	c.Songs = &SongsService{client: c}
 	c.Videos = &VideosService{client: c}
-	c.Search = &SearchService{client: c}
 	c.Thumbnails = &ThumbnailsService{client: c}
-
+	c.Search = &SearchService{client: c}
+	c.Suggestions = &SuggestionsService{client: c}
 	return c, nil
 }
 
-// ─── Internal HTTP helpers ────────────────────────────────────────────────────
+// ─── BabiesIQ API HTTP helpers ────────────────────────────────────────────────
 
 type apiResponse struct {
 	Success bool            `json:"success"`
@@ -117,8 +132,7 @@ type apiResponse struct {
 	Error   *string         `json:"error"`
 }
 
-// request performs an HTTP call with automatic retry on transient failures.
-// The bodyBytes slice is re-used across retries, avoiding consumed-reader issues.
+// request performs an authenticated BabiesIQ API call with automatic retry on transient 5xx errors.
 func (c *Client) request(ctx context.Context, method, path string, params url.Values, bodyBytes []byte) (json.RawMessage, error) {
 	u, err := url.Parse(c.baseURL + path)
 	if err != nil {
@@ -139,7 +153,6 @@ func (c *Client) request(ctx context.Context, method, path string, params url.Va
 			}
 		}
 
-		// Rebuild reader from bytes each attempt — avoids consumed-reader bug.
 		var bodyReader io.Reader
 		if len(bodyBytes) > 0 {
 			bodyReader = bytes.NewReader(bodyBytes)
@@ -160,7 +173,6 @@ func (c *Client) request(ctx context.Context, method, path string, params url.Va
 			lastErr = &NetworkError{Err: err}
 			continue
 		}
-
 		body, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		if err != nil {
@@ -176,12 +188,10 @@ func (c *Client) request(ctx context.Context, method, path string, params url.Va
 		case http.StatusNotFound:
 			return nil, &NotFoundError{Message: "resource not found"}
 		}
-
 		if resp.StatusCode >= 500 {
 			lastErr = &APIError{Message: string(body), Status: resp.StatusCode}
-			continue // retry on 5xx
+			continue
 		}
-
 		if resp.StatusCode >= 400 {
 			var ar apiResponse
 			if json.Unmarshal(body, &ar) == nil && ar.Error != nil {
@@ -219,7 +229,7 @@ func (c *Client) requestJSON(ctx context.Context, method, path string, params ur
 	return c.request(ctx, method, path, params, bodyBytes)
 }
 
-// ─── Response types ───────────────────────────────────────────────────────────
+// ─── BabiesIQ response types ──────────────────────────────────────────────────
 
 // Song is returned by Songs.Search.
 type Song struct {
@@ -240,16 +250,6 @@ type Video struct {
 	Thumbnail string `json:"thumbnail"`
 }
 
-// SearchResult is a single item returned by Search.Query.
-type SearchResult struct {
-	Type      string `json:"type"`
-	Title     string `json:"title"`
-	Artist    string `json:"artist,omitempty"`
-	Channel   string `json:"channel,omitempty"`
-	StreamURL string `json:"stream_url"`
-	Thumbnail string `json:"thumbnail"`
-}
-
 // ThumbnailResult is returned by Thumbnails.Get.
 type ThumbnailResult struct {
 	URL    string `json:"url"`
@@ -257,11 +257,9 @@ type ThumbnailResult struct {
 	Height int    `json:"height"`
 }
 
-// ─── Options ──────────────────────────────────────────────────────────────────
-
 // SongOptions holds optional parameters for Songs.Search.
 type SongOptions struct {
-	EQ       string // e.g. "bass_boost", "nightcore"
+	EQ       string // equalizer preset, e.g. "bass_boost", "nightcore"
 	Download bool   // request a direct download URL
 }
 
@@ -270,12 +268,12 @@ type VideoOptions struct {
 	Quality string // e.g. "720p", "1080p"
 }
 
-// ─── Services ─────────────────────────────────────────────────────────────────
+// ─── Songs service ────────────────────────────────────────────────────────────
 
-// SongsService handles song-related API calls.
+// SongsService handles BabiesIQ song lookups.
 type SongsService struct{ client *Client }
 
-// Search finds the best matching song for the given query.
+// Search finds the best matching song for the given query via the BabiesIQ API.
 func (s *SongsService) Search(ctx context.Context, query string, opts *SongOptions) (*Song, error) {
 	params := url.Values{"q": {query}}
 	if opts != nil {
@@ -294,10 +292,12 @@ func (s *SongsService) Search(ctx context.Context, query string, opts *SongOptio
 	return &result, json.Unmarshal(data, &result)
 }
 
-// VideosService handles video-related API calls.
+// ─── Videos service ───────────────────────────────────────────────────────────
+
+// VideosService handles BabiesIQ video lookups.
 type VideosService struct{ client *Client }
 
-// Search finds the best matching video for the given query.
+// Search finds the best matching video for the given query via the BabiesIQ API.
 func (s *VideosService) Search(ctx context.Context, query string, opts *VideoOptions) (*Video, error) {
 	params := url.Values{"q": {query}}
 	if opts != nil && opts.Quality != "" {
@@ -311,20 +311,9 @@ func (s *VideosService) Search(ctx context.Context, query string, opts *VideoOpt
 	return &result, json.Unmarshal(data, &result)
 }
 
-// SearchService handles cross-type search.
-type SearchService struct{ client *Client }
+// ─── Thumbnails service ───────────────────────────────────────────────────────
 
-// Query searches across all content types for the given query string.
-func (s *SearchService) Query(ctx context.Context, q string) ([]SearchResult, error) {
-	data, err := s.client.requestJSON(ctx, http.MethodPost, "/api/search", nil, map[string]string{"q": q})
-	if err != nil {
-		return nil, err
-	}
-	var results []SearchResult
-	return results, json.Unmarshal(data, &results)
-}
-
-// ThumbnailsService handles YouTube thumbnail retrieval.
+// ThumbnailsService handles YouTube thumbnail retrieval via the BabiesIQ API.
 type ThumbnailsService struct{ client *Client }
 
 // Get retrieves a YouTube thumbnail for the given video ID.
@@ -342,7 +331,7 @@ func (s *ThumbnailsService) Get(ctx context.Context, videoID string, design stri
 	return &result, json.Unmarshal(data, &result)
 }
 
-// ─── Errors ───────────────────────────────────────────────────────────────────
+// ─── Error types ──────────────────────────────────────────────────────────────
 
 // AuthError is returned when the API key is missing or invalid.
 type AuthError struct{ Message string }
