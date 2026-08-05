@@ -19,11 +19,17 @@ go get github.com/BabiesIQ/_metaAPI/sdk/go@latest
 
 | Service | Backend | API Key Required | Methods |
 |---|---|---|---|
-| `client.Songs` | BabiesIQ API | ✅ Yes | `Search`, `Download` |
-| `client.Videos` | BabiesIQ API | ✅ Yes | `Search`, `Download` |
+| `client.Songs` | YouTube → BabiesIQ CDN | ✅ Yes | `Search`, `Download` |
+| `client.Videos` | YouTube → BabiesIQ CDN | ✅ Yes | `Search`, `Download` |
 | `client.Thumbnails` | BabiesIQ API | ✅ Yes | `Get` |
 | `client.Search` | YouTube (direct) | ❌ No | `Query`, `GetVideo` |
 | `client.Suggestions` | YouTube (direct) | ❌ No | `ForVideo`, `ForQuery` |
+
+> **How Songs and Videos work internally:**
+> The BabiesIQ API requires a YouTube video ID, not a song name.
+> `Songs.Search` and `Videos.Search` handle this automatically — they first
+> resolve the video ID via YouTube search (or parse it from a URL you pass),
+> then call the BabiesIQ API. You just pass a name or URL.
 
 ---
 
@@ -47,14 +53,14 @@ func main() {
     }
     ctx := context.Background()
 
-    // Search a song — get metadata JSON only
+    // Search by name — returns metadata + CDN stream URL
     song, err := client.Songs.Search(ctx, "Shape of You", nil)
     if err != nil {
         log.Fatal(err)
     }
     fmt.Println("Stream URL:", song.StreamURL)
 
-    // Download a song to disk (polls CDN until ready, then saves)
+    // Download to disk — polls CDN until ready, then saves the file
     result, err := client.Songs.Download(ctx, "Shape of You", "/tmp/song.mp3", nil)
     if err != nil {
         log.Fatal(err)
@@ -68,39 +74,48 @@ func main() {
 
 ## Songs — `client.Songs`
 
-### Search (metadata only)
+### Search (metadata + stream URL)
 
-Returns song metadata and a CDN stream URL. The CDN file may not be ready immediately —
-use `Download` if you need the file on disk.
+Resolves the YouTube video ID first, then calls the BabiesIQ API.
+`query` can be a **song name**, a **YouTube video ID**, or any **YouTube URL**.
 
 ```go
+// By song name
 song, err := client.Songs.Search(ctx, "Blinding Lights", nil)
-fmt.Println(song.Title)      // "Blinding Lights"
-fmt.Println(song.Artist)     // "The Weeknd"
-fmt.Println(song.StreamURL)  // "https://..."
-fmt.Println(song.Duration)   // 200  (seconds)
-fmt.Println(song.Thumbnail)  // "https://..."
 
-// With options
+// By YouTube video ID (skips the YouTube search step)
+song, err := client.Songs.Search(ctx, "H_D7O7qGABs", nil)
+
+// By YouTube URL
+song, err := client.Songs.Search(ctx, "https://youtu.be/H_D7O7qGABs", nil)
+
+fmt.Println(song.Title)      // "The Weeknd - Blinding Lights (Official Video)"
+fmt.Println(song.Artist)     // "The Weeknd"  (YouTube channel)
+fmt.Println(song.StreamURL)  // "https://api.babiesiq.tech/api/stream/..."
+fmt.Println(song.Duration)   // 202  (seconds, from YouTube)
+fmt.Println(song.Thumbnail)  // "https://i.ytimg.com/vi/.../maxresdefault.jpg"
+fmt.Println(song.VideoID)    // "H_D7O7qGABs"
+
+// With EQ preset
 song, err := client.Songs.Search(ctx, "Blinding Lights", &babiesiq.SongOptions{
-    EQ:       "bass_boost", // equalizer preset applied server-side
-    Download: true,         // request a direct download URL
+    EQ: "bass_boost", // "bass_boost", "nightcore", etc.
 })
 ```
 
 **`Song` fields:**
 
-| Field | Type | Description |
-|---|---|---|
-| `Title` | `string` | Song title |
-| `Artist` | `string` | Artist name |
-| `StreamURL` | `string` | CDN stream / download URL |
-| `Duration` | `int` | Duration in seconds |
-| `Thumbnail` | `string` | Cover art URL |
+| Field | Type | Source | Description |
+|---|---|---|---|
+| `Title` | `string` | YouTube | Video / song title |
+| `Artist` | `string` | YouTube | Channel / artist name |
+| `StreamURL` | `string` | BabiesIQ CDN | CDN stream URL |
+| `Duration` | `int` | YouTube | Duration in seconds |
+| `Thumbnail` | `string` | YouTube | Thumbnail URL |
+| `VideoID` | `string` | YouTube | 11-char YouTube video ID used for the lookup |
 
-### Download (save to disk)
+### Download (save to disk with polling)
 
-Calls the API with `download=true`, polls the CDN stream URL every 2 s until it is ready
+Calls the API with `download=true`, polls the CDN every 2 s until it is ready
 (HTTP 200 / 206), then streams the file to `destPath` on disk.
 
 ```go
@@ -108,14 +123,14 @@ result, err := client.Songs.Download(ctx, "Blinding Lights", "/tmp/song.mp3", ni
 if err != nil {
     log.Fatal(err)
 }
-fmt.Println("Saved:", result.FilePath)   // "/tmp/song.mp3"
-fmt.Println("Title:", result.Title)      // from Song metadata
-fmt.Println("Artist:", result.Artist)
+fmt.Println("Saved:", result.FilePath) // "/tmp/song.mp3"
+fmt.Println("Title:", result.Title)
 
 // With custom EQ and a shorter poll timeout
+import "time"
 result, err := client.Songs.Download(ctx, "Blinding Lights", "/tmp/song.mp3", &babiesiq.SongDownloadOptions{
     EQ:      "nightcore",
-    Timeout: 90 * time.Second, // give up after 90 s instead of the 2-minute default
+    Timeout: 90 * time.Second, // default is 2 minutes
 })
 ```
 
@@ -130,12 +145,12 @@ result, err := client.Songs.Download(ctx, "Blinding Lights", "/tmp/song.mp3", &b
 
 | Field | Type | Description |
 |---|---|---|
-| `*Song` | embedded | All Song metadata fields (Title, Artist, StreamURL, …) |
+| `*Song` | embedded | All Song metadata fields |
 | `FilePath` | `string` | Absolute path to the saved file on disk |
 
 **Polling status codes:**
 
-| HTTP status | Meaning | Action |
+| HTTP status | Meaning | SDK action |
 |---|---|---|
 | `200`, `206` | Stream ready | Download immediately |
 | `204`, `404`, `410`, `423` | Not ready yet | Retry after 2 s |
@@ -147,54 +162,58 @@ result, err := client.Songs.Download(ctx, "Blinding Lights", "/tmp/song.mp3", &b
 
 ## Videos — `client.Videos`
 
-### Search (metadata only)
+### Search (metadata + stream URL)
 
 ```go
-video, err := client.Videos.Search(ctx, "Big Buck Bunny", nil)
-fmt.Println(video.Title)     // "Big Buck Bunny"
-fmt.Println(video.Channel)   // "Blender"
-fmt.Println(video.StreamURL) // "https://..."
-fmt.Println(video.Quality)   // "720p"
-fmt.Println(video.Duration)  // 596  (seconds)
-fmt.Println(video.Thumbnail) // "https://..."
+// By video name
+video, err := client.Videos.Search(ctx, "Gangnam Style", nil)
 
-// With quality option
-video, err := client.Videos.Search(ctx, "Big Buck Bunny", &babiesiq.VideoOptions{
-    Quality: "1080p",
+// By YouTube video ID
+video, err := client.Videos.Search(ctx, "9bZkp7q19f0", nil)
+
+// By YouTube URL
+video, err := client.Videos.Search(ctx, "https://youtu.be/9bZkp7q19f0", nil)
+
+fmt.Println(video.Title)     // "PSY - GANGNAM STYLE M/V"
+fmt.Println(video.Channel)   // "officialpsy"
+fmt.Println(video.StreamURL) // "https://api.babiesiq.tech/api/stream/..."
+fmt.Println(video.Duration)  // 253  (seconds)
+fmt.Println(video.Thumbnail) // "https://i.ytimg.com/vi/.../maxresdefault.jpg"
+fmt.Println(video.VideoID)   // "9bZkp7q19f0"
+
+// With quality
+video, err := client.Videos.Search(ctx, "Gangnam Style", &babiesiq.VideoOptions{
+    Quality: "720p",
 })
+fmt.Println(video.Quality)   // "720p"
 ```
 
 **`Video` fields:**
 
-| Field | Type | Description |
-|---|---|---|
-| `Title` | `string` | Video title |
-| `Channel` | `string` | Channel / uploader name |
-| `StreamURL` | `string` | CDN stream / download URL |
-| `Quality` | `string` | Video quality, e.g. `"720p"` |
-| `Duration` | `int` | Duration in seconds |
-| `Thumbnail` | `string` | Thumbnail URL |
+| Field | Type | Source | Description |
+|---|---|---|---|
+| `Title` | `string` | YouTube | Video title |
+| `Channel` | `string` | YouTube | Channel / uploader name |
+| `StreamURL` | `string` | BabiesIQ CDN | CDN stream URL |
+| `Quality` | `string` | Request option | Requested quality, e.g. `"720p"` |
+| `Duration` | `int` | YouTube | Duration in seconds |
+| `Thumbnail` | `string` | YouTube | Thumbnail URL |
+| `VideoID` | `string` | YouTube | 11-char YouTube video ID used for the lookup |
 
-### Download (save to disk)
-
-Calls the API with `download=true`, polls the CDN stream URL every 2 s until it is ready
-(HTTP 200 / 206), then streams the file to `destPath` on disk.
-
-Video files can be large — the default poll timeout is **3 minutes** and the file transfer
-itself has a 10-minute budget.
+### Download (save to disk with polling)
 
 ```go
-result, err := client.Videos.Download(ctx, "Big Buck Bunny", "/tmp/video.mp4", nil)
+result, err := client.Videos.Download(ctx, "Gangnam Style", "/tmp/video.mp4", nil)
 if err != nil {
     log.Fatal(err)
 }
-fmt.Println("Saved:", result.FilePath)   // "/tmp/video.mp4"
-fmt.Println("Quality:", result.Quality)
+fmt.Println("Saved:", result.FilePath)
+fmt.Printf("Size: approx %.0f MB\n", float64(result.Duration)/60*3) // rough estimate
 
-// With custom quality and a longer poll timeout
-result, err := client.Videos.Download(ctx, "Big Buck Bunny", "/tmp/video.mp4", &babiesiq.VideoDownloadOptions{
+// With custom quality and timeout
+result, err := client.Videos.Download(ctx, "Gangnam Style", "/tmp/video.mp4", &babiesiq.VideoDownloadOptions{
     Quality: "1080p",
-    Timeout: 5 * time.Minute,
+    Timeout: 5 * time.Minute, // default is 3 minutes
 })
 ```
 
@@ -209,7 +228,7 @@ result, err := client.Videos.Download(ctx, "Big Buck Bunny", "/tmp/video.mp4", &
 
 | Field | Type | Description |
 |---|---|---|
-| `*Video` | embedded | All Video metadata fields (Title, Channel, StreamURL, …) |
+| `*Video` | embedded | All Video metadata fields |
 | `FilePath` | `string` | Absolute path to the saved file on disk |
 
 ---
@@ -220,23 +239,20 @@ result, err := client.Videos.Download(ctx, "Big Buck Bunny", "/tmp/video.mp4", &
 
 ### Auto-detection: text vs. video ID / URL
 
-`Search.Query` is smart — it detects automatically whether you passed a text query or a video ID/URL:
+`Search.Query` detects automatically whether you passed a text query or a video ID/URL:
 
 ```go
-// Text query → calls YouTube /v1/search, returns multiple results
+// Text query → YouTube search, returns up to `limit` results
 results, err := client.Search.Query(ctx, "Never Gonna Give You Up", 10)
 
-// Video ID → calls YouTube /v1/player, returns 1 result with full details
+// Video ID → YouTube player API, returns 1 result with full details
 results, err := client.Search.Query(ctx, "dQw4w9WgXcQ", 1)
 
-// Full YouTube URL → same as video ID
+// Full YouTube URL
 results, err := client.Search.Query(ctx, "https://www.youtube.com/watch?v=dQw4w9WgXcQ", 1)
 
-// youtu.be short URL
+// youtu.be, Shorts, embed URLs — all supported
 results, err := client.Search.Query(ctx, "https://youtu.be/dQw4w9WgXcQ", 1)
-
-// YouTube Shorts URL
-results, err := client.Search.Query(ctx, "https://www.youtube.com/shorts/dQw4w9WgXcQ", 1)
 ```
 
 **`YTSearchResult` fields:**
@@ -246,7 +262,7 @@ results, err := client.Search.Query(ctx, "https://www.youtube.com/shorts/dQw4w9W
 | `VideoID` | `string` | 11-character YouTube video ID |
 | `Title` | `string` | Video title |
 | `Description` | `string` | Short description snippet |
-| `Duration` | `string` | Human-readable duration, e.g. `"4:32"` |
+| `Duration` | `string` | Human-readable, e.g. `"4:32"` |
 | `DurationSec` | `int` | Duration in seconds |
 | `URL` | `string` | Full YouTube watch URL |
 | `Thumbnail` | `string` | YouTube CDN thumbnail (maxresdefault) |
@@ -258,69 +274,30 @@ results, err := client.Search.Query(ctx, "https://www.youtube.com/shorts/dQw4w9W
 
 ```go
 info, err := client.Search.GetVideo(ctx, "dQw4w9WgXcQ")
-// Also works with any YouTube URL format:
-// info, err := client.Search.GetVideo(ctx, "https://youtu.be/dQw4w9WgXcQ")
-
-fmt.Println(info.VideoID)     // "dQw4w9WgXcQ"
 fmt.Println(info.Title)       // "Rick Astley - Never Gonna Give You Up"
 fmt.Println(info.Channel)     // "Rick Astley"
 fmt.Println(info.Duration)    // "3:33"
 fmt.Println(info.DurationSec) // 213
-fmt.Println(info.ViewCount)   // "1500000000"
-fmt.Println(info.Thumbnail)   // "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
 fmt.Println(info.IsLive)      // false
 ```
-
-**`YTVideoInfo` fields:**
-
-| Field | Type | Description |
-|---|---|---|
-| `VideoID` | `string` | 11-character YouTube video ID |
-| `Title` | `string` | Full video title |
-| `Description` | `string` | Full video description |
-| `Duration` | `string` | Human-readable, e.g. `"3:33"` or `"1:02:45"` |
-| `DurationSec` | `int` | Duration in seconds |
-| `URL` | `string` | YouTube watch URL |
-| `Thumbnail` | `string` | YouTube CDN thumbnail URL |
-| `Channel` | `string` | Channel/author name |
-| `ViewCount` | `string` | Raw view count string |
-| `IsLive` | `bool` | `true` if this is a live stream |
 
 ---
 
 ## Suggestions — `client.Suggestions`
 
-**No API key required.** Calls YouTube's internal API directly.
-
-### Autoplay / related videos for a video
-
-Get the "Up Next" sidebar videos — same as YouTube's autoplay queue.
+**No API key required.**
 
 ```go
+// Autoplay / related videos ("Up Next" sidebar)
 suggestions, err := client.Suggestions.ForVideo(ctx, "dQw4w9WgXcQ", 10)
 for _, s := range suggestions {
     fmt.Printf("[%s] %s — %s\n", s.Duration, s.Title, s.Channel)
 }
-```
 
-**`Suggestion` fields:**
-
-| Field | Type | Description |
-|---|---|---|
-| `VideoID` | `string` | YouTube video ID |
-| `Title` | `string` | Video title |
-| `Duration` | `string` | Human-readable duration |
-| `URL` | `string` | YouTube watch URL |
-| `Thumbnail` | `string` | YouTube CDN thumbnail |
-| `Channel` | `string` | Channel name |
-| `ViewCount` | `string` | View count string |
-
-### Search autocomplete suggestions
-
-```go
+// Search autocomplete (YouTube search bar dropdown)
 suggestions, err := client.Suggestions.ForQuery(ctx, "never gonna", "en", "US")
 for _, s := range suggestions {
-    fmt.Println(s.Text) // "never gonna give you up", "never gonna let you down", ...
+    fmt.Println(s.Text)
 }
 ```
 
@@ -330,15 +307,11 @@ for _, s := range suggestions {
 
 ```go
 thumb, err := client.Thumbnails.Get(ctx, "dQw4w9WgXcQ", "")
-fmt.Println(thumb.URL)    // styled thumbnail URL
-fmt.Println(thumb.Width)  // e.g. 1280
-fmt.Println(thumb.Height) // e.g. 720
+fmt.Println(thumb.URL)
 ```
 
-> **Tip:** For raw YouTube CDN thumbnails (no API key, no styling), use:
-> ```
-> https://i.ytimg.com/vi/{videoID}/maxresdefault.jpg
-> ```
+> **Raw YouTube CDN thumbnails** (no API key, no styling):
+> `https://i.ytimg.com/vi/{videoID}/maxresdefault.jpg`
 
 ---
 
@@ -359,7 +332,7 @@ client, err := babiesiq.New("biq_YOUR_KEY", babiesiq.Config{
 ## Error Handling
 
 ```go
-_, err := client.Songs.Download(ctx, "test", "/tmp/out.mp3", nil)
+_, err := client.Songs.Download(ctx, "Blinding Lights", "/tmp/out.mp3", nil)
 if err != nil {
     switch e := err.(type) {
     case *babiesiq.DownloadTimeoutError:
@@ -387,7 +360,7 @@ if err != nil {
 | `*DownloadTimeoutError` | CDN stream not ready within poll timeout |
 | `*AuthError` | Missing/invalid API key, or stream geo-blocked |
 | `*RateLimitError` | API or CDN rate limit hit |
-| `*NotFoundError` | Song/video not found |
+| `*NotFoundError` | No YouTube results found for query |
 | `*APIError` | Other non-2xx API response |
 | `*NetworkError` | Transport-level failure |
 
@@ -423,10 +396,9 @@ func main() {
         log.Fatal(err)
     }
     ctx := context.Background()
-
     os.MkdirAll("downloads", 0755)
 
-    // ── Search only (metadata JSON) ────────────────────────────────────
+    // ── Search: metadata + stream URL only ─────────────────────────────
     song, err := client.Songs.Search(ctx, "Blinding Lights", nil)
     if err != nil {
         log.Fatal(err)
@@ -434,30 +406,23 @@ func main() {
     fmt.Printf("Song: %s by %s (%ds)\n", song.Title, song.Artist, song.Duration)
     fmt.Println("Stream URL:", song.StreamURL)
 
-    // ── Download song to disk (polls until CDN ready) ──────────────────
-    songResult, err := client.Songs.Download(ctx, "Blinding Lights", "downloads/blinding_lights.mp3", &babiesiq.SongDownloadOptions{
+    // ── Download song to disk ──────────────────────────────────────────
+    songResult, err := client.Songs.Download(ctx, "Blinding Lights", "downloads/song.mp3", &babiesiq.SongDownloadOptions{
         EQ:      "bass_boost",
         Timeout: 90 * time.Second,
     })
     if err != nil {
         switch e := err.(type) {
         case *babiesiq.DownloadTimeoutError:
-            log.Fatalf("Timed out after %s waiting for CDN: %s", e.Timeout, e.StreamURL)
+            log.Fatalf("Timed out after %s: %s", e.Timeout, e.StreamURL)
         default:
             log.Fatal(err)
         }
     }
     fmt.Println("Song saved:", songResult.FilePath)
 
-    // ── Search video (metadata JSON) ───────────────────────────────────
-    video, err := client.Videos.Search(ctx, "Gangnam Style", nil)
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("Video: %s [%s]\n", video.Title, video.Quality)
-
     // ── Download video to disk ─────────────────────────────────────────
-    videoResult, err := client.Videos.Download(ctx, "Gangnam Style", "downloads/gangnam_style.mp4", &babiesiq.VideoDownloadOptions{
+    videoResult, err := client.Videos.Download(ctx, "Gangnam Style", "downloads/video.mp4", &babiesiq.VideoDownloadOptions{
         Quality: "720p",
         Timeout: 4 * time.Minute,
     })
@@ -466,7 +431,7 @@ func main() {
     }
     fmt.Println("Video saved:", videoResult.FilePath)
 
-    // ── YouTube: Text search ───────────────────────────────────────────
+    // ── YouTube search (no API key) ────────────────────────────────────
     results, err := client.Search.Query(ctx, "Taylor Swift Anti-Hero", 5)
     if err != nil {
         log.Fatal(err)
@@ -475,14 +440,7 @@ func main() {
         fmt.Printf("[%s] %s — %s\n", r.Duration, r.Title, r.Channel)
     }
 
-    // ── YouTube: Video ID lookup ───────────────────────────────────────
-    info, err := client.Search.GetVideo(ctx, "https://youtu.be/dQw4w9WgXcQ")
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("Video: %s (%s)\n", info.Title, info.Duration)
-
-    // ── YouTube: Autoplay suggestions ──────────────────────────────────
+    // ── Autoplay suggestions ───────────────────────────────────────────
     related, err := client.Suggestions.ForVideo(ctx, "dQw4w9WgXcQ", 5)
     if err != nil {
         log.Fatal(err)
@@ -491,7 +449,7 @@ func main() {
         fmt.Printf("  [%s] %s — %s\n", s.Duration, s.Title, s.Channel)
     }
 
-    // ── YouTube: Search autocomplete ───────────────────────────────────
+    // ── Search autocomplete ────────────────────────────────────────────
     autocomplete, err := client.Suggestions.ForQuery(ctx, "never gonna", "en", "US")
     if err != nil {
         log.Fatal(err)
