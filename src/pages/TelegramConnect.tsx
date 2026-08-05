@@ -4,10 +4,12 @@ import { CheckCircle, XCircle, Loader2, Send } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/hooks/useAuth";
 import { checkTelegramToken, linkTelegramAuth } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 type Stage = "loading" | "success" | "error" | "expired";
 
 export function TelegramConnectPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isLoading: authLoading, initialize } = useAuth();
   const [stage, setStage] = useState<Stage>("loading");
@@ -92,8 +94,12 @@ export function TelegramConnectPage() {
             </div>
             <Loader2 className="w-6 h-6 text-primary animate-spin mt-2" />
             <div>
-              <h2 className="text-lg font-display font-semibold text-foreground">Connecting Telegram</h2>
-              <p className="text-sm text-muted-foreground mt-1">Verifying your account…</p>
+              <h2 className="text-lg font-display font-semibold text-foreground">
+                {t("telegram.connecting")}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t("telegram.verifying")}
+              </p>
             </div>
           </motion.div>
         )}
@@ -117,39 +123,29 @@ export function TelegramConnectPage() {
             </motion.div>
 
             <div>
-              <h1 className="text-2xl font-display font-bold text-foreground">Account Connected!</h1>
+              <h1 className="text-2xl font-display font-bold text-foreground">
+                {t("telegram.linked_title")}
+              </h1>
               <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                Your Telegram account is now linked to <span className="text-foreground font-medium">BabyAPI</span>.
-                You can use all bot commands like <code className="text-xs bg-muted px-1 py-0.5 rounded">/key</code>,{" "}
-                <code className="text-xs bg-muted px-1 py-0.5 rounded">/status</code>, and more.
+                {t("telegram.linked_to")}{" "}
+                <span className="text-foreground font-medium">BabiesIQ</span>.
               </p>
             </div>
 
-            <div className="w-full rounded-xl border border-border bg-card p-4 space-y-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Telegram successfully linked
-              </div>
-              <div className="h-px bg-border" />
-              <p className="text-xs text-muted-foreground">
-                Returning to bot in <span className="font-semibold text-foreground">{countdown}s</span>…
+            <div className="w-full rounded-xl border border-border bg-card p-4">
+              <p className="text-sm text-muted-foreground">
+                {t("telegram.redirect_prefix")}{" "}
+                <span className="font-semibold text-foreground">{countdown}</span>{" "}
+                {t("telegram.seconds")}…
               </p>
-              <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                <motion.div
-                  className="h-full bg-emerald-500 rounded-full"
-                  initial={{ width: "100%" }}
-                  animate={{ width: "0%" }}
-                  transition={{ duration: 4, ease: "linear" }}
-                />
-              </div>
             </div>
 
             <a
               href={botUrl}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-medium text-sm hover:opacity-90 transition-opacity shadow-elevated"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-semibold text-sm shadow-elevated hover:opacity-90 transition-opacity"
             >
               <Send className="w-4 h-4" />
-              Open Telegram Bot Now
+              {t("telegram.open_bot_now")}
             </a>
           </motion.div>
         )}
@@ -173,15 +169,16 @@ export function TelegramConnectPage() {
 
             <div>
               <h1 className="text-2xl font-display font-bold text-foreground">
-                {stage === "expired" ? "Link Expired" : "Connection Failed"}
+                {stage === "expired" ? t("telegram.link_expired") : t("telegram.connection_failed")}
               </h1>
               <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{errorMsg}</p>
             </div>
 
             <div className="w-full rounded-xl border border-border bg-card p-4">
               <p className="text-sm text-muted-foreground">
-                To get a new link, open the Telegram bot and tap{" "}
-                <span className="font-medium text-foreground">◈ Automated Login</span> after using{" "}
+                {t("telegram.get_new_link")}{" "}
+                <span className="font-medium text-foreground">◈ {t("telegram.automated_login")}</span>{" "}
+                {t("telegram.after_login_cmd")}{" "}
                 <code className="text-xs bg-muted px-1 py-0.5 rounded">/login</code>.
               </p>
             </div>
@@ -191,7 +188,7 @@ export function TelegramConnectPage() {
               className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-foreground font-medium text-sm hover:border-primary/40 transition-colors"
             >
               <Send className="w-4 h-4" />
-              Open Telegram Bot
+              {t("telegram.open_bot")}
             </a>
           </motion.div>
         )}

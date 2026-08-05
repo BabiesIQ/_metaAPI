@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 type Duration = 1 | 3 | 6 | 12;
 type BillingCycle = "monthly" | "yearly";
@@ -53,9 +54,11 @@ const PLAN_DATA = [
   },
 ];
 
-const DURATIONS: { value: Duration; label: string; best?: boolean }[] = [
-  { value: 1, label: "1 Month" }, { value: 3, label: "3 Months" },
-  { value: 6, label: "6 Months", best: true }, { value: 12, label: "1 Year" },
+const DURATIONS: { value: Duration; labelKey: string; best?: boolean }[] = [
+  { value: 1, labelKey: "billing.duration_1_month" },
+  { value: 3, labelKey: "billing.duration_3_months" },
+  { value: 6, labelKey: "billing.duration_6_months", best: true },
+  { value: 12, labelKey: "billing.duration_12_months" },
 ];
 
 const PLAN_LABEL: Record<string, string> = {
@@ -79,6 +82,7 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export default function BillingPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [billing, setBillingCycle] = useState<BillingCycle>("monthly");
@@ -171,8 +175,8 @@ export default function BillingPage() {
 
             {/* Header */}
             <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center">
-              <p className="text-xs font-mono text-primary uppercase tracking-widest mb-2">Subscription</p>
-              <h1 className="text-3xl font-bold text-foreground font-display mb-2">Upgrade Your Plan</h1>
+              <p className="text-xs font-mono text-primary uppercase tracking-widest mb-2">{t("billing.subscription")}</p>
+              <h1 className="text-3xl font-bold text-foreground font-display mb-2">{t("billing.upgrade_title")}</h1>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">Scale your audio & video streaming API. Instant activation, cancel anytime.</p>
             </motion.div>
 
@@ -192,7 +196,7 @@ export default function BillingPage() {
                     </p>
                   )}
                 </div>
-                <Badge variant="outline" className="text-xs border-primary/30 text-primary">Active</Badge>
+                <Badge variant="outline" className="text-xs border-primary/30 text-primary">{t("billing.active")}</Badge>
               </motion.div>
             )}
 
@@ -203,7 +207,7 @@ export default function BillingPage() {
                 <div className="flex items-start gap-3">
                   <Clock className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-amber-400">Subscription Queue</p>
+                    <p className="text-sm font-medium text-amber-400">{t("billing.queue_title")}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">New purchases will extend your access beyond your current expiry.</p>
                     <div className="mt-2 space-y-1">
                       {futureSubs.map((s, i) => (
@@ -242,7 +246,7 @@ export default function BillingPage() {
                     <button key={d.value} onClick={() => setDuration(d.value)}
                       className={cn("relative px-4 py-2 rounded-xl text-sm font-medium transition-all border",
                         duration === d.value ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-muted/30 text-muted-foreground border-border hover:border-primary/40")}>
-                      {d.label}
+                      {t(d.labelKey)}
                       {d.best && <span className="absolute -top-2 -right-2 text-[9px] bg-amber-400 text-black px-1.5 rounded-full font-bold leading-5">BEST</span>}
                     </button>
                   ))}
@@ -305,11 +309,11 @@ export default function BillingPage() {
                         ))}
                       </ul>
                       {isCurrentPlan ? (
-                        <div className="w-full py-2.5 rounded-xl border border-border text-center text-sm text-muted-foreground">Current Plan</div>
+                        <div className="w-full py-2.5 rounded-xl border border-border text-center text-sm text-muted-foreground">{t("billing.current_plan")}</div>
                       ) : plan.code === "business" ? (
                         <button onClick={() => handleBuy(plan.code)}
                           className="w-full py-2.5 rounded-xl border border-border text-sm font-medium hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
-                          <Mail className="w-3.5 h-3.5" /> Contact Us
+                          <Mail className="w-3.5 h-3.5" /> {t("billing.contact_us")}
                         </button>
                       ) : (
                         <button onClick={() => handleBuy(plan.code)} disabled={isPayingThis || !!paying}
@@ -318,7 +322,7 @@ export default function BillingPage() {
                             : "bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60")}>
                           {isPayingThis
                             ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing...</>
-                            : <><Zap className="w-3.5 h-3.5" /> Upgrade to {plan.name} <ArrowRight className="w-3.5 h-3.5" /></>}
+                            : <><Zap className="w-3.5 h-3.5" /> {t("billing.upgrade_to")} {plan.name} <ArrowRight className="w-3.5 h-3.5" /></>}
                         </button>
                       )}
                     </div>
@@ -330,8 +334,8 @@ export default function BillingPage() {
             {/* Trust badges */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
               className="flex items-center justify-center gap-6 text-xs text-muted-foreground flex-wrap">
-              {[{ icon: Shield, text: "Secure Razorpay Checkout" }, { icon: Check, text: "30-Day Money Back" }, { icon: Clock, text: "Instant Activation" }].map(({ icon: Icon, text }) => (
-                <span key={text} className="flex items-center gap-1.5"><Icon className="w-3.5 h-3.5 text-muted-foreground/60" />{text}</span>
+              {[{ icon: Shield, textKey: "billing.trust_secure" }, { icon: Check, textKey: "billing.trust_refund" }, { icon: Clock, textKey: "billing.trust_instant" }].map(({ icon: Icon, textKey }) => (
+                <span key={textKey} className="flex items-center gap-1.5"><Icon className="w-3.5 h-3.5 text-muted-foreground/60" />{t(textKey)}</span>
               ))}
             </motion.div>
 
@@ -339,7 +343,7 @@ export default function BillingPage() {
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-foreground font-display">Payment History</h2>
+                  <h2 className="text-lg font-bold text-foreground font-display">{t("billing.payment_history")}</h2>
                   <p className="text-xs text-muted-foreground mt-0.5">{invoices.length} invoice{invoices.length !== 1 ? "s" : ""} total</p>
                 </div>
               </div>
@@ -347,7 +351,7 @@ export default function BillingPage() {
               {invoices.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 bg-card border border-border rounded-2xl text-center">
                   <FileText className="w-10 h-10 text-muted-foreground/30 mb-3" />
-                  <p className="text-sm text-muted-foreground">No payments yet</p>
+                  <p className="text-sm text-muted-foreground">{t("billing.no_payments")}</p>
                   <p className="text-xs text-muted-foreground/60 mt-1">Your invoices will appear here after your first purchase.</p>
                 </div>
               ) : (
@@ -355,7 +359,7 @@ export default function BillingPage() {
                   <div className="bg-card border border-border rounded-2xl overflow-hidden">
                     {/* Table header */}
                     <div className="grid grid-cols-5 gap-4 px-5 py-3 border-b border-border bg-muted/20">
-                      {["Invoice #", "Plan", "Duration", "Amount", "Actions"].map((h) => (
+                      {[t("billing.col_invoice"), t("billing.col_plan"), t("billing.col_duration"), t("billing.col_amount"), t("billing.col_actions")].map((h) => (
                         <div key={h} className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{h}</div>
                       ))}
                     </div>
@@ -394,7 +398,7 @@ export default function BillingPage() {
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted hover:border-primary/30 hover:text-primary transition-all"
                           >
                             <Download className="w-3.5 h-3.5" />
-                            Receipt
+                            {t("billing.receipt")}
                           </button>
                         </div>
                       </motion.div>
@@ -407,7 +411,7 @@ export default function BillingPage() {
                       onClick={() => setShowAllInvoices(v => !v)}
                       className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mx-auto"
                     >
-                      {showAllInvoices ? <><ChevronUp className="w-3.5 h-3.5" /> Show less</> : <><ChevronDown className="w-3.5 h-3.5" /> Show all {invoices.length} invoices</>}
+                      {showAllInvoices ? <><ChevronUp className="w-3.5 h-3.5" /> {t("billing.show_less")}</> : <><ChevronDown className="w-3.5 h-3.5" /> {t("billing.show_all", { count: invoices.length })}</>}
                     </button>
                   )}
                 </>

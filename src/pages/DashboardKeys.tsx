@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-IN", {
@@ -149,6 +150,7 @@ function KeyRow({
 }
 
 function DashboardKeysContent() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showConfirmGenerate, setShowConfirmGenerate] = useState(false);
   const [appName, setAppName] = useState("");
@@ -239,7 +241,7 @@ function DashboardKeysContent() {
           data-ocid="keys.generate.open_modal_button"
         >
           <Plus className="w-4 h-4 mr-2" />
-          {activeKey ? "Regenerate Key" : "Generate Key"}
+          {activeKey ? t("api_keys_page.regenerate_btn") : t("api_keys_page.generate_btn")}
         </Button>
       </div>
 
@@ -281,7 +283,7 @@ function DashboardKeysContent() {
             <div className="text-center py-12" data-ocid="keys.empty_state">
               <Key className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
               <p className="text-sm font-body text-muted-foreground mb-4">
-                No API keys yet. Generate your first key to get started.
+                {t("api_keys_page.no_keys")}
               </p>
               <Button
                 type="button"
@@ -311,30 +313,30 @@ function DashboardKeysContent() {
               {activeKey ? (
                 <>
                   <AlertTriangle className="w-5 h-5 text-yellow-400" />{" "}
-                  Regenerate API Key
+                  {t("api_keys_page.regenerate_btn")}
                 </>
               ) : (
-                "Generate API Key"
+                t("api_keys_page.generate_btn")
               )}
             </DialogTitle>
             <DialogDescription className="font-body">
               {activeKey
-                ? "Generating a new key will permanently revoke your current key. Any services using the old key will stop working immediately."
-                : "Generate a new API key to start making requests to BabiesIQ."}
+                ? t("api_keys_page.gen_desc_regen")
+                : t("api_keys_page.gen_desc_new")}
             </DialogDescription>
           </DialogHeader>
 
           {/* Application Name field */}
           <div className="space-y-1.5 py-1">
             <Label htmlFor="dash_keys_app_name" className="text-sm font-medium">
-              Application Name{" "}
+              {t("api_keys_page.app_name_label")}{" "}
               <span className="text-destructive" aria-hidden="true">
                 *
               </span>
             </Label>
             <Input
               id="dash_keys_app_name"
-              placeholder="e.g. My Mobile App"
+              placeholder={t("api_keys_page.app_name_placeholder")}
               value={appName}
               onChange={(e) => {
                 setAppName(e.target.value);
@@ -367,7 +369,7 @@ function DashboardKeysContent() {
               disabled={generateMutation.isPending}
               data-ocid="keys.generate.cancel_button"
             >
-              Cancel
+              {t("api_keys_page.cancel")}
             </Button>
             <Button
               type="button"
@@ -381,10 +383,10 @@ function DashboardKeysContent() {
               data-ocid="keys.generate.confirm_button"
             >
               {generateMutation.isPending
-                ? "Generating…"
+                ? t("api_keys_page.generating")
                 : activeKey
-                  ? "Yes, Regenerate"
-                  : "Generate"}
+                  ? t("api_keys_page.revoke_yes_regen")
+                  : t("api_keys_page.generate")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -401,20 +403,19 @@ function DashboardKeysContent() {
         >
           <DialogHeader>
             <DialogTitle className="font-display text-destructive">
-              Revoke API Key
+              {t("api_keys_page.revoke_title")}
             </DialogTitle>
             <DialogDescription className="font-body">
               {revokeTarget?.application_name ? (
                 <>
-                  Are you sure you want to revoke the key for{" "}
+                  {t("api_keys_page.revoke_confirm_named_pre")}{" "}
                   <span className="font-semibold text-foreground">
                     &ldquo;{revokeTarget.application_name}&rdquo;
                   </span>
-                  ? This action cannot be undone. Services using this key will
-                  lose access immediately.
+                  {t("api_keys_page.revoke_confirm_named_post")}
                 </>
               ) : (
-                "This action cannot be undone. Services using this key will lose access immediately."
+                t("api_keys_page.revoke_desc")
               )}
             </DialogDescription>
           </DialogHeader>
@@ -425,7 +426,7 @@ function DashboardKeysContent() {
               onClick={() => setRevokeTarget(null)}
               data-ocid="keys.revoke.cancel_button"
             >
-              Cancel
+              {t("api_keys_page.cancel")}
             </Button>
             <Button
               type="button"
@@ -436,7 +437,7 @@ function DashboardKeysContent() {
               disabled={revokeMutation.isPending}
               data-ocid="keys.revoke.confirm_button"
             >
-              {revokeMutation.isPending ? "Revoking…" : "Revoke Key"}
+              {revokeMutation.isPending ? t("api_keys_page.revoking") : t("api_keys_page.revoke_title")}
             </Button>
           </DialogFooter>
         </DialogContent>

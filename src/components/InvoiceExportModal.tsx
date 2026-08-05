@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { X, Download, Printer } from "lucide-react";
 import type { Invoice } from "@/types/index";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface InvoiceExportModalProps {
   open: boolean;
@@ -16,6 +17,7 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 export function InvoiceExportModal({ open, invoice, userEmail, userName, onClose }: InvoiceExportModalProps) {
+  const { t } = useTranslation();
   const printRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
@@ -156,14 +158,14 @@ export function InvoiceExportModal({ open, invoice, userEmail, userName, onClose
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  Download PDF
+                  {t("invoices.download_pdf")}
                 </button>
                 <button
                   onClick={handlePrint}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-100 transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  Print
+                  {t("invoices.print")}
                 </button>
                 <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                   <X className="w-4 h-4 text-gray-500" />

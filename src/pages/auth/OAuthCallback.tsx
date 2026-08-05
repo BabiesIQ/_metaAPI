@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-
+import { useTranslation } from "react-i18next";
 import { activateSession } from "@/lib/api";
 
 type Status = "loading" | "error";
@@ -36,6 +36,7 @@ function getErrorMessage(code: string): string {
 }
 
 export function OAuthCallbackPage() {
+  const { t } = useTranslation();
   const called = useRef(false);
   const [status, setStatus] = useState<Status>("loading");
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -113,11 +114,11 @@ export function OAuthCallbackPage() {
           </div>
 
           <div className="space-y-1">
-            <h2 className="font-semibold text-foreground text-base">Sign-in failed</h2>
+            <h2 className="font-semibold text-foreground text-base">{t("oauth.failed_title")}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">{errorMsg}</p>
           </div>
 
-          <p className="text-xs text-muted-foreground">Redirecting you back to login…</p>
+          <p className="text-xs text-muted-foreground">{t("oauth.redirecting")}</p>
 
           {/* Progress bar */}
           <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
@@ -132,7 +133,7 @@ export function OAuthCallbackPage() {
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="text-center space-y-4">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mx-auto" />
-        <p className="text-sm text-muted-foreground">Completing sign in…</p>
+        <p className="text-sm text-muted-foreground">{t("oauth.completing")}</p>
       </div>
     </div>
   );

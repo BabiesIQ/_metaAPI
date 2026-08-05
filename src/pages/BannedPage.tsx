@@ -3,6 +3,7 @@ import { LogOut, ShieldX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth";
 import { logout as apiLogout } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 function getInitials(firstName?: string, lastName?: string, email?: string): string {
   if (firstName || lastName) {
@@ -12,6 +13,7 @@ function getInitials(firstName?: string, lastName?: string, email?: string): str
 }
 
 export function BannedPage() {
+  const { t } = useTranslation();
   const { bannedUser, setBannedUser } = useAuthStore();
 
   const handleLogout = async () => {
@@ -67,7 +69,7 @@ export function BannedPage() {
           onClick={handleLogout}
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          {t("banned.logout_btn")}
         </Button>
       </header>
 
@@ -91,42 +93,41 @@ export function BannedPage() {
 
           {/* Heading */}
           <h1 className="text-2xl font-display font-bold text-foreground mb-2">
-            Account Banned
+            {t("banned.title")}
           </h1>
 
           {/* Message */}
           <p className="text-muted-foreground text-sm leading-relaxed mb-2">
-            Your account has been banned due to a violation of our community
-            rules.
+            {t("banned.message")}
           </p>
           <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-            Please review our{" "}
+            {t("banned.review")}{" "}
             <a
               href="/terms"
               className="text-primary underline underline-offset-2 hover:text-primary/70 transition-colors"
             >
-              Terms of Service
+              {t("banned.terms_link")}
             </a>{" "}
-            and{" "}
+            {t("auth.and")}{" "}
             <a
               href="/contact"
               className="text-primary underline underline-offset-2 hover:text-primary/70 transition-colors"
             >
-              contact support
+              {t("banned.contact_link")}
             </a>{" "}
-            if you believe this is a mistake.
+            {t("banned.mistake")}
           </p>
 
           {/* Rule reminder card */}
           <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 mb-8 text-left">
             <p className="text-xs font-semibold text-destructive uppercase tracking-wider mb-2">
-              Why accounts get banned
+              {t("banned.why_title")}
             </p>
             <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
-              <li>Abusing or sharing API keys</li>
-              <li>Automated scraping beyond plan limits</li>
-              <li>Violating content or usage policies</li>
-              <li>Fraudulent payment or chargebacks</li>
+              <li>{t("banned.reason_1")}</li>
+              <li>{t("banned.reason_2")}</li>
+              <li>{t("banned.reason_3")}</li>
+              <li>{t("banned.reason_4")}</li>
             </ul>
           </div>
 
@@ -137,7 +138,7 @@ export function BannedPage() {
               className="gap-2"
               onClick={() => (window.location.href = "/contact")}
             >
-              Contact Support
+              {t("banned.contact_btn")}
             </Button>
             <Button
               variant="destructive"
@@ -145,7 +146,7 @@ export function BannedPage() {
               onClick={handleLogout}
             >
               <LogOut className="w-4 h-4" />
-              Sign out
+              {t("banned.sign_out")}
             </Button>
           </div>
         </motion.div>

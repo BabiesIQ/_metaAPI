@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { X, Eye, Pin, Megaphone, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import {
   ALLOWED_REACTIONS,
@@ -402,6 +403,7 @@ function PostCard({ ann, onReact }: {
 // UpdateChannel panel
 // ═══════════════════════════════════════════════════════════════
 export function UpdateChannel({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const [posts, setPosts] = useState<PostState[]>([]);
   const [loading, setLoading] = useState(false);
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
@@ -466,7 +468,7 @@ export function UpdateChannel({ open, onClose }: { open: boolean; onClose: () =>
                 </div>
                 <div className="flex items-center gap-1.5 text-[11px] text-white/40 mt-0.5">
                   <Megaphone className="w-3 h-3" />
-                  <span>Official Announcements Channel</span>
+                  <span>{t("channel.official_channel")}</span>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -484,7 +486,7 @@ export function UpdateChannel({ open, onClose }: { open: boolean; onClose: () =>
             {/* Channel description */}
             <div className="px-4 py-2.5 border-b border-white/6 shrink-0 bg-white/2">
               <p className="text-[11px] text-white/35 leading-relaxed">
-                Official updates, new features, and important announcements from the BabiesIQ team.
+                {t("channel.description")}
                 {lastFetched && <span className="ml-1 text-white/20">· Updated {formatDate(lastFetched)}</span>}
               </p>
             </div>
@@ -494,14 +496,14 @@ export function UpdateChannel({ open, onClose }: { open: boolean; onClose: () =>
               {loading && posts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 gap-3 text-white/25">
                   <div className="w-8 h-8 rounded-full border-2 border-purple-500/40 border-t-purple-400 animate-spin" />
-                  <span className="text-sm">Loading posts…</span>
+                  <span className="text-sm">{t("channel.loading")}</span>
                 </div>
               ) : posts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 gap-3 text-white/30">
                   <Megaphone className="w-10 h-10 opacity-30" />
                   <div className="text-center">
-                    <p className="text-sm font-medium">No announcements yet</p>
-                    <p className="text-xs mt-1 text-white/20">Check back soon for updates</p>
+                    <p className="text-sm font-medium">{t("channel.empty_title")}</p>
+                    <p className="text-xs mt-1 text-white/20">{t("channel.empty_desc")}</p>
                   </div>
                 </div>
               ) : (
@@ -511,7 +513,7 @@ export function UpdateChannel({ open, onClose }: { open: boolean; onClose: () =>
 
             {/* Footer */}
             <div className="px-4 py-3 border-t border-white/6 shrink-0">
-              <p className="text-[10px] text-white/20 text-center">BabiesIQ Update · Official Channel · Verified</p>
+              <p className="text-[10px] text-white/20 text-center">{t("channel.footer")}</p>
             </div>
           </motion.div>
         </>

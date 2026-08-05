@@ -27,6 +27,7 @@ import type { PlanCode } from "@/types/index";
 import { Eye, EyeOff, LogOut, Save, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const PLAN_BADGE: Record<PlanCode, string> = {
   free: "bg-muted text-muted-foreground border-0",
@@ -35,16 +36,17 @@ const PLAN_BADGE: Record<PlanCode, string> = {
   business: "bg-yellow-500/15 text-yellow-400 border-0",
 };
 
-const COUNTRIES = [
-  "India",
-  "United States",
-  "United Kingdom",
-  "Canada",
-  "Australia",
-  "Other",
+const COUNTRY_KEYS = [
+  { value: "India",          labelKey: "profile.country_india" },
+  { value: "United States",  labelKey: "profile.country_us" },
+  { value: "United Kingdom", labelKey: "profile.country_uk" },
+  { value: "Canada",         labelKey: "profile.country_canada" },
+  { value: "Australia",      labelKey: "profile.country_australia" },
+  { value: "Other",          labelKey: "profile.country_other" },
 ];
 
 function DashboardSettingsContent() {
+  const { t } = useTranslation();
   const { user: authUser, setUser, logout } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -261,9 +263,9 @@ function DashboardSettingsContent() {
                   className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   data-ocid="settings.country.select"
                 >
-                  {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                  {COUNTRY_KEYS.map(({ value, labelKey }) => (
+                    <option key={value} value={value}>
+                      {t(labelKey)}
                     </option>
                   ))}
                 </select>
@@ -280,11 +282,11 @@ function DashboardSettingsContent() {
                   {saving ? (
                     <span className="flex items-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Saving…
+                      {t("profile.saving")}
                     </span>
                   ) : (
                     <>
-                      <Save className="w-4 h-4 mr-2" /> Save Changes
+                      <Save className="w-4 h-4 mr-2" /> {t("profile.save_changes")}
                     </>
                   )}
                 </Button>
@@ -294,7 +296,7 @@ function DashboardSettingsContent() {
                   onClick={() => setShowPwdModal(true)}
                   data-ocid="settings.change_password.button"
                 >
-                  Change Password
+                  {t("profile.change_password")}
                 </Button>
               </div>
             </>
@@ -416,7 +418,7 @@ function DashboardSettingsContent() {
               onClick={() => setShowPwdModal(false)}
               data-ocid="settings.change_password.cancel_button"
             >
-              Cancel
+              {t("profile.cancel")}
             </Button>
             <Button
               type="button"
@@ -425,7 +427,7 @@ function DashboardSettingsContent() {
               className="gradient-primary text-white border-0"
               data-ocid="settings.change_password.confirm_button"
             >
-              {pwdLoading ? "Updating…" : "Update Password"}
+              {pwdLoading ? t("profile.updating") : t("profile.update_password")}
             </Button>
           </DialogFooter>
         </DialogContent>
