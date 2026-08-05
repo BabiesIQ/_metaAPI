@@ -7,8 +7,15 @@
 //	    log.Fatal(err)
 //	}
 //
-//	// Search a song (BabiesIQ API)
+//	// Search a song — returns metadata JSON only
 //	song, err := client.Songs.Search(ctx, "Shape of You", nil)
+//
+//	// Download a song to disk (polls until ready, then saves)
+//	result, err := client.Songs.Download(ctx, "Shape of You", "/tmp/song.mp3", nil)
+//	fmt.Println(result.FilePath) // "/tmp/song.mp3"
+//
+//	// Download a video to disk
+//	result, err := client.Videos.Download(ctx, "Big Buck Bunny", "/tmp/video.mp4", nil)
 //
 //	// Smart YouTube search
 //	results, err := client.Search.Query(ctx, "Shape of You", 10)
@@ -25,19 +32,31 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
 const (
 	defaultBaseURL    = "https://api.babiesiq.tech"
-	sdkVersion        = "2.0.0"
+	sdkVersion        = "2.1.0"
 	defaultMaxRetries = 2
 	defaultTimeout    = 30 * time.Second
+
+	// defaultSongPollTimeout is the max time to wait for a song stream to become
+	// ready before giving up (mirrors the Python SDK's 60 × 2 s = 120 s window).
+	defaultSongPollTimeout = 2 * time.Minute
+
+	// defaultVideoPollTimeout is the max time to wait for a video stream to become
+	// ready before giving up (mirrors the Python SDK's 90 × 2 s = 180 s window).
+	defaultVideoPollTimeout = 3 * time.Minute
+
+	// pollInterval is the sleep between each poll probe.
+	pollInterval = 2 * time.Second
 )
 
 // Metadata contains SDK package information.
 //
-//	fmt.Println(babiesiq.Metadata.Version) // "2.0.0"
+//	fmt.Println(babiesiq.Metadata.Version) // "2.1.0"
 var Metadata = struct {
 	Name     string
 	Version  string
@@ -82,7 +101,9 @@ type Config struct {
 	BaseURL string
 	// MaxRetries sets the number of retries on transient 5xx errors (default: 2).
 	MaxRetries int
-	// Timeout sets the HTTP client timeout (default: 30s).
+	// Timeout sets the HTTP client timeout for regular API calls (default: 30s).
+	// This does NOT affect the download poll timeout — use SongDownloadOptions.Timeout
+	// and VideoDownloadOptions.Timeout for that.
 	Timeout time.Duration
 }
 
@@ -231,7 +252,7 @@ func (c *Client) requestJSON(ctx context.Context, method, path string, params ur
 
 // ─── BabiesIQ response types ──────────────────────────────────────────────────
 
-// Song is returned by Songs.Search.
+// Song is returned by Songs.Search and embedded in SongDownloadResult.
 type Song struct {
 	Title     string `json:"title"`
 	Artist    string `json:"artist"`
@@ -240,7 +261,7 @@ type Song struct {
 	Thumbnail string `json:"thumbnail"`
 }
 
-// Video is returned by Videos.Search.
+// Video is returned by Videos.Search and embedded in VideoDownloadResult.
 type Video struct {
 	Title     string `json:"title"`
 	Channel   string `json:"channel"`
@@ -260,12 +281,46 @@ type ThumbnailResult struct {
 // SongOptions holds optional parameters for Songs.Search.
 type SongOptions struct {
 	EQ       string // equalizer preset, e.g. "bass_boost", "nightcore"
-	Download bool   // request a direct download URL
+	Download bool   // request a direct download URL (stream_url points to a downloadable CDN)
 }
 
 // VideoOptions holds optional parameters for Videos.Search.
 type VideoOptions struct {
 	Quality string // e.g. "720p", "1080p"
+}
+
+// SongDownloadOptions holds optional parameters for Songs.Download.
+type SongDownloadOptions struct {
+	// EQ is an optional equalizer preset applied server-side (e.g. "bass_boost", "nightcore").
+	EQ string
+	// Timeout is the maximum time to wait for the stream to become ready on the CDN.
+	// Defaults to 2 minutes when zero. Set to a lower value if you want to fail faster.
+	Timeout time.Duration
+}
+
+// VideoDownloadOptions holds optional parameters for Videos.Download.
+type VideoDownloadOptions struct {
+	// Quality is the preferred video quality (e.g. "720p", "1080p").
+	Quality string
+	// Timeout is the maximum time to wait for the stream to become ready on the CDN.
+	// Defaults to 3 minutes when zero. Set to a lower value if you want to fail faster.
+	Timeout time.Duration
+}
+
+// SongDownloadResult is returned by Songs.Download.
+// It carries the song metadata (same as Search) plus the local file path.
+type SongDownloadResult struct {
+	*Song
+	// FilePath is the absolute path to the downloaded file on disk.
+	FilePath string
+}
+
+// VideoDownloadResult is returned by Videos.Download.
+// It carries the video metadata (same as Search) plus the local file path.
+type VideoDownloadResult struct {
+	*Video
+	// FilePath is the absolute path to the downloaded file on disk.
+	FilePath string
 }
 
 // ─── Songs service ────────────────────────────────────────────────────────────
@@ -274,6 +329,8 @@ type VideoOptions struct {
 type SongsService struct{ client *Client }
 
 // Search finds the best matching song for the given query via the BabiesIQ API.
+// Returns metadata JSON only — the StreamURL is a CDN link but the file may not
+// be ready yet. Use Download if you need the file saved to disk.
 func (s *SongsService) Search(ctx context.Context, query string, opts *SongOptions) (*Song, error) {
 	params := url.Values{"q": {query}}
 	if opts != nil {
@@ -292,12 +349,56 @@ func (s *SongsService) Search(ctx context.Context, query string, opts *SongOptio
 	return &result, json.Unmarshal(data, &result)
 }
 
+// Download searches for the given song query, waits for the CDN stream to
+// become ready (polling every 2 s up to opts.Timeout or the 2-minute default),
+// then streams the file to destPath on disk.
+//
+// destPath is the full file path where the audio will be saved, e.g.
+// "/tmp/song.mp3" or "downloads/blinding_lights.mp3".
+// Parent directories must already exist.
+//
+// Returns SongDownloadResult which embeds the Song metadata and the resolved FilePath.
+func (s *SongsService) Download(ctx context.Context, query, destPath string, opts *SongDownloadOptions) (*SongDownloadResult, error) {
+	params := url.Values{
+		"q":        {query},
+		"download": {"true"},
+	}
+	pollTimeout := defaultSongPollTimeout
+	if opts != nil {
+		if opts.EQ != "" {
+			params.Set("eq", opts.EQ)
+		}
+		if opts.Timeout > 0 {
+			pollTimeout = opts.Timeout
+		}
+	}
+
+	data, err := s.client.request(ctx, http.MethodGet, "/api/song", params, nil)
+	if err != nil {
+		return nil, err
+	}
+	var song Song
+	if err := json.Unmarshal(data, &song); err != nil {
+		return nil, fmt.Errorf("failed to decode song response: %w", err)
+	}
+	if song.StreamURL == "" {
+		return nil, &APIError{Message: "API did not return a stream URL", Status: 200}
+	}
+
+	if err := s.client.pollAndDownload(ctx, song.StreamURL, destPath, pollTimeout); err != nil {
+		return nil, err
+	}
+	return &SongDownloadResult{Song: &song, FilePath: destPath}, nil
+}
+
 // ─── Videos service ───────────────────────────────────────────────────────────
 
 // VideosService handles BabiesIQ video lookups.
 type VideosService struct{ client *Client }
 
 // Search finds the best matching video for the given query via the BabiesIQ API.
+// Returns metadata JSON only — the StreamURL is a CDN link but the file may not
+// be ready yet. Use Download if you need the file saved to disk.
 func (s *VideosService) Search(ctx context.Context, query string, opts *VideoOptions) (*Video, error) {
 	params := url.Values{"q": {query}}
 	if opts != nil && opts.Quality != "" {
@@ -309,6 +410,48 @@ func (s *VideosService) Search(ctx context.Context, query string, opts *VideoOpt
 	}
 	var result Video
 	return &result, json.Unmarshal(data, &result)
+}
+
+// Download searches for the given video query, waits for the CDN stream to
+// become ready (polling every 2 s up to opts.Timeout or the 3-minute default),
+// then streams the file to destPath on disk.
+//
+// destPath is the full file path where the video will be saved, e.g.
+// "/tmp/video.mp4" or "downloads/gangnam_style.mp4".
+// Parent directories must already exist.
+//
+// Returns VideoDownloadResult which embeds the Video metadata and the resolved FilePath.
+func (s *VideosService) Download(ctx context.Context, query, destPath string, opts *VideoDownloadOptions) (*VideoDownloadResult, error) {
+	params := url.Values{
+		"q":        {query},
+		"download": {"true"},
+	}
+	pollTimeout := defaultVideoPollTimeout
+	if opts != nil {
+		if opts.Quality != "" {
+			params.Set("quality", opts.Quality)
+		}
+		if opts.Timeout > 0 {
+			pollTimeout = opts.Timeout
+		}
+	}
+
+	data, err := s.client.request(ctx, http.MethodGet, "/api/video", params, nil)
+	if err != nil {
+		return nil, err
+	}
+	var video Video
+	if err := json.Unmarshal(data, &video); err != nil {
+		return nil, fmt.Errorf("failed to decode video response: %w", err)
+	}
+	if video.StreamURL == "" {
+		return nil, &APIError{Message: "API did not return a stream URL", Status: 200}
+	}
+
+	if err := s.client.pollAndDownload(ctx, video.StreamURL, destPath, pollTimeout); err != nil {
+		return nil, err
+	}
+	return &VideoDownloadResult{Video: &video, FilePath: destPath}, nil
 }
 
 // ─── Thumbnails service ───────────────────────────────────────────────────────
@@ -331,14 +474,115 @@ func (s *ThumbnailsService) Get(ctx context.Context, videoID string, design stri
 	return &result, json.Unmarshal(data, &result)
 }
 
+// ─── Polling + download helpers ───────────────────────────────────────────────
+
+// pollAndDownload polls streamURL every 2 s until the CDN signals the file is
+// ready (HTTP 200 or 206), then downloads it to destPath.
+//
+// Status semantics (mirrors the Python SDK):
+//   - 200, 206      → ready; download immediately
+//   - 204, 423, 404, 410 → not ready yet; wait and retry
+//   - 401, 403      → blocked (bad credentials / geo-block) → AuthError
+//   - 429           → rate-limited → RateLimitError
+//   - anything else → fatal → APIError
+func (c *Client) pollAndDownload(ctx context.Context, streamURL, destPath string, pollTimeout time.Duration) error {
+	// Use a separate HTTP client with a short per-request timeout for polling probes.
+	pollClient := &http.Client{Timeout: 15 * time.Second}
+
+	deadline := time.Now().Add(pollTimeout)
+
+	for {
+		if time.Now().After(deadline) {
+			return &DownloadTimeoutError{StreamURL: streamURL, Timeout: pollTimeout}
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, streamURL, nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("User-Agent", "biq-api-go/"+sdkVersion)
+
+		resp, err := pollClient.Do(req)
+		if err != nil {
+			// Transient network error — treat like "not ready", keep polling.
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(pollInterval):
+			}
+			continue
+		}
+		status := resp.StatusCode
+		resp.Body.Close()
+
+		switch {
+		case status == http.StatusOK || status == http.StatusPartialContent:
+			// Stream is ready — download to disk.
+			return c.downloadToFile(ctx, streamURL, destPath)
+
+		case status == http.StatusNoContent || status == 423 || status == http.StatusNotFound || status == http.StatusGone:
+			// Not ready yet; wait and retry.
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(pollInterval):
+			}
+
+		case status == http.StatusUnauthorized || status == http.StatusForbidden:
+			return &AuthError{Message: fmt.Sprintf("stream access blocked (HTTP %d) — check your API key or region", status)}
+
+		case status == http.StatusTooManyRequests:
+			return &RateLimitError{Message: "rate limited while polling stream CDN"}
+
+		default:
+			return &APIError{Message: fmt.Sprintf("unexpected status while polling stream CDN"), Status: status}
+		}
+	}
+}
+
+// downloadToFile streams the content at url into the file at destPath.
+// Uses a generous 10-minute timeout to handle large video files.
+func (c *Client) downloadToFile(ctx context.Context, streamURL, destPath string) error {
+	dlClient := &http.Client{Timeout: 10 * time.Minute}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, streamURL, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("User-Agent", "biq-api-go/"+sdkVersion)
+
+	resp, err := dlClient.Do(req)
+	if err != nil {
+		return &NetworkError{Err: err}
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusPartialContent {
+		return &APIError{Message: "unexpected status during file download", Status: resp.StatusCode}
+	}
+
+	f, err := os.Create(destPath)
+	if err != nil {
+		return fmt.Errorf("failed to create destination file %q: %w", destPath, err)
+	}
+	defer f.Close()
+
+	if _, err := io.Copy(f, resp.Body); err != nil {
+		// Remove the incomplete file on error.
+		_ = os.Remove(destPath)
+		return &NetworkError{Err: fmt.Errorf("download interrupted: %w", err)}
+	}
+	return nil
+}
+
 // ─── Error types ──────────────────────────────────────────────────────────────
 
-// AuthError is returned when the API key is missing or invalid.
+// AuthError is returned when the API key is missing, invalid, or the stream is geo-blocked.
 type AuthError struct{ Message string }
 
 func (e *AuthError) Error() string { return e.Message }
 
-// RateLimitError is returned when the API rate limit is exceeded.
+// RateLimitError is returned when the API or CDN rate limit is exceeded.
 type RateLimitError struct{ Message string }
 
 func (e *RateLimitError) Error() string { return e.Message }
@@ -361,3 +605,14 @@ type NetworkError struct{ Err error }
 
 func (e *NetworkError) Error() string { return fmt.Sprintf("network error: %v", e.Err) }
 func (e *NetworkError) Unwrap() error { return e.Err }
+
+// DownloadTimeoutError is returned when the CDN stream does not become ready
+// within the allowed poll window.
+type DownloadTimeoutError struct {
+	StreamURL string
+	Timeout   time.Duration
+}
+
+func (e *DownloadTimeoutError) Error() string {
+	return fmt.Sprintf("stream not ready after %s — CDN may still be processing: %s", e.Timeout, e.StreamURL)
+}
