@@ -159,9 +159,14 @@ func (c *Client) request(ctx context.Context, method, path string, params url.Va
 	if err != nil {
 		return nil, err
 	}
+	// Inject API key as a query parameter (the BabiesIQ API reads it from ?api=).
+	q := url.Values{"api": {c.apiKey}}
 	if params != nil {
-		u.RawQuery = params.Encode()
+		for k, vs := range params {
+			q[k] = vs
+		}
 	}
+	u.RawQuery = q.Encode()
 
 	var lastErr error
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
@@ -183,7 +188,6 @@ func (c *Client) request(ctx context.Context, method, path string, params url.Va
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Set("X-API-Key", c.apiKey)
 		req.Header.Set("User-Agent", "biq-api-go/"+sdkVersion)
 		if len(bodyBytes) > 0 {
 			req.Header.Set("Content-Type", "application/json")
@@ -332,7 +336,7 @@ type SongsService struct{ client *Client }
 // Returns metadata JSON only — the StreamURL is a CDN link but the file may not
 // be ready yet. Use Download if you need the file saved to disk.
 func (s *SongsService) Search(ctx context.Context, query string, opts *SongOptions) (*Song, error) {
-	params := url.Values{"q": {query}}
+	params := url.Values{"query": {query}}
 	if opts != nil {
 		if opts.EQ != "" {
 			params.Set("eq", opts.EQ)
@@ -360,7 +364,7 @@ func (s *SongsService) Search(ctx context.Context, query string, opts *SongOptio
 // Returns SongDownloadResult which embeds the Song metadata and the resolved FilePath.
 func (s *SongsService) Download(ctx context.Context, query, destPath string, opts *SongDownloadOptions) (*SongDownloadResult, error) {
 	params := url.Values{
-		"q":        {query},
+		"query":    {query},
 		"download": {"true"},
 	}
 	pollTimeout := defaultSongPollTimeout
@@ -400,7 +404,7 @@ type VideosService struct{ client *Client }
 // Returns metadata JSON only — the StreamURL is a CDN link but the file may not
 // be ready yet. Use Download if you need the file saved to disk.
 func (s *VideosService) Search(ctx context.Context, query string, opts *VideoOptions) (*Video, error) {
-	params := url.Values{"q": {query}}
+	params := url.Values{"query": {query}}
 	if opts != nil && opts.Quality != "" {
 		params.Set("quality", opts.Quality)
 	}
@@ -423,7 +427,7 @@ func (s *VideosService) Search(ctx context.Context, query string, opts *VideoOpt
 // Returns VideoDownloadResult which embeds the Video metadata and the resolved FilePath.
 func (s *VideosService) Download(ctx context.Context, query, destPath string, opts *VideoDownloadOptions) (*VideoDownloadResult, error) {
 	params := url.Values{
-		"q":        {query},
+		"query":    {query},
 		"download": {"true"},
 	}
 	pollTimeout := defaultVideoPollTimeout
