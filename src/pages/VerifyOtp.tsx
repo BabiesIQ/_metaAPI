@@ -237,7 +237,7 @@ export function VerifyOtpPage() {
                 {t("auth.locked_desc")}
               </p>
               <Link
-                to="/login"
+                to="/signin"
                 className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
               >
                 {t("auth.back_to_login")}
@@ -384,7 +384,7 @@ export function VerifyOtpPage() {
 
         <div className="mt-4 text-center">
           <Link
-            to="/login"
+            to="/signin"
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
             data-ocid="verify_otp.back_to_login.link"
           >

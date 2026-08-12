@@ -13,7 +13,7 @@ export function PasswordSuccessPage() {
   // Auto-redirect to login after 4 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.navigate({ to: "/login" });
+      router.navigate({ to: "/signin" });
     }, 4000);
     return () => clearTimeout(timer);
   }, [router]);
@@ -96,7 +96,7 @@ export function PasswordSuccessPage() {
             </Button>
           </Link>
           <Link
-            to="/login"
+            to="/signin"
             className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
             data-ocid="password_success.login.link"
           >

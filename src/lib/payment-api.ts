@@ -6,15 +6,16 @@ type ApiResponse<T> = { success: boolean; data?: T; error?: string | null };
 /**
  * Safely parse a fetch Response into an ApiResponse.
  * - Handles non-JSON bodies (HTML error pages, empty bodies, plain text)
- * - Redirects to /login on 401
+ * - Redirects to /signin on 401
  * - Surfaces the HTTP status code in the error string for easier debugging
  */
 async function parseResponse<T>(res: Response): Promise<ApiResponse<T>> {
   // 401 → clear auth state and go to login
   if (res.status === 401) {
     useAuthStore.getState().setUser(null);
-    if (!window.location.pathname.startsWith("/login")) {
-      window.location.href = "/login";
+    const path = window.location.pathname;
+    if (path !== "/login" && path !== "/signin") {
+      window.location.replace("/signin");
     }
     return { success: false, error: "Unauthorized" };
   }

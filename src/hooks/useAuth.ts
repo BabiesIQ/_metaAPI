@@ -13,7 +13,7 @@ export function useAuth() {
       // best effort
     }
     setUser(null);
-    window.location.href = "/login";
+    window.location.replace("/signin");
   };
 
   return {

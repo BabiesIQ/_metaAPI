@@ -405,7 +405,7 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-2 pl-1">
               <Link
-                to="/login"
+                to="/signin"
                 className="h-8 px-4 flex items-center text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/10"
                 data-ocid="header.login.button"
               >
@@ -557,7 +557,7 @@ export function Header() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Link
-                      to="/login"
+                      to="/signin"
                       onClick={() => setMobileOpen(false)}
                       className="w-full flex items-center justify-center h-9 rounded-lg border border-white/15 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white transition-all duration-200"
                       data-ocid="header.mobile_login.button"

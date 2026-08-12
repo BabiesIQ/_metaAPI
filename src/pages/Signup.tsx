@@ -387,7 +387,7 @@ export function SignupPage() {
         <p className="text-center text-sm text-muted-foreground mt-6">
           {t("auth.have_account")}{" "}
           <Link
-            to="/login"
+            to="/signin"
             className="text-primary hover:text-primary/70 font-semibold transition-colors"
             data-ocid="signup.login.link"
           >

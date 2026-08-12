@@ -3,6 +3,7 @@ import { Activity, Globe, Shield, Zap } from "lucide-react";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 interface AuthShellProps {
   children: ReactNode;
@@ -209,6 +210,11 @@ export function AuthShell({ children }: AuthShellProps) {
 
       {/* ── Right form panel ── */}
       <div className="flex-1 flex flex-col min-h-screen relative overflow-hidden">
+        {/* Keep the user's selected day/night theme available throughout auth. */}
+        <div className="absolute top-5 right-5 z-20">
+          <ThemeSwitcher />
+        </div>
+
         {/* Subtle bg orbs for form side */}
         <div
           aria-hidden="true"

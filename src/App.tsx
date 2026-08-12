@@ -94,6 +94,8 @@ const refundRoute = createRoute({ getParentRoute: () => rootRoute, path: "/refun
 
 // ── Auth routes ───────────────────────────────────────────────────────────────
 const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: "/login", component: LoginPage });
+// Keep /login working for existing links while exposing the clearer sign-in URL.
+const signinRoute = createRoute({ getParentRoute: () => rootRoute, path: "/signin", component: LoginPage });
 const bannedRoute = createRoute({ getParentRoute: () => rootRoute, path: "/banned", component: BannedPage });
 const signupRoute = createRoute({ getParentRoute: () => rootRoute, path: "/signup", component: SignupPage });
 const forgotPasswordRoute = createRoute({ getParentRoute: () => rootRoute, path: "/forgot-password", component: ForgotPasswordPage });
@@ -159,6 +161,7 @@ const routeTree = rootRoute.addChildren([
   termsRoute,
   refundRoute,
   loginRoute,
+  signinRoute,
   signupRoute,
   forgotPasswordRoute,
   resetPasswordRoute,

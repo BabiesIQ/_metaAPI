@@ -4,18 +4,22 @@ export type ThemeMode = "dark" | "light" | "midnight";
 export const CYCLE_ORDER: ThemeMode[] = ["dark", "light", "midnight"];
 const STORAGE_KEY = "babiesiq-theme";
 
-function getSavedTheme(): ThemeMode {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === "dark" || saved === "light" || saved === "midnight")
-      return saved as ThemeMode;
-  } catch {}
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+export function getSavedTheme(): ThemeMode {
+  if (typeof window !== "undefined") {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved === "dark" || saved === "light" || saved === "midnight")
+        return saved as ThemeMode;
+    } catch {}
+  }
+  return typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
 }
 
 export function applyThemeToDOM(mode: ThemeMode) {
+  if (typeof document === "undefined") return;
   const root = document.documentElement;
   root.classList.remove("dark", "light", "midnight");
   root.setAttribute("data-theme", mode);
@@ -25,6 +29,17 @@ export function applyThemeToDOM(mode: ThemeMode) {
   try {
     localStorage.setItem(STORAGE_KEY, mode);
   } catch {}
+}
+
+/**
+ * Apply the saved theme before React mounts. Auth pages do not render the
+ * header, so waiting for ThemeSwitcher would otherwise make them fall back to
+ * the light theme after a session redirect.
+ */
+export function initializeTheme() {
+  const saved = getSavedTheme();
+  applyThemeToDOM(saved);
+  return saved;
 }
 
 export function useThemeMode() {

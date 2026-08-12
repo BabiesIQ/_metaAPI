@@ -35,7 +35,7 @@ export function TelegramConnectPage() {
 
     if (!user) {
       const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-      navigate({ to: `/login?redirect=${returnUrl}` });
+      navigate({ to: `/signin?redirect=${returnUrl}` });
       return;
     }
 

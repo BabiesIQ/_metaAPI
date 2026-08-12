@@ -86,7 +86,7 @@ export function ForgotPasswordPage() {
             </p>
 
             <Link
-              to="/login"
+              to="/signin"
               className="w-full"
               data-ocid="forgot_password.back_to_login.button"
             >
@@ -184,7 +184,7 @@ export function ForgotPasswordPage() {
 
             <div className="mt-6 text-center">
               <Link
-                to="/login"
+                to="/signin"
                 className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 data-ocid="forgot_password.back_to_login.link"
               >

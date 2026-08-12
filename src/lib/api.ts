@@ -27,12 +27,14 @@ export interface ApiResponse<T> {
 
 /**
  * Handle a 401 Unauthorized response globally.
- * Clears auth state and redirects to /login — unless we're already there.
+ * Clears auth state and redirects to /signin — unless we're already there.
  */
 function handle401(): ApiResponse<never> {
   useAuthStore.getState().setUser(null);
-  if (!window.location.pathname.startsWith("/login")) {
-    window.location.href = "/login";
+  const path = window.location.pathname;
+  const onSignInPage = path === "/login" || path === "/signin";
+  if (!onSignInPage) {
+    window.location.replace("/signin");
   }
   return { success: false, data: null as never, error: "Unauthorized" };
 }
@@ -100,7 +102,7 @@ async function publicApiClient<T>(
 
 /**
  * Protected fetch — sends credentials: 'include' (session cookie).
- * Use for all panel/authenticated endpoints. Auto-redirects to /login on 401.
+ * Use for all panel/authenticated endpoints. Auto-redirects to /signin on 401.
  */
 async function protectedApiClient<T>(
   path: string,
@@ -248,7 +250,7 @@ export function changePassword(current: string, newPwd: string) {
 
 export function getMe() {
   // Use authApiClient (no 401-redirect) so unauthenticated users on public
-  // pages aren't forcibly sent to /login during the session check.
+  // pages aren't forcibly sent to /signin during the session check.
   return authApiClient<MeResponse>("/api/v1/me");
 }
 

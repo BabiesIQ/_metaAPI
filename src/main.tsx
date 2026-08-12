@@ -6,6 +6,7 @@ import "./index.css";
 import { loadConfig } from "./lib/config";
 import { verifyDomain } from "./lib/domain-verify";
 import { UnauthorizedScreen } from "./components/UnauthorizedScreen";
+import { initializeTheme } from "./hooks/useThemeMode";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,6 +16,9 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Restore the user's day/night choice before the first screen renders.
+initializeTheme();
 
 async function bootstrap() {
   // Load runtime config first — domain verify needs the backend URL

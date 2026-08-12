@@ -56,7 +56,7 @@ export function OAuthCallbackPage() {
       setStatus("error");
       // Give the user a moment to see the message before redirecting
       setTimeout(() => {
-        window.location.replace(`/login?error=${encodeURIComponent(code)}`);
+        window.location.replace(`/signin?error=${encodeURIComponent(code)}`);
       }, 3000);
       return;
     }
@@ -71,7 +71,7 @@ export function OAuthCallbackPage() {
           setErrorMsg(getErrorMessage(code));
           setStatus("error");
           setTimeout(() => {
-            window.location.replace(`/login?error=${encodeURIComponent(code)}&reason=${encodeURIComponent(res.error ?? "")}`);
+            window.location.replace(`/signin?error=${encodeURIComponent(code)}&reason=${encodeURIComponent(res.error ?? "")}`);
           }, 3000);
         }
       })
@@ -87,7 +87,7 @@ export function OAuthCallbackPage() {
         setErrorMsg(getErrorMessage(code));
         setStatus("error");
         setTimeout(() => {
-          window.location.replace(`/login?error=${encodeURIComponent(code)}&reason=${encodeURIComponent(raw)}`);
+          window.location.replace(`/signin?error=${encodeURIComponent(code)}&reason=${encodeURIComponent(raw)}`);
         }, 3000);
       });
   }, []);

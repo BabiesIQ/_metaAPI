@@ -23,7 +23,7 @@ export function BannedPage() {
       // best effort
     }
     setBannedUser(null);
-    window.location.href = "/login";
+    window.location.replace("/signin");
   };
 
   const displayName =
