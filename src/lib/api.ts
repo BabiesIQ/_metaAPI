@@ -52,6 +52,12 @@ async function parseResponse<T>(res: Response): Promise<ApiResponse<T>> {
     if (parsed) return parsed;
     return { success: false, data: null as T, error: `HTTP ${res.status}` };
   }
+  // Signup intentionally returns 204 No Content after accepting the request.
+  // Treat the empty successful response as a valid API response instead of
+  // calling res.json(), which throws and is shown to users as a network error.
+  if (res.status === 204) {
+    return { success: true, data: null as T, error: null };
+  }
   const json = (await res.json()) as ApiResponse<T>;
   return json;
 }
