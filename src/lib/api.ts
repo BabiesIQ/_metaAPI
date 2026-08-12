@@ -167,7 +167,7 @@ export function login(email: string, password: string) {
 }
 
 export function signup(email: string, password: string) {
-  return authApiClient<null>("/api/v1/auth/signup", {
+  return authApiClient<null>("/api/v1/auth/register", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
@@ -181,7 +181,7 @@ export function verifyOtp(email: string, otp: string, purpose: string) {
 }
 
 export function resendOtp(email: string, purpose: string) {
-  return authApiClient<null>("/api/v1/auth/resend-otp", {
+  return authApiClient<null>("/api/v1/auth/request-otp", {
     method: "POST",
     body: JSON.stringify({ email, purpose }),
   });
@@ -246,7 +246,7 @@ export function logout() {
 }
 
 export function changePassword(current: string, newPwd: string) {
-  return protectedApiClient<null>("/api/v1/auth/change-password", {
+  return protectedApiClient<null>("/api/v1/profile/change-password", {
     method: "POST",
     body: JSON.stringify({ current_password: current, new_password: newPwd }),
   });
@@ -261,7 +261,7 @@ export function getMe() {
 }
 
 export function updateProfile(formData: FormData) {
-  return protectedFormClient<MeResponse>("/api/v1/profile", formData);
+  return protectedFormClient<MeResponse>("/api/v1/profile/update", formData);
 }
 
 // ── API Keys — PROTECTED ──────────────────────────────────────────────────────
@@ -359,7 +359,7 @@ export function getNotifications() {
 }
 
 export function markNotificationsRead(ids: string[] | "all") {
-  return protectedApiClient<null>("/api/v1/notifications/mark-read", {
+  return protectedApiClient<null>("/api/v1/notifications/read", {
     method: "POST",
     body: JSON.stringify({ ids }),
   });

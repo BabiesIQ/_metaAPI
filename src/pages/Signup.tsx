@@ -11,10 +11,20 @@ import { z } from "zod";
 import { AuthShell } from "@/components/AuthShell";
 import { GoogleIcon } from "@/components/GoogleIcon";
 import { PasswordStrength } from "@/components/PasswordStrength";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
 import { googleOAuth, signup } from "@/lib/api";
 
 const schema = z
@@ -36,6 +46,7 @@ type FormValues = z.infer<typeof schema>;
 export function SignupPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { isLoading: isAuthLoading, isAuthenticated, logout } = useAuth();
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -52,6 +63,57 @@ export function SignupPage() {
 
   const passwordValue = watch("password", "");
   const termsValue = watch("terms");
+
+  if (isAuthLoading) {
+    return (
+      <AuthShell>
+        <div className="flex min-h-48 items-center justify-center">
+          <span
+            className="h-6 w-6 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
+            aria-label="Checking your session"
+          />
+        </div>
+      </AuthShell>
+    );
+  }
+
+  if (isAuthenticated) {
+    return (
+      <AuthShell>
+        <AlertDialog open>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {t(
+                  "auth.already_signed_in_title",
+                  "You are already signed in",
+                )}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t(
+                  "auth.already_signed_in_desc",
+                  "Please sign out before creating a new BabiesIQ account.",
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction
+                onClick={() => router.navigate({ to: "/panel/dashboard" })}
+              >
+                {t("auth.continue_dashboard", "Go to dashboard")}
+              </AlertDialogAction>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => void logout()}
+              >
+                {t("auth.logout", "Sign out")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </AuthShell>
+    );
+  }
 
   const onSubmit = async (values: FormValues) => {
     try {
