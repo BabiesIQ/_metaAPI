@@ -344,8 +344,37 @@ export function getPlans() {
 
 // ── Invoices — PROTECTED ──────────────────────────────────────────────────────
 
-export function getInvoices() {
-  return protectedApiClient<Invoice[]>("/api/v1/invoices");
+function normalizeInvoiceList(value: unknown): Invoice[] {
+  if (Array.isArray(value)) {
+    return value as Invoice[];
+  }
+
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+
+  const record = value as Record<string, unknown>;
+  for (const key of ["invoices", "items", "results", "records"]) {
+    if (Array.isArray(record[key])) {
+      return record[key] as Invoice[];
+    }
+  }
+
+  const nestedData = record.data;
+  if (nestedData && typeof nestedData === "object") {
+    return normalizeInvoiceList(nestedData);
+  }
+
+  return [];
+}
+
+export async function getInvoices(): Promise<ApiResponse<Invoice[]>> {
+  const response = await protectedApiClient<unknown>("/api/v1/invoices");
+
+  return {
+    ...response,
+    data: response.success ? normalizeInvoiceList(response.data) : [],
+  };
 }
 
 export function getInvoicePdfUrl(id: number) {
