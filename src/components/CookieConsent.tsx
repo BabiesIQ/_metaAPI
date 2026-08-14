@@ -38,7 +38,7 @@ export function CookieConsent() {
           exit={{ opacity: 0, y: 60, scale: 0.96 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="fixed bottom-4 left-4 right-4 md:left-auto md:right-5 md:bottom-5 md:w-[360px] z-[9999]"
-          aria-label="Cookie consent"
+          aria-label={t("cookie.title")}
           data-ocid="cookie_consent.dialog"
         >
           {/* Glow blob behind card */}
@@ -68,26 +68,23 @@ export function CookieConsent() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground leading-snug">
-                  {t("cookies.title", "We use cookies")}
+                  {t("cookie.title")}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  {t(
-                    "cookies.description",
-                    "We use cookies to improve your experience, analyze traffic, and personalize content. You can accept or decline.",
-                  )}
+                  {t("cookie.message")}
                 </p>
               </div>
             </div>
 
             {/* Privacy link */}
             <p className="text-[11px] text-muted-foreground">
-              {t("cookies.read_more", "Learn more in our")}{" "}
+              {t("cookie.learnMore")}{" "}
               <a
                 href="/privacy"
                 className="underline underline-offset-2 hover:text-foreground transition-colors duration-150"
                 data-ocid="cookie_consent.privacy_link"
               >
-                {t("cookies.privacy_policy", "Privacy Policy")}
+                {t("footer.privacy")}
               </a>
               .
             </p>
@@ -100,7 +97,7 @@ export function CookieConsent() {
                 className="flex-1 h-8 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:border-border/80 transition-all duration-200"
                 data-ocid="cookie_consent.decline_button"
               >
-                {t("cookies.decline", "Decline")}
+                {t("cookie.decline")}
               </button>
               <button
                 type="button"
@@ -113,7 +110,7 @@ export function CookieConsent() {
                 }}
                 data-ocid="cookie_consent.accept_button"
               >
-                {t("cookies.accept", "Accept all")}
+                {t("cookie.acceptAll")}
               </button>
             </div>
           </div>
