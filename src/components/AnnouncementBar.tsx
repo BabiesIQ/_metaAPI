@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getBackendUrl } from "@/lib/config";
 import type { AnnouncementListItem } from "@/types/announcements";
 
@@ -16,6 +17,7 @@ interface AnnouncementBarProps {
 export function AnnouncementBar({ className = "" }: AnnouncementBarProps) {
   const [announcement, setAnnouncement] = useState<AnnouncementListItem | null>(null);
   const [dismissed, setDismissed] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   const fetchLatest = async () => {
     try {
@@ -95,7 +97,7 @@ export function AnnouncementBar({ className = "" }: AnnouncementBarProps) {
       {/* Dismiss */}
       <button
         onClick={handleDismiss}
-        aria-label="Dismiss announcement"
+        aria-label={t("common.close")}
         className="relative ml-auto shrink-0 p-1 rounded-md hover:bg-white/10 transition-colors text-white/60 hover:text-white"
       >
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
