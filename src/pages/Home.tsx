@@ -25,6 +25,49 @@ import {
 import { motion, useScroll, useSpring } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePageSeo } from "@/lib/seo";
+
+const HOME_SCHEMA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://babiesiq.tech/#organization",
+      name: "BabiesIQ",
+      alternateName: ["BabiesIQ API", "BabyAPI"],
+      url: "https://babiesiq.tech/",
+      sameAs: ["https://github.com/BabiesIQ/_metaAPI"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://babiesiq.tech/#website",
+      name: "BabiesIQ",
+      url: "https://babiesiq.tech/",
+      publisher: { "@id": "https://babiesiq.tech/#organization" },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://babiesiq.tech/docs?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "BabiesIQ API",
+      alternateName: "BabyAPI",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "Web",
+      url: "https://babiesiq.tech/",
+      description:
+        "YouTube audio and video streaming API for developers with search, stream URLs, downloads, and EQ presets.",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "INR",
+        description: "Free forever developer plan",
+      },
+    },
+  ],
+};
 
 // ─── Scroll progress ──────────────────────────────────────────────────────────
 function ScrollProgressBar() {
@@ -957,6 +1000,13 @@ const TRUST_LOGOS = [
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export function HomePage() {
+  usePageSeo({
+    title: "BabiesIQ | YouTube Audio & Video Streaming API",
+    description:
+      "BabiesIQ is a fast YouTube audio and video streaming API for developers. Search videos, get stream URLs, apply EQ presets, and build with one API key.",
+    path: "/",
+    jsonLd: HOME_SCHEMA,
+  });
   const ripple = useRipple();
   const doubled = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
   const { t } = useTranslation();

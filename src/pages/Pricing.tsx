@@ -6,6 +6,7 @@ import { Check, ChevronDown, Minus, Shield, Star, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePageSeo } from "@/lib/seo";
 
 type BillingCycle = "monthly" | "yearly";
 type Duration = 1 | 3 | 6 | 12;
@@ -284,6 +285,12 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
 }
 
 export function PricingPage() {
+  usePageSeo({
+    title: "BabiesIQ API Pricing | Free YouTube Streaming API Plan",
+    description:
+      "Compare BabiesIQ API plans for YouTube audio and video streaming, search, downloads, EQ presets, request limits, and developer support.",
+    path: "/pricing",
+  });
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [durations, setDurations] = useState<Record<string, Duration>>({
     pro: 1,

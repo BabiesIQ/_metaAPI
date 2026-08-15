@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -6,6 +7,102 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DIST = path.join(__dirname, "dist");
+const INDEX_HTML = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
+const SITE_ORIGIN = "https://babiesiq.tech";
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/assets/banner.svg`;
+
+const PUBLIC_SEO = {
+  "/": {
+    title: "BabiesIQ | YouTube Audio & Video Streaming API",
+    description:
+      "BabiesIQ is a fast YouTube audio and video streaming API for developers. Search videos, get stream URLs, apply EQ presets, and build with one API key.",
+  },
+  "/docs": {
+    title: "BabiesIQ API Docs | YouTube Audio & Video Streaming API",
+    description:
+      "Read the BabiesIQ REST API documentation for YouTube search, audio and video stream URLs, downloads, seek, EQ presets, rate limits, and code examples.",
+  },
+  "/pricing": {
+    title: "BabiesIQ API Pricing | Free YouTube Streaming API Plan",
+    description:
+      "Compare BabiesIQ API plans for YouTube audio and video streaming, search, downloads, EQ presets, request limits, and developer support.",
+  },
+  "/contact": {
+    title: "Contact BabiesIQ | API Support and Partnerships",
+    description:
+      "Contact the BabiesIQ team for API integration support, streaming API questions, business plans, partnerships, and developer help.",
+  },
+  "/privacy": {
+    title: "BabiesIQ Privacy Policy",
+    description: "Read the BabiesIQ privacy policy for the website, API, and developer accounts.",
+  },
+  "/terms": {
+    title: "BabiesIQ Terms of Service",
+    description: "Read the terms that apply to using the BabiesIQ API, website, and developer services.",
+  },
+  "/refund": {
+    title: "BabiesIQ Refund Policy",
+    description: "Read the BabiesIQ refund policy for paid API plans and developer services.",
+  },
+};
+
+function escapeAttribute(value) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;");
+}
+
+function seoHtml(pathname) {
+  const page = PUBLIC_SEO[pathname];
+  const title = page?.title ?? "BabiesIQ | YouTube Audio & Video Streaming API";
+  const description =
+    page?.description ??
+    "BabiesIQ is a fast YouTube audio and video streaming API for developers.";
+  const robots = page ? "index, follow" : "noindex, follow";
+  const canonical = `${SITE_ORIGIN}${pathname === "/" ? "/" : pathname}`;
+  return INDEX_HTML.replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+    .replace(
+      /<meta name="description"[^>]*>/,
+      `<meta name="description" content="${escapeAttribute(description)}" />`,
+    )
+    .replace(
+      /<meta name="robots"[^>]*>/,
+      `<meta name="robots" content="${robots}" />`,
+    )
+    .replace(
+      /<link rel="canonical"[^>]*>/,
+      `<link rel="canonical" href="${escapeAttribute(canonical)}" />`,
+    )
+    .replace(
+      /<meta property="og:title"[^>]*>/,
+      `<meta property="og:title" content="${escapeAttribute(title)}" />`,
+    )
+    .replace(
+      /<meta property="og:description"[^>]*>/,
+      `<meta property="og:description" content="${escapeAttribute(description)}" />`,
+    )
+    .replace(
+      /<meta property="og:url"[^>]*>/,
+      `<meta property="og:url" content="${escapeAttribute(canonical)}" />`,
+    )
+    .replace(
+      /<meta property="og:image"[^>]*>/,
+      `<meta property="og:image" content="${DEFAULT_OG_IMAGE}" />`,
+    )
+    .replace(
+      /<meta name="twitter:title"[^>]*>/,
+      `<meta name="twitter:title" content="${escapeAttribute(title)}" />`,
+    )
+    .replace(
+      /<meta name="twitter:description"[^>]*>/,
+      `<meta name="twitter:description" content="${escapeAttribute(description)}" />`,
+    )
+    .replace(
+      /<meta name="twitter:image"[^>]*>/,
+      `<meta name="twitter:image" content="${DEFAULT_OG_IMAGE}" />`,
+    );
+}
 
 // ── Static files ──────────────────────────────────────────────────────────────
 app.use(express.static(DIST));
@@ -15,8 +112,8 @@ app.get("/ping", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 app.get("/health", (_req, res) => res.json({ status: "ok", ts: Date.now() }));
 
 // ── SPA fallback ──────────────────────────────────────────────────────────────
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(DIST, "index.html"));
+app.get("*", (req, res) => {
+  res.type("html").send(seoHtml(req.path));
 });
 
 // ── Start server ──────────────────────────────────────────────────────────────

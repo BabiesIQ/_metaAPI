@@ -25,6 +25,24 @@ import {
 import { motion } from "motion/react";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePageSeo } from "@/lib/seo";
+
+const DOCS_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: "BabiesIQ API Documentation",
+  description:
+    "Complete BabiesIQ REST API reference for YouTube search, audio streaming, video streaming, downloads, seek, and EQ presets.",
+  url: "https://babiesiq.tech/docs",
+  author: { "@type": "Organization", name: "BabiesIQ" },
+  publisher: { "@type": "Organization", name: "BabiesIQ" },
+  about: [
+    "YouTube API",
+    "audio streaming API",
+    "video streaming API",
+    "REST API",
+  ],
+};
 import { toast } from "sonner";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -579,6 +597,14 @@ function LangIcon({ lang }: { lang: string }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export function DocsPage() {
+  usePageSeo({
+    title: "BabiesIQ API Docs | YouTube Audio & Video Streaming API",
+    description:
+      "Read the BabiesIQ REST API documentation for YouTube search, audio and video stream URLs, downloads, seek, EQ presets, rate limits, and code examples.",
+    path: "/docs",
+    type: "article",
+    jsonLd: DOCS_SCHEMA,
+  });
   const { t } = useTranslation();
   const [active, setActive] = useState<SectionId>("overview");
   const [codeLang, setCodeLang] = useState<CodeLang>("curl");

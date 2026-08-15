@@ -17,6 +17,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { usePageSeo } from "@/lib/seo";
 
 interface FormState {
   name: string;
@@ -127,6 +128,12 @@ function AnimatedCheckmark() {
 }
 
 export function ContactPage() {
+  usePageSeo({
+    title: "Contact BabiesIQ | API Support and Partnerships",
+    description:
+      "Contact the BabiesIQ team for API integration support, streaming API questions, business plans, partnerships, and developer help.",
+    path: "/contact",
+  });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormState>({
