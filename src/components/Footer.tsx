@@ -62,7 +62,7 @@ function NewsletterStrip() {
       transition={{ duration: 0.5 }}
     >
       <div className="absolute inset-0 animated-gradient-bg opacity-80" />
-      <div className="absolute inset-0 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-background/35" />
       <div className="relative container mx-auto px-4 py-12">
         <div className="max-w-xl mx-auto text-center">
           <motion.div
@@ -113,7 +113,7 @@ function NewsletterStrip() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 bg-card/60 border border-border rounded-lg px-3 py-2 text-sm font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 backdrop-blur-sm transition-smooth"
+                   className="flex-1 surface-machined-soft rounded-lg px-3 py-2 text-sm font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-smooth"
                   data-ocid="footer.newsletter.email.input"
                 />
                 <button
@@ -230,7 +230,7 @@ export function Footer() {
   return (
     <>
       <NewsletterStrip />
-      <footer className="bg-card border-t border-border" data-ocid="footer">
+      <footer className="surface-machined rounded-t-2xl border-t border-border" data-ocid="footer">
         {/* Top accent line */}
         <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         <div className="container mx-auto px-4 md:px-6 pt-14 pb-8">

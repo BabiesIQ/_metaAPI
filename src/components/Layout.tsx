@@ -43,7 +43,7 @@ export function Layout({ children }: LayoutProps) {
   useScrollProgress();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
       <Header />
       <motion.main
         className="flex-1"

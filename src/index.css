@@ -9,20 +9,20 @@
     --font-mono: "JetBrains Mono";
     --radius: 0.625rem;
 
-    --background: 0.99 0.002 260;
-    --foreground: 0.15 0.01 260;
-    --card: 1.0 0.0 0;
+    --background: 0.12 0.018 270;
+    --foreground: 0.94 0.018 275;
+    --card: 0.17 0.022 270;
     --card-foreground: 0.15 0.01 260;
-    --popover: 1.0 0.0 0;
+    --popover: 0.2 0.025 270;
     --popover-foreground: 0.15 0.01 260;
 
     --primary: 0.72 0.24 254;
     --primary-foreground: 0.98 0.005 260;
 
-    --secondary: 0.95 0.01 260;
-    --secondary-foreground: 0.25 0.01 260;
-    --muted: 0.95 0.01 260;
-    --muted-foreground: 0.5 0.01 260;
+    --secondary: 0.22 0.025 270;
+    --secondary-foreground: 0.9 0.018 275;
+    --muted: 0.2 0.022 270;
+    --muted-foreground: 0.62 0.018 275;
 
     --accent: 0.65 0.22 310;
     --accent-foreground: 0.98 0.005 260;
@@ -30,8 +30,8 @@
     --destructive: 0.62 0.21 25;
     --destructive-foreground: 0.98 0.005 260;
 
-    --border: 0.9 0.01 260;
-    --input: 0.9 0.01 260;
+    --border: 0.34 0.025 275;
+    --input: 0.31 0.025 275;
     --ring: 0.72 0.24 254;
 
     --chart-1: 0.72 0.24 254;
@@ -40,13 +40,13 @@
     --chart-4: 0.75 0.15 85;
     --chart-5: 0.68 0.2 270;
 
-    --sidebar: 0.98 0 0;
-    --sidebar-foreground: 0.15 0.01 260;
+    --sidebar: 0.14 0.02 270;
+    --sidebar-foreground: 0.94 0.018 275;
     --sidebar-primary: 0.72 0.24 254;
     --sidebar-primary-foreground: 0.98 0.005 260;
-    --sidebar-accent: 0.95 0.01 260;
-    --sidebar-accent-foreground: 0.25 0.01 260;
-    --sidebar-border: 0.9 0.01 260;
+    --sidebar-accent: 0.22 0.025 270;
+    --sidebar-accent-foreground: 0.9 0.018 275;
+    --sidebar-border: 0.34 0.025 275;
     --sidebar-ring: 0.72 0.24 254;
   }
 
@@ -141,6 +141,10 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background-image:
+      radial-gradient(circle at 12% 0%, oklch(0.38 0.12 295 / 0.13), transparent 30rem),
+      radial-gradient(circle at 92% 18%, oklch(0.4 0.1 250 / 0.1), transparent 28rem);
+    background-attachment: fixed;
   }
 }
 
@@ -162,8 +166,7 @@
   }
 
   .shadow-elevated {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px
-      rgba(0, 0, 0, 0.04);
+    box-shadow: 0 18px 38px -18px rgba(0, 0, 0, 0.82), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.55);
   }
 
   .shadow-subtle {
@@ -171,7 +174,36 @@
   }
 
   .glass {
-    @apply backdrop-blur-md bg-opacity-10 border border-white border-opacity-10;
+    @apply bg-card border border-border;
+    backdrop-filter: none;
+  }
+
+  /* Shared BabiesIQ machined-surface treatment: opaque, rim-lit, and tactile. */
+  .surface-machined {
+    background: oklch(var(--card));
+    border: 1px solid oklch(0.48 0.025 275 / 0.72);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0.01 275 / 0.1),
+      inset 0 -1px 0 oklch(0 0 0 / 0.62),
+      0 16px 34px -22px oklch(0 0 0 / 0.95);
+  }
+
+  .surface-machined-soft {
+    background: oklch(var(--secondary));
+    border: 1px solid oklch(0.4 0.025 275 / 0.68);
+    box-shadow: inset 0 1px 0 oklch(1 0.01 275 / 0.07), inset 0 -1px 0 oklch(0 0 0 / 0.5);
+  }
+
+  .press-depth {
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+  .press-depth:hover {
+    transform: translateY(-1px);
+    border-color: oklch(0.58 0.12 290 / 0.78);
+  }
+  .press-depth:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 5px oklch(0 0 0 / 0.42);
   }
 
   .gradient-primary {
@@ -518,6 +550,31 @@
 
 [dir="rtl"] .rounded-r-lg {
   border-radius: 0.5rem 0 0 0.5rem;
+}
+
+/* Treat Radix/shadcn primitives as the same solid control surface. */
+[data-slot="popover-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dialog-content"],
+[data-slot="alert-dialog-content"],
+[data-slot="sheet-content"],
+[role="dialog"] {
+  background: oklch(var(--popover)) !important;
+  border: 1px solid oklch(0.48 0.025 275 / 0.72) !important;
+  box-shadow:
+    inset 0 1px 0 oklch(1 0.01 275 / 0.1),
+    inset 0 -1px 0 oklch(0 0 0 / 0.62),
+    0 22px 48px -24px oklch(0 0 0 / 0.95) !important;
+  backdrop-filter: none !important;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid oklch(var(--ring));
+  outline-offset: 2px;
 }
 
 /* ── Markdown renderer styles ─────────────────────────────────────────── */

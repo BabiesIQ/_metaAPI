@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Keep account, admin, and operational endpoints out of search results.
+Disallow: /panel/
+Disallow: /admin/
+Disallow: /login
+Disallow: /signin
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/
+Disallow: /connect/
+Disallow: /banned
+
+Sitemap: https://babiesiq.tech/sitemap.xml

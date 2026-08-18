@@ -31,7 +31,7 @@ export function AuthShell({ children }: AuthShellProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-[100dvh] flex bg-background">
       {/* ── Left brand panel (desktop only) ── */}
       <div
         className="hidden lg:flex lg:w-[52%] xl:w-[55%] flex-col justify-between relative overflow-hidden"
@@ -143,8 +143,8 @@ export function AuthShell({ children }: AuthShellProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
-              className="rounded-xl border border-white/10 overflow-hidden"
-              style={{ background: "oklch(0.08 0.025 254 / 0.85)" }}
+              className="surface-machined rounded-xl overflow-hidden"
+              style={{ background: "oklch(0.1 0.025 254)" }}
             >
               {/* Terminal title bar */}
               <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/8">
@@ -252,7 +252,7 @@ export function AuthShell({ children }: AuthShellProps) {
         {/* Form centered */}
         <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8 relative z-10">
           <div className="w-full max-w-[420px]">
-            <div className="bg-card border border-border rounded-2xl p-7 sm:p-8 shadow-elevated">
+            <div className="surface-machined rounded-2xl p-7 sm:p-8 shadow-elevated">
               {children}
             </div>
 

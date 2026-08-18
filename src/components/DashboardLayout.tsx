@@ -364,10 +364,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const contentMargin = collapsed ? "md:ml-[64px]" : "md:ml-[240px]";
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex h-[100dvh] bg-background text-foreground overflow-hidden">
       {/* ── Desktop sidebar ───────────────────────────────────────────────────── */}
       <aside
-        className={`hidden md:flex flex-col ${sidebarWidth} shrink-0 border-r border-border bg-card/80 backdrop-blur-xl fixed inset-y-0 left-0 z-30 transition-all duration-300`}
+        className={`hidden md:flex flex-col ${sidebarWidth} shrink-0 border-r border-border bg-card fixed inset-y-0 left-0 z-30 transition-all duration-300 shadow-elevated`}
         data-ocid="dashboard.sidebar"
       >
         <SidebarContent
@@ -415,7 +415,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 340, damping: 32 }}
-              className="fixed inset-y-0 left-0 z-50 w-[240px] bg-card border-r border-border shadow-2xl md:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-[240px] surface-machined border-r border-border shadow-2xl md:hidden"
               data-ocid="dashboard.sidebar_mobile"
             >
               <button
@@ -447,7 +447,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Top bar */}
         <header
-          className="sticky top-0 z-20 h-14 shrink-0 flex items-center gap-3 px-4 bg-card/80 backdrop-blur-xl border-b border-border"
+          className="sticky top-0 z-20 h-14 shrink-0 flex items-center gap-3 px-4 bg-card border-b border-border shadow-[0_8px_20px_-18px_rgba(0,0,0,.9)]"
           data-ocid="dashboard.topbar"
         >
           {/* Mobile hamburger */}

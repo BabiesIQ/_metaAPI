@@ -91,7 +91,7 @@ function LanguageSwitcher() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-white/10 backdrop-blur-xl bg-black/70 shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-52 rounded-xl surface-machined z-50 overflow-hidden"
             data-ocid="header.lang_dropdown.popover"
           >
             <div className="p-1.5 max-h-72 overflow-y-auto">
@@ -162,8 +162,8 @@ export function Header() {
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "border-b border-white/10 bg-black/50 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.35)]"
-          : "border-b border-white/5 bg-white/5 backdrop-blur-md"
+          ? "border-b border-border bg-card shadow-elevated"
+          : "border-b border-border/70 bg-background"
       }`}
       data-ocid="header"
     >
@@ -314,7 +314,7 @@ export function Header() {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="flex items-center gap-2 h-8 pl-2 pr-3 rounded-lg border border-white/10 hover:border-purple-400/40 hover:bg-white/10 transition-all duration-200 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50"
+                    className="surface-machined-soft flex items-center gap-2 h-8 pl-2 pr-3 rounded-lg hover:border-purple-400/40 transition-all duration-200 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50"
                     data-ocid="header.user_menu.button"
                   >
                     {avatarUrl ? (
@@ -344,7 +344,7 @@ export function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-52 border-white/10 bg-black/80 backdrop-blur-xl"
+                  className="w-52 surface-machined"
                 >
                   <DropdownMenuLabel className="pb-1">
                     <div className="flex items-center gap-2">
@@ -491,10 +491,9 @@ export function Header() {
             className="md:hidden overflow-hidden"
           >
             <div
-              className="border-t border-white/10 px-4 pb-5 pt-3"
+              className="border-t border-border px-4 pb-5 pt-3 surface-machined"
               style={{
-                background: "rgba(0,0,0,0.6)",
-                backdropFilter: "blur(20px)",
+                 background: "oklch(var(--card))",
               }}
             >
               {/* Nav links */}

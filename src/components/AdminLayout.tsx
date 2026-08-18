@@ -50,11 +50,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex h-[100dvh] bg-background text-foreground overflow-hidden">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col transition-transform duration-200",
+          "fixed inset-y-0 left-0 z-50 w-64 surface-machined border-r border-border flex flex-col transition-transform duration-200",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:relative lg:translate-x-0"
         )}
@@ -131,7 +131,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 border-b border-border flex items-center gap-4 px-4 lg:px-6 shrink-0 bg-card">
+        <header className="h-16 border-b border-border flex items-center gap-4 px-4 lg:px-6 shrink-0 bg-card shadow-[0_8px_20px_-18px_rgba(0,0,0,.9)]">
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden text-muted-foreground hover:text-foreground"
