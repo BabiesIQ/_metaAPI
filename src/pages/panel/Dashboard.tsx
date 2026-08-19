@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { DownloadYoutubeButton } from "@/components/DownloadYoutubeButton";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -419,13 +420,19 @@ export function DashboardPage() {
                 data-ocid="dashboard.apikey.card"
               >
                 <CardContent className="p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Key className="w-4 h-4 text-primary" />
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Key className="w-4 h-4 text-primary" />
+                      </div>
+                      <h3 className="font-display font-semibold text-sm text-foreground">
+                        {t("api_keys.active_key")}
+                      </h3>
                     </div>
-                    <h3 className="font-display font-semibold text-sm text-foreground">
-                      {t("api_keys.active_key")}
-                    </h3>
+                    <DownloadYoutubeButton
+                      compact
+                      dataOcid="dashboard.youtube_example.download.button"
+                    />
                   </div>
                   {keysLoading ? (
                     <div className="space-y-3">

@@ -1,4 +1,5 @@
 import { Layout } from "@/components/Layout";
+import { DownloadYoutubeButton } from "@/components/DownloadYoutubeButton";
 import { TryItWidget } from "@/components/TryItWidget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1002,39 +1003,42 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
                 subtitle="Full search → stream flow in your language."
               />
 
-              {/* Language tabs with sliding indicator */}
-              <div
-                className="relative flex flex-wrap gap-1.5 mb-4"
-                data-ocid="docs.code_examples.lang_tabs"
-              >
-                {CODE_LANGUAGES.map((lang) => (
-                  <motion.button
-                    key={lang}
-                    type="button"
-                    onClick={() => setCodeLang(lang)}
-                    data-ocid={`docs.code_examples.tab.${lang.toLowerCase()}`}
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                    className={`relative px-3 py-1.5 rounded-md text-xs font-mono transition-all duration-200 ${
-                      codeLang === lang
-                        ? "bg-primary/15 text-primary border border-primary/30"
-                        : "bg-muted/40 text-muted-foreground border border-border hover:text-foreground hover:border-primary/20"
-                    }`}
-                  >
-                    {lang}
-                    {codeLang === lang && (
-                      <motion.div
-                        layoutId="lang-indicator"
-                        className="absolute inset-0 rounded-md border border-primary/30 bg-primary/10 -z-10"
-                        transition={{
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                  </motion.button>
-                ))}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                {/* Language tabs with sliding indicator */}
+                <div
+                  className="relative flex flex-wrap gap-1.5"
+                  data-ocid="docs.code_examples.lang_tabs"
+                >
+                  {CODE_LANGUAGES.map((lang) => (
+                    <motion.button
+                      key={lang}
+                      type="button"
+                      onClick={() => setCodeLang(lang)}
+                      data-ocid={`docs.code_examples.tab.${lang.toLowerCase()}`}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      className={`relative px-3 py-1.5 rounded-md text-xs font-mono transition-all duration-200 ${
+                        codeLang === lang
+                          ? "bg-primary/15 text-primary border border-primary/30"
+                          : "bg-muted/40 text-muted-foreground border border-border hover:text-foreground hover:border-primary/20"
+                      }`}
+                    >
+                      {lang}
+                      {codeLang === lang && (
+                        <motion.div
+                          layoutId="lang-indicator"
+                          className="absolute inset-0 rounded-md border border-primary/30 bg-primary/10 -z-10"
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+                <DownloadYoutubeButton dataOcid="docs.youtube_example.download.button" />
               </div>
 
               <CopyableCode
