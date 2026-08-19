@@ -274,7 +274,6 @@ export default function BillingPage() {
                     )}
                     <div className={cn("relative flex flex-col flex-1 rounded-2xl border p-5 transition-all duration-300",
                       plan.highlight ? "border-primary/50 bg-card shadow-[0_0_32px_-4px_oklch(0.72_0.24_254_/_0.25)] ring-1 ring-primary/20" : "border-border bg-card hover:border-primary/30 hover:shadow-md")}>
-                      {plan.highlight && <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent rounded-t-2xl" />}
                       <div className="mb-4">
                         <div className="flex items-center gap-2.5 mb-3">
                           <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", plan.highlight ? "bg-gradient-to-br from-violet-500 to-purple-700" : "bg-muted")}>

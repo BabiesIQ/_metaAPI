@@ -282,7 +282,6 @@ export function ProfileSettingsPage() {
               transition={{ duration: 0.35 }}
             >
               <Card className="bg-card border-border shadow-sm overflow-hidden">
-                <div className="h-0.5 gradient-primary w-full" />
                 <CardHeader className="pb-3">
                   <CardTitle className="font-display text-base flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">

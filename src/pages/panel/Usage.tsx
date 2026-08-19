@@ -82,7 +82,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-card/95 backdrop-blur-sm border border-border/60 rounded-xl px-4 py-3 shadow-elevated text-xs font-body">
+    <div className="surface-machined-soft px-4 py-3 shadow-elevated text-xs font-body">
       <p className="text-foreground font-semibold mb-1">{d.date}</p>
       <p className="text-muted-foreground">
         {d.count.toLocaleString()} {t("usage.requests")}
@@ -241,7 +241,7 @@ export function UsagePage() {
         <PageTransition>
           <div className="space-y-6" data-ocid="usage.page">
             {/* Page header */}
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h1 className="text-2xl font-display font-bold text-foreground">
                   {t("usage.title")}
@@ -250,7 +250,7 @@ export function UsagePage() {
                   {t("usage.subtitle")}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -291,11 +291,8 @@ export function UsagePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, delay: i * 0.08 }}
                 >
-                  <Card className="bg-card/50 backdrop-blur-sm border-border/60 hover:border-primary/25 hover:shadow-md transition-smooth overflow-hidden">
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${s.tint} pointer-events-none`}
-                    />
-                    <CardContent className="p-5 relative">
+                  <Card className="relative bg-card border-border hover:border-primary/25 hover:shadow-md transition-smooth overflow-hidden">
+                    <CardContent className="p-5 relative z-10">
                       <div className="flex items-start justify-between mb-4">
                         <div
                           className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.iconClass}`}
@@ -331,34 +328,38 @@ export function UsagePage() {
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.32 }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bannerInfo.bg}`}
+                  className={`surface-machined-soft flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${bannerInfo.bg}`}
                   data-ocid="usage.status.banner"
                 >
-                  <span
-                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      usageStatus === "safe"
-                        ? "bg-emerald-400"
-                        : usageStatus === "restricted"
-                          ? "bg-amber-400"
-                          : "bg-destructive"
-                    }`}
-                  />
-                  <p className={`text-sm font-medium ${bannerInfo.text}`}>
-                    {t(bannerInfo.key)}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        usageStatus === "safe"
+                          ? "bg-emerald-400"
+                          : usageStatus === "restricted"
+                            ? "bg-amber-400"
+                            : "bg-destructive"
+                      }`}
+                    />
+                    <p className={`text-sm font-medium ${bannerInfo.text}`}>
+                      {t(bannerInfo.key)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground pl-5 sm:pl-0" data-ocid="usage.reset_time">
+                    <Clock className="w-3 h-3 flex-shrink-0" />
+                    <span>
+                      Daily quota resets in{" "}
+                      <span className="font-semibold text-foreground">{resetCountdown}</span>{" "}
+                      ({IST_RESET_TIME_LABEL})
+                    </span>
+                  </div>
                 </motion.div>
-
-                {/* Reset time chip */}
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-1" data-ocid="usage.reset_time">
-                  <Clock className="w-3 h-3 flex-shrink-0" />
-                  <span>Daily quota resets in <span className="font-semibold text-foreground">{resetCountdown}</span> ({IST_RESET_TIME_LABEL})</span>
-                </div>
               </>
             )}
 
             {/* Period selector */}
             <div
-              className="flex items-center gap-1 p-1 rounded-xl bg-muted/40 border border-border w-fit"
+              className="surface-machined-soft flex items-center gap-1 p-1 w-fit"
               data-ocid="usage.period.tabs"
             >
               {PERIOD_OPTIONS.map((opt) => (
@@ -368,7 +369,7 @@ export function UsagePage() {
                   onClick={() => setSelectedDays(opt.days)}
                   className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-smooth ${
                     selectedDays === opt.days
-                      ? "bg-card text-foreground shadow-sm"
+                      ? "bg-card text-foreground shadow-sm rounded-lg"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   data-ocid={`usage.period.${opt.days}d`}
@@ -380,7 +381,7 @@ export function UsagePage() {
 
             {/* Summary mini-stats */}
             {!usageLoading && days && days.length > 0 && (
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
                   {
                     icon: BarChart2,
@@ -403,7 +404,7 @@ export function UsagePage() {
                 ].map((s) => (
                   <div
                     key={s.label}
-                    className="flex items-center gap-3 bg-card/50 backdrop-blur-sm border border-border/60 rounded-xl px-4 py-3"
+                    className="surface-machined-soft flex items-center gap-3 px-4 py-3"
                   >
                     <s.icon
                       className={`w-4 h-4 ${s.iconClass} flex-shrink-0`}
@@ -428,7 +429,7 @@ export function UsagePage() {
               transition={{ duration: 0.4, delay: 0.4 }}
             >
               <Card
-                className="bg-card/50 backdrop-blur-sm border-border/60"
+                className="bg-card border-border"
                 data-ocid="usage.chart.section"
               >
                 <CardHeader className="pb-3">

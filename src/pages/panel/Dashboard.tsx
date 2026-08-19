@@ -65,7 +65,6 @@ interface StatCardProps {
   value: React.ReactNode;
   sub?: string;
   iconClass: string;
-  accentBar?: string;
   isLoading?: boolean;
   progress?: number;
   delay?: number;
@@ -77,7 +76,6 @@ function StatCard({
   value,
   sub,
   iconClass,
-  accentBar,
   isLoading,
   progress,
   delay = 0,
@@ -89,9 +87,6 @@ function StatCard({
       transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       <Card className="bg-card border-border hover:border-primary/30 transition-smooth group relative overflow-hidden h-full">
-        {accentBar && (
-          <div className={`absolute top-0 left-0 right-0 h-0.5 ${accentBar}`} />
-        )}
         <CardContent className="p-5">
           <div className="flex items-start justify-between mb-3">
             <div
@@ -365,7 +360,6 @@ export function DashboardPage() {
               value={today.toLocaleString()}
               sub={t("usage.api_calls_today")}
               iconClass="bg-primary/10 text-primary"
-              accentBar="gradient-primary"
               isLoading={isLoading}
               delay={0.05}
             />
@@ -424,7 +418,6 @@ export function DashboardPage() {
                 className="bg-card border-border overflow-hidden h-full"
                 data-ocid="dashboard.apikey.card"
               >
-                <div className="h-0.5 gradient-primary w-full" />
                 <CardContent className="p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">

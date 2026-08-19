@@ -102,7 +102,6 @@ function SingleKeyCard({
 
   return (
     <Card className="bg-card border-border overflow-hidden">
-      <div className="h-0.5 gradient-primary w-full" />
       <CardHeader className="pb-3 pt-5">
         <div className="flex items-center justify-between">
           <CardTitle className="font-display text-base flex items-center gap-2">
@@ -554,7 +553,6 @@ export function ApiKeysPage() {
                 transition={{ duration: 0.35, delay: 0.05 }}
               >
                 <Card className="bg-card border-border overflow-hidden">
-                  <div className="h-0.5 gradient-primary w-full" />
                   <CardHeader className="pb-3 pt-5">
                     <CardTitle className="font-display text-base flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
