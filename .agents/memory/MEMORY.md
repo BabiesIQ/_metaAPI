@@ -1,1 +1,0 @@
-- [Preview and GitHub access](preview-and-github-access.md) — clean old preview processes before reusing a port; keep Git remotes credentialless and authenticate pushes per command.
