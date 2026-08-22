@@ -3,7 +3,7 @@ import { ArrowUp, Check, Send } from "lucide-react";
 import { AnimatePresence, motion, useScroll } from "motion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SiGithub, SiX, SiYoutube } from "react-icons/si";
+import { SiGithub, SiInstagram, SiTelegram } from "react-icons/si";
 import { toast } from "sonner";
 
 const SOCIAL_LINKS = [
@@ -15,17 +15,24 @@ const SOCIAL_LINKS = [
     iconClass: "w-[17px] h-[17px] -translate-y-px",
   },
   {
-    href: "https://x.com",
-    label: "X / Twitter",
-    icon: SiX,
-    hoverClass: "social-icon-x",
+    href: "https://www.instagram.com/uttam.rathore1m/",
+    label: "Instagram (Founder)",
+    icon: SiInstagram,
+    hoverClass: "social-icon-instagram",
     iconClass: "w-3.5 h-3.5",
   },
   {
-    href: "https://youtube.com",
-    label: "YouTube",
-    icon: SiYoutube,
-    hoverClass: "social-icon-youtube",
+    href: "https://www.instagram.com/babiesiq.tech/",
+    label: "Instagram (BabiesIQ.Tech)",
+    icon: SiInstagram,
+    hoverClass: "social-icon-instagram",
+    iconClass: "w-3.5 h-3.5",
+  },
+  {
+    href: "https://t.me/BABY_MUSIC09_BOT",
+    label: "Official Telegram Bot",
+    icon: SiTelegram,
+    hoverClass: "social-icon-telegram",
     iconClass: "w-3.5 h-3.5",
   },
 ];
@@ -289,6 +296,35 @@ export function Footer() {
                     <Icon className={iconClass} />
                   </motion.a>
                 ))}
+              </div>
+              <div className="mt-5 space-y-1.5 text-xs text-muted-foreground">
+                <p className="font-semibold uppercase tracking-[0.14em] text-foreground/80">
+                  Official links
+                </p>
+                <a
+                  href="https://www.instagram.com/uttam.rathore1m/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Founder Instagram: @uttam.rathore1m
+                </a>
+                <a
+                  href="https://www.instagram.com/babiesiq.tech/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  BabiesIQ.Tech Instagram
+                </a>
+                <a
+                  href="https://t.me/BABY_MUSIC09_BOT"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Official Telegram Bot: @BABY_MUSIC09_BOT
+                </a>
               </div>
             </motion.div>
 
