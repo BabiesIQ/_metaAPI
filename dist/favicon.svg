@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">BabiesIQ</title>
+  <desc id="desc">A colorful BabiesIQ baby face icon</desc>
+  <defs>
+    <radialGradient id="background" cx="28%" cy="22%" r="92%">
+      <stop offset="0" stop-color="#63d9ff"/>
+      <stop offset="0.38" stop-color="#2d7ff0"/>
+      <stop offset="0.72" stop-color="#5650d8"/>
+      <stop offset="1" stop-color="#161a38"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="84" y1="42" x2="430" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff7a8"/>
+      <stop offset="0.22" stop-color="#ff9d82"/>
+      <stop offset="0.5" stop-color="#ef6fe7"/>
+      <stop offset="0.74" stop-color="#54cfff"/>
+      <stop offset="1" stop-color="#7df4c4"/>
+    </linearGradient>
+    <linearGradient id="face" x1="174" y1="138" x2="339" y2="378" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#eef7ff"/>
+      <stop offset="1" stop-color="#a9c7ff"/>
+    </linearGradient>
+    <linearGradient id="faceStroke" x1="163" y1="151" x2="354" y2="368" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fffde4"/>
+      <stop offset="0.52" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#9ac7ff"/>
+    </linearGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="circleClip"><circle cx="256" cy="256" r="220"/></clipPath>
+  </defs>
+
+  <circle cx="256" cy="256" r="238" fill="#090d1d" opacity="0.7"/>
+  <circle cx="256" cy="256" r="226" fill="url(#background)"/>
+  <g clip-path="url(#circleClip)">
+    <circle cx="90" cy="92" r="134" fill="#59d7ff" opacity="0.28" filter="url(#softShadow)"/>
+    <circle cx="420" cy="112" r="128" fill="#ff668f" opacity="0.34" filter="url(#softShadow)"/>
+    <circle cx="404" cy="420" r="150" fill="#ffd95e" opacity="0.3" filter="url(#softShadow)"/>
+    <circle cx="102" cy="422" r="120" fill="#75f0d0" opacity="0.2" filter="url(#softShadow)"/>
+  </g>
+
+  <circle cx="256" cy="256" r="216" fill="none" stroke="url(#ring)" stroke-width="15"/>
+  <circle cx="256" cy="256" r="201" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="3"/>
+
+  <path d="M164 222c0-65 41-111 92-111s92 46 92 111v57c0 65-41 111-92 111s-92-46-92-111z" fill="#0b1431" opacity="0.35" filter="url(#softShadow)"/>
+  <path d="M164 217c0-61 41-104 92-104s92 43 92 104v62c0 59-41 101-92 101s-92-42-92-101z" fill="url(#face)" stroke="url(#faceStroke)" stroke-width="11"/>
+
+  <path d="M151 239c-18 0-29 13-29 31s12 31 30 31h17v-62z" fill="url(#face)" stroke="url(#faceStroke)" stroke-width="10"/>
+  <path d="M361 239c18 0 29 13 29 31s-12 31-30 31h-17v-62z" fill="url(#face)" stroke="url(#faceStroke)" stroke-width="10"/>
+
+  <path d="M191 195c18-25 39-37 65-37 25 0 47 12 65 37" fill="none" stroke="#ffffff" stroke-opacity="0.65" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="214" cy="250" r="13" fill="#182548"/>
+  <circle cx="298" cy="250" r="13" fill="#182548"/>
+  <circle cx="210" cy="246" r="4" fill="#ffffff"/>
+  <circle cx="294" cy="246" r="4" fill="#ffffff"/>
+  <path d="M256 263c-8 8-8 18 0 23" fill="none" stroke="#6c82b7" stroke-width="8" stroke-linecap="round"/>
+  <path d="M207 303c27 27 71 27 98 0" fill="none" stroke="#182548" stroke-width="12" stroke-linecap="round"/>
+
+  <circle cx="116" cy="151" r="11" fill="#fff28a" filter="url(#glow)"/>
+  <circle cx="399" cy="172" r="8" fill="#ff9a8b" filter="url(#glow)"/>
+  <path d="M398 89v28M384 103h28" stroke="#fff5a1" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+</svg>
