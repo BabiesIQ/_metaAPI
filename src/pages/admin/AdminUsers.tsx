@@ -116,7 +116,8 @@ export function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Link
-                        to={`/admin/users/${u.id}`}
+                        to="/admin/users/$id"
+                        params={{ id: String(u.id) }}
                         className="text-xs text-primary hover:underline font-medium"
                       >
                         Manage →

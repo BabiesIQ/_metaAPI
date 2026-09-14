@@ -105,15 +105,101 @@ function seoHtml(pathname) {
 }
 
 // ── Static files ──────────────────────────────────────────────────────────────
-app.use(express.static(DIST));
+// Vite's fingerprinted assets are safe to cache for a year. Runtime config and
+// non-fingerprinted public files get shorter cache lifetimes.
+app.use(
+  express.static(DIST, {
+    index: false,
+    setHeaders(res, filePath) {
+      const relativePath = path.relative(DIST, filePath).replaceAll(path.sep, "/");
+      const fileName = path.basename(filePath);
+
+      if (
+        relativePath.startsWith("assets/index-") ||
+        /\.[a-f0-9]{8,}\.(?:js|css|map)$/i.test(fileName)
+      ) {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=31536000, immutable",
+        );
+        return;
+      }
+
+      if (fileName === "config.json") {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=300, stale-while-revalidate=86400",
+        );
+        return;
+      }
+
+      if (relativePath.startsWith("assets/")) {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=604800, stale-while-revalidate=2592000",
+        );
+      }
+    },
+  }),
+);
 
 // ── Health / Ping endpoint ────────────────────────────────────────────────────
 app.get("/ping", (_req, res) => res.json({ ok: true, ts: Date.now() }));
 app.get("/health", (_req, res) => res.json({ status: "ok", ts: Date.now() }));
 
+const APP_ROUTES = new Set([
+  "/",
+  "/docs",
+  "/pricing",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/refund",
+  "/login",
+  "/signin",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/auth/verify-otp",
+  "/auth/create-password",
+  "/auth/password-success",
+  "/auth/callback",
+  "/banned",
+  "/panel/dashboard",
+  "/panel/api-keys",
+  "/panel/usage",
+  "/panel/billing",
+  "/panel/invoices",
+  "/panel/notifications",
+  "/panel/profile-settings",
+  "/connect/telegram",
+  "/admin/login",
+  "/admin/dashboard",
+  "/admin/users",
+  "/admin/support",
+  "/admin/admins",
+  "/admin/announcements",
+  "/admin/domains",
+]);
+
+function isKnownAppRoute(pathname) {
+  const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  return (
+    APP_ROUTES.has(normalized) ||
+    /^\/admin\/(?:users|support)\/[^/]+$/.test(normalized)
+  );
+}
+
 // ── SPA fallback ──────────────────────────────────────────────────────────────
 app.get("*", (req, res) => {
-  res.type("html").send(seoHtml(req.path));
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+  );
+  res
+    .status(isKnownAppRoute(req.path) ? 200 : 404)
+    .type("html")
+    .send(seoHtml(req.path));
 });
 
 // ── Start server ──────────────────────────────────────────────────────────────

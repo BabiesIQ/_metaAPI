@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getMe, getUsage } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { getUsage } from "@/lib/api";
 import { countdownToReset, IST_RESET_TIME_LABEL } from "@/types/index";
-import type { MeResponse, UsageDay } from "@/types/index";
+import type { UsageDay } from "@/types/index";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import {
@@ -153,6 +154,7 @@ const STAT_CARDS = (
 
 export function UsagePage() {
   const { t } = useTranslation();
+  const { user: me, isLoading: meLoading, initialize: refreshMe } = useAuth();
   const [selectedDays, setSelectedDays] = useState(7);
   const [resetCountdown, setResetCountdown] = useState(() => countdownToReset());
 
@@ -160,20 +162,6 @@ export function UsagePage() {
     const id = setInterval(() => setResetCountdown(countdownToReset()), 60_000);
     return () => clearInterval(id);
   }, []);
-
-
-  const {
-    data: me,
-    isLoading: meLoading,
-    refetch: refetchMe,
-  } = useQuery<MeResponse>({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const res = await getMe();
-      if (!res.success || !res.data) throw new Error(res.error ?? "Failed");
-      return res.data;
-    },
-  });
 
   const {
     data: days,
@@ -228,7 +216,7 @@ export function UsagePage() {
       : null;
 
   const handleRefresh = () => {
-    void refetchMe();
+    void refreshMe();
     void refetchUsage();
   };
 

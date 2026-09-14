@@ -1224,11 +1224,6 @@ const resources = {
         duration_3_months: "3 महीने",
         duration_6_months: "6 महीने",
         duration_12_months: "1 साल",
-      
-        duration_1_month: "1 महीना",
-        duration_3_months: "3 महीने",
-        duration_6_months: "6 महीने",
-        duration_12_months: "1 साल",
         subscription: "सब्सक्रिप्शन",
         upgrade_title: "अपना प्लान अपग्रेड करें",
         queue_title: "सब्सक्रिप्शन कतार",

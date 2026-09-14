@@ -20,6 +20,8 @@ const STATUS_BADGE: Record<UsageStatus, string> = {
   safe: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
   restricted: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
   banned: "bg-destructive/10 text-destructive border-destructive/20",
+  warning: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+  exceeded: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
 function UsageBar({ value, max }: { value: number; max: number }) {

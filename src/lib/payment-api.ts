@@ -1,7 +1,12 @@
 import { getBackendUrl } from "@/lib/config";
 import { useAuthStore } from "@/store/auth";
 
-type ApiResponse<T> = { success: boolean; data?: T; error?: string | null };
+type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string | null;
+  message?: string | null;
+};
 
 /**
  * Safely parse a fetch Response into an ApiResponse.

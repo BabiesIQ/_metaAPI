@@ -5,7 +5,7 @@ import { PaymentResultModal } from "@/components/PaymentResultModal";
 import { InvoiceExportModal } from "@/components/InvoiceExportModal";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { getMe, getInvoices } from "@/lib/api";
+import { getInvoices } from "@/lib/api";
 import { createOrder, verifyPayment, getSubscriptions, type SubscriptionEntry } from "@/lib/payment-api";
 import type { Invoice } from "@/types/index";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -95,10 +95,9 @@ export default function BillingPage() {
   const [invoiceModal, setInvoiceModal] = useState<Invoice | null>(null);
   const [showAllInvoices, setShowAllInvoices] = useState(false);
 
-  const { data: meData } = useQuery({ queryKey: ["me"], queryFn: getMe });
-  const currentPlan = meData?.data?.plan?.code ?? "free";
-  const userEmail = meData?.data?.user?.email ?? "";
-  const userName = [meData?.data?.user?.first_name, meData?.data?.user?.last_name].filter(Boolean).join(" ");
+  const currentPlan = user?.plan?.code ?? "free";
+  const userEmail = user?.user?.email ?? "";
+  const userName = [user?.user?.first_name, user?.user?.last_name].filter(Boolean).join(" ");
 
   const { data: subsData } = useQuery({ queryKey: ["subscriptions"], queryFn: getSubscriptions });
   const subscriptions: SubscriptionEntry[] = subsData?.data?.subscriptions ?? [];

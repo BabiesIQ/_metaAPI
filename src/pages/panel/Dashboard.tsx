@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getApiKeys, getMe, getNotifications } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { getApiKeys, getNotifications } from "@/lib/api";
 import { PLAN_LABELS } from "@/types/index";
-import type { ApiKey, MeResponse, Notification, PlanCode } from "@/types/index";
+import type { ApiKey, Notification, PlanCode } from "@/types/index";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
@@ -234,15 +235,7 @@ function ActiveKeyCard({ activeKey }: { activeKey: ApiKey | undefined }) {
 
 export function DashboardPage() {
   const { t } = useTranslation();
-
-  const { data: me, isLoading: meLoading } = useQuery<MeResponse>({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const res = await getMe();
-      if (!res.success || !res.data) throw new Error(res.error ?? "Failed");
-      return res.data;
-    },
-  });
+  const { user: me, isLoading: meLoading } = useAuth();
 
   const { data: keysData, isLoading: keysLoading } = useQuery<ApiKey[]>({
     queryKey: ["api-keys"],

@@ -86,7 +86,7 @@ export function LoginPage() {
       const res = await login(values.email, values.password);
       if (!res.success) {
         // Security: banned account — show full banned page instead of toast
-        const data = res.data as Record<string, unknown> | null | undefined;
+        const data = res.data as unknown as Record<string, unknown> | null | undefined;
         if (data && typeof data === 'object' && data['banned'] === true) {
           const bannedUserRaw = data['user'] as Record<string, unknown> | undefined;
           setBannedUser({

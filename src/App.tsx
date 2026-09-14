@@ -6,58 +6,186 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 
-// ── Pages ─────────────────────────────────────────────────────────────────────
-import { ContactPage } from "@/pages/Contact";
-import { DocsPage } from "@/pages/Docs";
-import { ForgotPasswordPage } from "@/pages/ForgotPassword";
-import { HomePage } from "@/pages/Home";
-import { LoginPage } from "@/pages/Login";
-import { PricingPage } from "@/pages/Pricing";
-import { PrivacyPage } from "@/pages/Privacy";
-import { RefundPage } from "@/pages/Refund";
-import { ResetPasswordPage } from "@/pages/ResetPassword";
-import { SignupPage } from "@/pages/Signup";
-import { TermsPage } from "@/pages/Terms";
-
-// Banned page
-import { BannedPage } from "@/pages/BannedPage";
-
-// Auth flow pages
-import { CreatePasswordPage } from "@/pages/auth/CreatePassword";
-import { OAuthCallbackPage } from "@/pages/auth/OAuthCallback";
-import { PasswordSuccessPage } from "@/pages/auth/PasswordSuccess";
-import { VerifyOtpPage } from "@/pages/auth/VerifyOtp";
-
 import { CookieConsent } from "@/components/CookieConsent";
-import { TelegramConnectPage } from "@/pages/TelegramConnect";
-import { ApiKeysPage } from "@/pages/panel/ApiKeys";
-import { BillingPage } from "@/pages/panel/Billing";
-// Panel pages
-import { DashboardPage } from "@/pages/panel/Dashboard";
-import { InvoicesPage } from "@/pages/panel/Invoices";
-import { NotificationsPage } from "@/pages/panel/Notifications";
-import { ProfileSettingsPage } from "@/pages/panel/ProfileSettings";
-import { UsagePage } from "@/pages/panel/Usage";
-
-// Admin imports
-import { AdminLoginPage } from "@/pages/admin/AdminLogin";
-import { AdminDashboardPage } from "@/pages/admin/AdminDashboard";
-import { AdminUsersPage } from "@/pages/admin/AdminUsers";
-import { AdminUserDetailPage } from "@/pages/admin/AdminUserDetail";
-import { AdminSupportPage } from "@/pages/admin/AdminSupport";
-import { AdminSupportDetailPage } from "@/pages/admin/AdminSupportDetail";
-import { AdminManageAdminsPage } from "@/pages/admin/AdminManageAdmins";
 import { AdminProtectedRoute } from "@/pages/admin/AdminProtectedRoute";
-import { AdminAnnouncementsPage } from "@/pages/admin/AdminAnnouncements";
-import { AdminTrustedDomainsPage } from "@/pages/admin/AdminTrustedDomains";
 
 import { AnimatePresence } from "motion/react";
 import { applyDocumentDir } from "./lib/i18n";
+
+// Keep the initial public bundle small. Auth, panel, admin, and documentation
+// pages are only downloaded when a user navigates to them.
+const ContactPage = lazy(() =>
+  import("@/pages/Contact").then(({ ContactPage }) => ({ default: ContactPage })),
+);
+const DocsPage = lazy(() =>
+  import("@/pages/Docs").then(({ DocsPage }) => ({ default: DocsPage })),
+);
+const ForgotPasswordPage = lazy(() =>
+  import("@/pages/ForgotPassword").then(({ ForgotPasswordPage }) => ({
+    default: ForgotPasswordPage,
+  })),
+);
+const HomePage = lazy(() =>
+  import("@/pages/Home").then(({ HomePage }) => ({ default: HomePage })),
+);
+const LoginPage = lazy(() =>
+  import("@/pages/Login").then(({ LoginPage }) => ({ default: LoginPage })),
+);
+const PricingPage = lazy(() =>
+  import("@/pages/Pricing").then(({ PricingPage }) => ({ default: PricingPage })),
+);
+const PrivacyPage = lazy(() =>
+  import("@/pages/Privacy").then(({ PrivacyPage }) => ({ default: PrivacyPage })),
+);
+const RefundPage = lazy(() =>
+  import("@/pages/Refund").then(({ RefundPage }) => ({ default: RefundPage })),
+);
+const ResetPasswordPage = lazy(() =>
+  import("@/pages/ResetPassword").then(({ ResetPasswordPage }) => ({
+    default: ResetPasswordPage,
+  })),
+);
+const SignupPage = lazy(() =>
+  import("@/pages/Signup").then(({ SignupPage }) => ({ default: SignupPage })),
+);
+const TermsPage = lazy(() =>
+  import("@/pages/Terms").then(({ TermsPage }) => ({ default: TermsPage })),
+);
+const BannedPage = lazy(() =>
+  import("@/pages/BannedPage").then(({ BannedPage }) => ({ default: BannedPage })),
+);
+const CreatePasswordPage = lazy(() =>
+  import("@/pages/auth/CreatePassword").then(({ CreatePasswordPage }) => ({
+    default: CreatePasswordPage,
+  })),
+);
+const OAuthCallbackPage = lazy(() =>
+  import("@/pages/auth/OAuthCallback").then(({ OAuthCallbackPage }) => ({
+    default: OAuthCallbackPage,
+  })),
+);
+const PasswordSuccessPage = lazy(() =>
+  import("@/pages/auth/PasswordSuccess").then(({ PasswordSuccessPage }) => ({
+    default: PasswordSuccessPage,
+  })),
+);
+const VerifyOtpPage = lazy(() =>
+  import("@/pages/auth/VerifyOtp").then(({ VerifyOtpPage }) => ({
+    default: VerifyOtpPage,
+  })),
+);
+const TelegramConnectPage = lazy(() =>
+  import("@/pages/TelegramConnect").then(({ TelegramConnectPage }) => ({
+    default: TelegramConnectPage,
+  })),
+);
+const ApiKeysPage = lazy(() =>
+  import("@/pages/panel/ApiKeys").then(({ ApiKeysPage }) => ({ default: ApiKeysPage })),
+);
+const BillingPage = lazy(() =>
+  import("@/pages/panel/Billing").then(({ default: BillingPage }) => ({
+    default: BillingPage,
+  })),
+);
+const DashboardPage = lazy(() =>
+  import("@/pages/panel/Dashboard").then(({ DashboardPage }) => ({
+    default: DashboardPage,
+  })),
+);
+const InvoicesPage = lazy(() =>
+  import("@/pages/panel/Invoices").then(({ InvoicesPage }) => ({
+    default: InvoicesPage,
+  })),
+);
+const NotificationsPage = lazy(() =>
+  import("@/pages/panel/Notifications").then(({ NotificationsPage }) => ({
+    default: NotificationsPage,
+  })),
+);
+const ProfileSettingsPage = lazy(() =>
+  import("@/pages/panel/ProfileSettings").then(({ ProfileSettingsPage }) => ({
+    default: ProfileSettingsPage,
+  })),
+);
+const UsagePage = lazy(() =>
+  import("@/pages/panel/Usage").then(({ UsagePage }) => ({ default: UsagePage })),
+);
+const AdminLoginPage = lazy(() =>
+  import("@/pages/admin/AdminLogin").then(({ AdminLoginPage }) => ({
+    default: AdminLoginPage,
+  })),
+);
+const AdminDashboardPage = lazy(() =>
+  import("@/pages/admin/AdminDashboard").then(({ AdminDashboardPage }) => ({
+    default: AdminDashboardPage,
+  })),
+);
+const AdminUsersPage = lazy(() =>
+  import("@/pages/admin/AdminUsers").then(({ AdminUsersPage }) => ({
+    default: AdminUsersPage,
+  })),
+);
+const AdminUserDetailPage = lazy(() =>
+  import("@/pages/admin/AdminUserDetail").then(({ AdminUserDetailPage }) => ({
+    default: AdminUserDetailPage,
+  })),
+);
+const AdminSupportPage = lazy(() =>
+  import("@/pages/admin/AdminSupport").then(({ AdminSupportPage }) => ({
+    default: AdminSupportPage,
+  })),
+);
+const AdminSupportDetailPage = lazy(() =>
+  import("@/pages/admin/AdminSupportDetail").then(({ AdminSupportDetailPage }) => ({
+    default: AdminSupportDetailPage,
+  })),
+);
+const AdminManageAdminsPage = lazy(() =>
+  import("@/pages/admin/AdminManageAdmins").then(({ AdminManageAdminsPage }) => ({
+    default: AdminManageAdminsPage,
+  })),
+);
+const AdminAnnouncementsPage = lazy(() =>
+  import("@/pages/admin/AdminAnnouncements").then(({ AdminAnnouncementsPage }) => ({
+    default: AdminAnnouncementsPage,
+  })),
+);
+const AdminTrustedDomainsPage = lazy(() =>
+  import("@/pages/admin/AdminTrustedDomains").then(({ AdminTrustedDomainsPage }) => ({
+    default: AdminTrustedDomainsPage,
+  })),
+);
+
+function RouteLoading() {
+  return (
+    <div className="min-h-[50vh] flex items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-3" role="status" aria-live="polite">
+        <div className="w-7 h-7 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-muted-foreground">Loading page…</p>
+      </div>
+    </div>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <main className="min-h-[70vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
+      <p className="text-sm uppercase tracking-[0.25em] text-primary">404</p>
+      <h1 className="text-3xl font-display font-bold text-foreground">Page not found</h1>
+      <p className="max-w-md text-muted-foreground">
+        This page does not exist or may have moved.
+      </p>
+      <a className="text-primary hover:underline" href="/">
+        Return home
+      </a>
+    </main>
+  );
+}
 
 // ── Root ──────────────────────────────────────────────────────────────────────
 
@@ -73,7 +201,9 @@ function RootComponent() {
     <>
       <AnnouncementBar />
       <AnimatePresence mode="wait">
-        <Outlet />
+        <Suspense fallback={<RouteLoading />}>
+          <Outlet />
+        </Suspense>
       </AnimatePresence>
       <Toaster position="top-right" richColors />
       <CookieConsent />
@@ -81,7 +211,10 @@ function RootComponent() {
   );
 }
 
-const rootRoute = createRootRoute({ component: RootComponent });
+const rootRoute = createRootRoute({
+  component: RootComponent,
+  notFoundComponent: NotFoundPage,
+});
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", component: HomePage });

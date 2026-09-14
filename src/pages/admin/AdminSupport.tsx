@@ -48,7 +48,7 @@ export function AdminSupportPage() {
             <div key={i} className="h-20 rounded-xl bg-muted/40 animate-pulse" />
           ))}
           {!isLoading && tickets.map((t) => (
-            <Link to={`/admin/support/${t.id}`} key={t.id}
+            <Link to="/admin/support/$id" params={{ id: String(t.id) }} key={t.id}
               className="flex items-start gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/30 hover:bg-muted/20 transition-colors block">
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
                 <MessageSquare className="w-4 h-4" />
