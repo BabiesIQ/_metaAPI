@@ -1,6 +1,0 @@
-import{c as t}from"./createLucideIcon-CbIT3Yy4.js";import{a3 as o}from"./index-BBsVhFwZ.js";import{D as n}from"./download-C26BWCaF.js";/**
- * @license lucide-react v0.511.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */const i=[["path",{d:"M12 7v14",key:"1akyts"}],["path",{d:"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",key:"ruj8y"}]],p=t("book-open",i);function d({compact:e=!1,className:a="",dataOcid:r="youtube-example.download.button"}){return o.jsxs("a",{href:"/examples/Youtube.py",download:"Youtube.py",title:"Download Youtube.py","aria-label":"Download Youtube.py REST API example","data-ocid":r,className:`inline-flex items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/10 text-primary transition-colors hover:border-primary/60 hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${e?"h-8 w-8":"h-9 px-3 text-xs font-medium"} ${a}`,children:[o.jsx(n,{className:"h-3.5 w-3.5"}),!e&&o.jsx("span",{children:"Download Youtube.py"})]})}export{p as B,d as D};

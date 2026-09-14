@@ -14,7 +14,7 @@ import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AdminProtectedRoute } from "@/pages/admin/AdminProtectedRoute";
 
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { applyDocumentDir } from "./lib/i18n";
 
 // Keep the initial public bundle small. Auth, panel, admin, and documentation
@@ -174,15 +174,199 @@ function RouteLoading() {
 
 function NotFoundPage() {
   return (
-    <main className="min-h-[70vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
-      <p className="text-sm uppercase tracking-[0.25em] text-primary">404</p>
-      <h1 className="text-3xl font-display font-bold text-foreground">Page not found</h1>
-      <p className="max-w-md text-muted-foreground">
-        This page does not exist or may have moved.
-      </p>
-      <a className="text-primary hover:underline" href="/">
-        Return home
-      </a>
+    <main className="relative isolate flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden px-6 py-16 text-center">
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -left-20 top-1/3 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+        <div className="absolute -right-24 bottom-1/4 h-52 w-52 rounded-full bg-primary/10 blur-3xl" />
+        <span className="absolute left-[18%] top-1/4 h-2 w-2 rounded-full bg-primary/50 animate-pulse" />
+        <span className="absolute right-[20%] top-1/3 h-1.5 w-1.5 rounded-full bg-accent/60 animate-pulse [animation-delay:700ms]" />
+        <span className="absolute bottom-1/4 left-[27%] h-1.5 w-1.5 rounded-full bg-primary/40 animate-pulse [animation-delay:1200ms]" />
+      </div>
+
+      <div className="flex w-full max-w-2xl flex-col items-center">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-primary"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+          404 · Path not found
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.88, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.08 }}
+          className="relative mb-3 h-64 w-64 sm:h-72 sm:w-72"
+          aria-label="A crying baby illustration"
+          role="img"
+        >
+          <div className="absolute inset-5 rounded-full bg-primary/10 blur-2xl" />
+          <motion.div
+            animate={{ y: [0, -4, 0], rotate: [0, -1.5, 1.5, 0] }}
+            transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+            className="relative h-full w-full"
+          >
+            <svg
+              viewBox="0 0 280 280"
+              className="h-full w-full overflow-visible drop-shadow-[0_22px_24px_rgba(0,0,0,0.35)]"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="baby-skin" x1="82" y1="52" x2="204" y2="222" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#FFE1C2" />
+                  <stop offset="1" stopColor="#F6B989" />
+                </linearGradient>
+                <linearGradient id="baby-onesie" x1="88" y1="180" x2="195" y2="267" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#5E9BFF" />
+                  <stop offset="1" stopColor="#7652E8" />
+                </linearGradient>
+                <linearGradient id="baby-hair" x1="105" y1="38" x2="185" y2="93" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#3B2A55" />
+                  <stop offset="1" stopColor="#171329" />
+                </linearGradient>
+                <filter id="baby-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="2.5" />
+                </filter>
+              </defs>
+
+              <ellipse cx="140" cy="258" rx="76" ry="10" fill="black" fillOpacity="0.24" />
+
+              <path
+                d="M85 264C87 214 103 190 140 190C177 190 193 214 195 264H85Z"
+                fill="url(#baby-onesie)"
+                stroke="#A9C7FF"
+                strokeOpacity="0.28"
+                strokeWidth="3"
+              />
+              <path d="M120 196L140 216L160 196" stroke="#DCE8FF" strokeOpacity="0.55" strokeWidth="3" />
+              <circle cx="140" cy="231" r="4" fill="#DCE8FF" fillOpacity="0.75" />
+              <circle cx="140" cy="249" r="4" fill="#DCE8FF" fillOpacity="0.75" />
+
+              <path d="M94 208C75 214 67 231 73 244C77 252 88 248 94 237" fill="url(#baby-skin)" stroke="#D99065" strokeWidth="3" />
+              <path d="M186 208C205 214 213 231 207 244C203 252 192 248 186 237" fill="url(#baby-skin)" stroke="#D99065" strokeWidth="3" />
+
+              <circle cx="140" cy="124" r="77" fill="url(#baby-skin)" stroke="#D99065" strokeWidth="3" />
+              <path d="M69 119C60 109 63 94 76 91C66 76 77 62 92 66C92 45 111 37 124 49C135 31 158 35 162 53C179 40 199 50 195 69C214 66 224 85 211 99C225 108 221 127 205 132C198 87 177 73 140 74C103 73 81 87 69 119Z" fill="url(#baby-hair)" />
+              <path d="M92 82C106 65 123 59 140 59C158 59 177 66 188 81" stroke="#76568E" strokeOpacity="0.65" strokeWidth="4" strokeLinecap="round" />
+
+              <ellipse cx="65" cy="126" rx="13" ry="20" fill="#F6B989" stroke="#D99065" strokeWidth="3" />
+              <ellipse cx="215" cy="126" rx="13" ry="20" fill="#F6B989" stroke="#D99065" strokeWidth="3" />
+
+              <path d="M99 113C106 106 115 106 122 112" stroke="#3B2A55" strokeWidth="5" strokeLinecap="round" />
+              <path d="M158 112C165 106 174 106 181 113" stroke="#3B2A55" strokeWidth="5" strokeLinecap="round" />
+              <motion.path
+                d="M104 126C109 121 117 121 121 127"
+                stroke="#27203C"
+                strokeWidth="5"
+                strokeLinecap="round"
+                animate={{ d: ["M104 126C109 121 117 121 121 127", "M104 128C109 133 117 133 121 127", "M104 126C109 121 117 121 121 127"] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.path
+                d="M159 127C163 121 171 121 176 126"
+                stroke="#27203C"
+                strokeWidth="5"
+                strokeLinecap="round"
+                animate={{ d: ["M159 127C163 121 171 121 176 126", "M159 127C163 133 171 133 176 128", "M159 127C163 121 171 121 176 126"] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+              />
+
+              <motion.path
+                d="M107 142C110 154 119 159 129 151"
+                stroke="#78B7FF"
+                strokeWidth="5"
+                strokeLinecap="round"
+                animate={{ opacity: [0.3, 1, 0.3], pathLength: [0.65, 1, 0.65] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.path
+                d="M173 142C170 154 161 159 151 151"
+                stroke="#78B7FF"
+                strokeWidth="5"
+                strokeLinecap="round"
+                animate={{ opacity: [0.3, 1, 0.3], pathLength: [0.65, 1, 0.65] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.15 }}
+              />
+              <motion.path
+                d="M140 146C126 146 122 164 140 174C158 164 154 146 140 146Z"
+                fill="#5B214B"
+                stroke="#421A3A"
+                strokeWidth="3"
+                animate={{ scaleY: [1, 1.16, 1], originY: "50%" }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <ellipse cx="140" cy="165" rx="6" ry="3" fill="#F384A6" fillOpacity="0.7" />
+
+              <motion.path
+                d="M104 145C96 158 98 170 108 178"
+                stroke="#6BB7FF"
+                strokeWidth="4"
+                strokeLinecap="round"
+                animate={{ opacity: [0, 1, 0], y: [0, 12, 23] }}
+                transition={{ duration: 1.7, repeat: Infinity, ease: "easeIn" }}
+              />
+              <motion.path
+                d="M176 145C184 158 182 170 172 178"
+                stroke="#6BB7FF"
+                strokeWidth="4"
+                strokeLinecap="round"
+                animate={{ opacity: [0, 1, 0], y: [0, 12, 23] }}
+                transition={{ duration: 1.7, repeat: Infinity, ease: "easeIn", delay: 0.45 }}
+              />
+              <circle cx="102" cy="189" r="3" fill="#78B7FF" filter="url(#baby-glow)" />
+              <circle cx="178" cy="189" r="3" fill="#78B7FF" filter="url(#baby-glow)" />
+            </svg>
+          </motion.div>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.28, duration: 0.45 }}
+          className="mb-3 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground"
+        >
+          A tiny navigation boo-boo
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.34, duration: 0.45 }}
+          className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl"
+        >
+          Oops, baby found nothing!
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.45 }}
+          className="mt-4 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg"
+        >
+          The path you requested was not found. The little one is crying, but
+          we can get you safely back to BabiesIQ.
+        </motion.p>
+        <motion.a
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.48, duration: 0.45 }}
+          href="/"
+          className="group mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Go to home
+          <span
+            aria-hidden="true"
+            className="text-lg transition-transform duration-200 group-hover:translate-x-1"
+          >
+            →
+          </span>
+        </motion.a>
+      </div>
     </main>
   );
 }

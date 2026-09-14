@@ -1,0 +1,1 @@
+import{a3 as i,ac as a}from"./index-B1_ObdHQ.js";function n({children:t}){return i.jsx(a.div,{initial:{opacity:0,y:18},animate:{opacity:1,y:0},exit:{opacity:0,y:-10},transition:{duration:.38,ease:"easeOut"},style:{width:"100%"},children:t})}export{n as P};
