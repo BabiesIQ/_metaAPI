@@ -34,7 +34,7 @@ const HOME_SCHEMA = {
       "@type": "Organization",
       "@id": "https://babiesiq.tech/#organization",
       name: "BabiesIQ",
-      alternateName: ["BabiesIQ API", "BabyAPI"],
+      alternateName: "BabiesIQ API",
       url: "https://babiesiq.tech/",
       sameAs: ["https://github.com/BabiesIQ/_metaAPI"],
     },
@@ -53,7 +53,7 @@ const HOME_SCHEMA = {
     {
       "@type": "SoftwareApplication",
       name: "BabiesIQ API",
-      alternateName: "BabyAPI",
+      alternateName: "BabiesIQ API",
       applicationCategory: "DeveloperApplication",
       operatingSystem: "Web",
       url: "https://babiesiq.tech/",
