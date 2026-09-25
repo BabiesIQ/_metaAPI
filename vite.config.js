@@ -41,8 +41,6 @@ export default defineConfig({
       "babiesiq.tech",
       "www.babiesiq.tech",
       "api.babiesiq.tech",
-      "babyapi.pro",
-      "www.babyapi.pro",
       "localhost",
       "127.0.0.1",
       ...(process.env.VITE_EXTRA_HOSTS
