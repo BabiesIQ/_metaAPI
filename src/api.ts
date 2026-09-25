@@ -1,5 +1,5 @@
 /**
- * PHP BabyAPI backend client (legacy secondary client)
+ * Legacy secondary API client
  * Public auth endpoints use credentials: 'omit'; protected endpoints use credentials: 'include'
  */
 
@@ -33,7 +33,7 @@ async function publicApiFetch<T>(
   return json;
 }
 
-/** Protected fetch — sends BABYAPI_SESSION cookie. For authenticated panel endpoints. */
+/** Protected fetch — sends BABYIQ_SESSION cookie. For authenticated panel endpoints. */
 async function protectedApiFetch<T>(
   path: string,
   options: RequestInit = {},
