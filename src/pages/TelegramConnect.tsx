@@ -14,7 +14,7 @@ export function TelegramConnectPage() {
   const { user, isLoading: authLoading, initialize } = useAuth();
   const [stage, setStage] = useState<Stage>("loading");
   const [errorMsg, setErrorMsg] = useState("");
-  const [botUrl, setBotUrl] = useState("https://t.me/BabiesIQ APIBot");
+  const [botUrl, setBotUrl] = useState("https://t.me/BabiesIQBot");
   const [countdown, setCountdown] = useState(4);
 
   useEffect(() => {
