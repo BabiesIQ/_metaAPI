@@ -13,7 +13,7 @@
 # || PROJECT  : SPOTIFY_MUSIC Public Music Repository                  ||
 # || AUTHOR   : BabiesIQ Team                                      ||
 # || REPO     : github.com/BABY-MUSIC/SPOTIFY_MUSIC                ||
-# || API      : www.babyapi.pro                                    ||
+# || API      : api.babiesiq.tech                                    ||
 # || TELEGRAM : t.me/BabiesIQ                                      ||
 # ----------------------------------------------------------------------
 # || LEGAL NOTICE                                                  ||
@@ -26,7 +26,7 @@
 # || SECURITY                                                      ||
 # || Internal protection may exist.                                ||
 # || Unauthorized change may stop system.                          ||
-# || Use official API only -> www.babyapi.pro                      ||
+# || Use official API only -> api.babiesiq.tech                      ||
 # ======================================================================
 
 import asyncio
