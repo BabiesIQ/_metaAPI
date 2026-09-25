@@ -32,7 +32,7 @@ const SECTIONS = [
     id: "cookies",
     title: "3. Cookies",
     content: [
-      "BABYAPI_SESSION: An httpOnly, Secure, SameSite=Lax cookie used to maintain your authenticated session for 7 days. This is essential for the service.",
+      "BABYIQ_SESSION: An httpOnly, Secure, SameSite=Lax cookie used to maintain your authenticated session for 7 days. This is essential for the service.",
       "Theme Preference: A localStorage value (not a cookie) to remember your dark/light mode setting.",
       "We do not use advertising, tracking, or analytics cookies. You can clear the session cookie by logging out.",
     ],
@@ -72,7 +72,7 @@ const SECTIONS = [
     id: "contact",
     title: "7. Contact & Your Rights",
     content: [
-      "For privacy questions, data access, correction, or deletion requests: support@babiesiq.com",
+      "For privacy questions, data access, correction, or deletion requests: support@babiesiq.tech",
       "You have the right to request a copy of your data, correction of inaccurate data, and deletion of your data.",
       "We will respond to all legitimate requests within 30 days.",
     ],
@@ -161,10 +161,10 @@ export function PrivacyPage() {
               This Privacy Policy describes how BabiesIQ collects, uses, and
               protects information when you use our API service at{" "}
               <a
-                href="https://babiesiq.com"
+                href="https://babiesiq.tech"
                 className="text-primary hover:underline"
               >
-                babiesiq.com
+                babiesiq.tech
               </a>
               . By using BabiesIQ, you agree to the practices described in this
               policy.
