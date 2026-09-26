@@ -54,6 +54,20 @@ export interface AdminUserRow {
   subscription_expires_at: string | null;
   daily_usage: number;
   total_usage: number;
+  daily_limit: number;
+  quota_adjustment_expires_at?: string | null;
+}
+
+export interface QuotaAdjustment {
+  id: number;
+  user_id: number;
+  previous_limit: number;
+  daily_limit: number;
+  duration_days: number;
+  reason?: string;
+  created_at: string;
+  expires_at: string;
+  status: "active" | "expired" | "replaced";
 }
 
 export interface SupportReply {

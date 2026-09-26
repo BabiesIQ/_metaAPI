@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { getUsage } from "@/lib/api";
+import { getQuotaAdjustments, getUsage, type QuotaAdjustment } from "@/lib/api";
 import { countdownToReset, IST_RESET_TIME_LABEL } from "@/types/index";
 import type { UsageDay } from "@/types/index";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ import {
   BarChart2,
   CheckCircle,
   Clock,
+  Gauge,
   RefreshCw,
   TrendingUp,
   Zap,
@@ -175,6 +176,14 @@ export function UsagePage() {
       return res.success && res.data ? res.data : [];
     },
   });
+  const { data: quotaAdjustments = [], isLoading: quotaAdjustmentsLoading } =
+    useQuery<QuotaAdjustment[]>({
+      queryKey: ["quota-adjustments", me?.user?.id],
+      queryFn: async () => {
+        const res = await getQuotaAdjustments();
+        return res.success && res.data ? res.data : [];
+      },
+    });
 
   const isLoading = meLoading || usageLoading;
 
@@ -344,6 +353,74 @@ export function UsagePage() {
                 </motion.div>
               </>
             )}
+
+            {/* Temporary quota adjustment history */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.36 }}
+            >
+              <Card className="bg-card border-border" data-ocid="usage.quota_history.section">
+                <CardHeader className="pb-3">
+                  <CardTitle className="font-display text-base flex items-center gap-2">
+                    <Gauge className="w-4 h-4 text-primary" />
+                    Temporary quota history
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    Admin changes to your daily request limit. Your regular plan limit resumes after an adjustment expires.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {quotaAdjustmentsLoading ? (
+                    <div className="space-y-3">
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                    </div>
+                  ) : quotaAdjustments.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4">
+                      No temporary quota changes have been made to your account.
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {quotaAdjustments.map((adjustment) => (
+                        <div
+                          key={adjustment.id}
+                          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 rounded-lg border border-border/70 bg-muted/15 p-3"
+                          data-ocid={`usage.quota_history.item.${adjustment.id}`}
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-foreground">
+                              {adjustment.previous_limit === -1 ? "Unlimited" : adjustment.previous_limit.toLocaleString()}
+                              {" → "}
+                              {adjustment.daily_limit === -1 ? "Unlimited" : adjustment.daily_limit.toLocaleString()}
+                              {" requests/day"}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Changed {format(parseISO(adjustment.created_at), "MMM d, yyyy")}
+                              {" · "}Expires {format(parseISO(adjustment.expires_at), "MMM d, yyyy")}
+                              {" · "}{adjustment.duration_days} days
+                            </p>
+                            {adjustment.reason && (
+                              <p className="text-xs text-muted-foreground mt-1 break-words">
+                                Reason: {adjustment.reason}
+                              </p>
+                            )}
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className={adjustment.status === "active"
+                              ? "border-emerald-500/30 text-emerald-400 bg-emerald-500/10 capitalize"
+                              : "border-border text-muted-foreground capitalize"}
+                          >
+                            {adjustment.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
 
             {/* Period selector */}
             <div

@@ -321,6 +321,22 @@ export function getUsageStats() {
   }>("/api/v1/usage/stats");
 }
 
+export interface QuotaAdjustment {
+  id: number;
+  user_id: number;
+  previous_limit: number;
+  daily_limit: number;
+  duration_days: number;
+  reason?: string;
+  created_at: string;
+  expires_at: string;
+  status: "active" | "expired" | "replaced";
+}
+
+export function getQuotaAdjustments() {
+  return protectedApiClient<QuotaAdjustment[]>("/api/v1/usage/quota-adjustments");
+}
+
 // ── Billing — PROTECTED ───────────────────────────────────────────────────────
 
 export function getBillingCurrent() {

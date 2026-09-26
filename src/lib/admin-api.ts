@@ -1,5 +1,5 @@
 // Admin Panel API client
-import type { Admin, AdminStats, AdminUserRow, ContactMessage, PaginatedResponse } from "@/types/admin";
+import type { Admin, AdminStats, AdminUserRow, ContactMessage, PaginatedResponse, QuotaAdjustment } from "@/types/admin";
 import { getBackendUrl } from "@/lib/config";
 import { useAdminAuthStore } from "@/store/adminAuth";
 
@@ -97,6 +97,15 @@ export function resetUserPassword(id: number, password: string) {
 }
 export function changeUserRole(id: number, role: string, subscriptionMonths: number) {
   return adminFetch<{ message: string }>(`/users/${id}/change-role`, { method: "POST", body: JSON.stringify({ role, subscription_months: subscriptionMonths }) });
+}
+export function setUserQuota(id: number, dailyLimit: number, days: number, reason: string) {
+  return adminFetch<{ message: string; adjustment: QuotaAdjustment }>(`/users/${id}/quota`, {
+    method: "POST",
+    body: JSON.stringify({ daily_limit: dailyLimit, days, reason }),
+  });
+}
+export function getAdminQuotaAdjustments(id: number) {
+  return adminFetch<QuotaAdjustment[]>(`/users/${id}/quota`);
 }
 // FIX: backend route is POST /notify-user (not /users/:id/notify)
 export function sendUserNotification(userId: number, title: string, message: string, level: string, sendEmail: boolean) {

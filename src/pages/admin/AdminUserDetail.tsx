@@ -1,20 +1,20 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import {
-  banUser, changeUserRole, getAdminUser, resetUserPassword,
+  banUser, changeUserRole, getAdminQuotaAdjustments, getAdminUser, resetUserPassword, setUserQuota,
   restrictUser, sendUserNotification, suspendUser, unbanUser,
   unrestrictUser, unsuspendUser
 } from "@/lib/admin-api";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
-import { ROLE_COLORS, ROLE_LABELS, STATUS_COLORS, type AdminUserRow } from "@/types/admin";
+import { ROLE_COLORS, ROLE_LABELS, STATUS_COLORS, type AdminUserRow, type QuotaAdjustment } from "@/types/admin";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
-import { ArrowLeft, Ban, Bell, CheckCircle, Crown, Key, Lock, Mail, ShieldOff, UserCheck, UserX } from "lucide-react";
+import { ArrowLeft, Ban, Bell, CheckCircle, Crown, Gauge, Key, ShieldOff, UserCheck, UserX } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type ModalType = "suspend" | "ban" | "restrict" | "reset_password" | "change_role" | "notify" | null;
+type ModalType = "suspend" | "ban" | "restrict" | "reset_password" | "change_role" | "quota" | "notify" | null;
 
 export function AdminUserDetailPage() {
   const { id } = useParams({ from: "/admin/users/$id" });
@@ -29,6 +29,9 @@ export function AdminUserDetailPage() {
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("free");
   const [subMonths, setSubMonths] = useState(1);
+  const [quotaLimit, setQuotaLimit] = useState(500);
+  const [quotaDays, setQuotaDays] = useState(7);
+  const [quotaReason, setQuotaReason] = useState("");
   const [notifTitle, setNotifTitle] = useState("");
   const [notifMessage, setNotifMessage] = useState("");
   const [notifLevel, setNotifLevel] = useState("info");
@@ -38,7 +41,12 @@ export function AdminUserDetailPage() {
     queryKey: ["admin-user", id],
     queryFn: () => getAdminUser(Number(id)),
   });
+  const { data: quotaData } = useQuery({
+    queryKey: ["admin-user-quota", id],
+    queryFn: () => getAdminQuotaAdjustments(Number(id)),
+  });
   const user: AdminUserRow | undefined = data?.data ?? undefined;
+  const quotaHistory: QuotaAdjustment[] = quotaData?.data ?? [];
 
   const hasPerm = (perm: string) => admin?.is_owner || admin?.permissions.includes(perm);
 
@@ -50,12 +58,14 @@ export function AdminUserDetailPage() {
       toast.success(successMsg);
       setModal(null);
       qc.invalidateQueries({ queryKey: ["admin-user", id] });
+      qc.invalidateQueries({ queryKey: ["admin-user-quota", id] });
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
     } else {
       toast.error(res.error ?? "Operation failed");
     }
   };
 
-  const closeModal = () => { setModal(null); setReason(""); setNewPassword(""); };
+  const closeModal = () => { setModal(null); setReason(""); setNewPassword(""); setQuotaReason(""); };
 
   if (isLoading) return (
     <AdminLayout>
@@ -95,10 +105,12 @@ export function AdminUserDetailPage() {
         </div>
 
         {/* Info cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
             { label: "Daily Usage", value: user.daily_usage },
             { label: "Total Usage", value: user.total_usage },
+            { label: "Daily Quota", value: user.daily_limit === -1 ? "Unlimited" : user.daily_limit.toLocaleString() },
+            { label: "Quota Expires", value: user.quota_adjustment_expires_at ? new Date(user.quota_adjustment_expires_at).toLocaleDateString() : "Plan default" },
             { label: "Joined", value: new Date(user.created_at).toLocaleDateString() },
             { label: "Sub Expires", value: user.subscription_expires_at ? new Date(user.subscription_expires_at).toLocaleDateString() : "N/A" },
           ].map((item) => (
@@ -143,8 +155,48 @@ export function AdminUserDetailPage() {
             {hasPerm("change_roles") && (
               <ActionBtn icon={Crown} label="Change Role" color="amber" onClick={() => { setNewRole(user.role); setModal("change_role"); }} />
             )}
+            {hasPerm("change_roles") && (
+              <ActionBtn
+                icon={Gauge}
+                label="Temporary Quota"
+                color="blue"
+                onClick={() => {
+                  setQuotaLimit(user.daily_limit ?? 500);
+                  setQuotaDays(7);
+                  setQuotaReason("");
+                  setModal("quota");
+                }}
+              />
+            )}
             <ActionBtn icon={Bell} label="Send Notification" color="blue" onClick={() => setModal("notify")} />
           </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-5">
+          <h3 className="font-semibold mb-3">Quota Adjustment History</h3>
+          {quotaHistory.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No temporary quota changes for this user.</p>
+          ) : (
+            <div className="space-y-3">
+              {quotaHistory.slice(0, 5).map((item) => (
+                <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3 last:border-0 last:pb-0">
+                  <div>
+                    <p className="text-sm font-medium">
+                      {item.previous_limit === -1 ? "Unlimited" : item.previous_limit.toLocaleString()}
+                      {" → "}
+                      {item.daily_limit === -1 ? "Unlimited" : item.daily_limit.toLocaleString()}
+                      {" requests/day"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(item.created_at).toLocaleString()} · Expires {new Date(item.expires_at).toLocaleDateString()}
+                    </p>
+                    {item.reason && <p className="text-xs text-muted-foreground mt-1">{item.reason}</p>}
+                  </div>
+                  <span className={cn("rounded-full px-2 py-1 text-xs capitalize", item.status === "active" ? "bg-emerald-500/10 text-emerald-400" : "bg-muted text-muted-foreground")}>{item.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -255,6 +307,64 @@ export function AdminUserDetailPage() {
                   <button onClick={() => doAction(() => changeUserRole(user.id, newRole, subMonths), "Role updated")} disabled={loading}
                     className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 disabled:opacity-60">
                     {loading ? "..." : "Update Role"}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {modal === "quota" && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">Temporary Daily Quota</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Current limit: {user.daily_limit === -1 ? "Unlimited" : `${user.daily_limit.toLocaleString()} requests/day`}. A higher value increases the quota; a lower value reduces it. The plan limit returns automatically when this adjustment expires.
+                </p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block" htmlFor="quota-limit">Temporary requests per day</label>
+                    <input
+                      id="quota-limit"
+                      type="number"
+                      min={-1}
+                      max={10000000}
+                      value={quotaLimit}
+                      onChange={(e) => setQuotaLimit(Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Enter -1 for unlimited access during this period.</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block" htmlFor="quota-days">Duration in days</label>
+                    <input
+                      id="quota-days"
+                      type="number"
+                      min={1}
+                      max={3650}
+                      value={quotaDays}
+                      onChange={(e) => setQuotaDays(Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block" htmlFor="quota-reason">Reason (optional)</label>
+                    <textarea
+                      id="quota-reason"
+                      value={quotaReason}
+                      onChange={(e) => setQuotaReason(e.target.value)}
+                      maxLength={500}
+                      rows={2}
+                      placeholder="Reason for this quota change..."
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-5">
+                  <button onClick={closeModal} className="flex-1 py-2 rounded-lg border border-border text-sm hover:bg-muted">Cancel</button>
+                  <button
+                    onClick={() => doAction(() => setUserQuota(user.id, quotaLimit, quotaDays, quotaReason), "Quota updated")}
+                    disabled={loading || quotaLimit < -1 || quotaLimit > 10000000 || quotaDays < 1 || quotaDays > 3650}
+                    className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 disabled:opacity-60"
+                  >
+                    {loading ? "..." : "Apply Temporarily"}
                   </button>
                 </div>
               </>
