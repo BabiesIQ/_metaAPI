@@ -3,7 +3,7 @@ import type { BannedUserInfo } from "@/store/auth";
 import { useAuthStore } from "@/store/auth";
 
 export function useAuth() {
-  const { user, isLoading, isAuthenticated, setUser, initialize, setBannedUser } =
+  const { user, isLoading, isAuthenticated, authError, setUser, initialize, setBannedUser } =
     useAuthStore();
 
   const logout = async () => {
@@ -20,6 +20,7 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated,
+    authError,
     setUser,
     setBannedUser,
     initialize,

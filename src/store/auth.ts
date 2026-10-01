@@ -39,6 +39,7 @@ interface AuthState {
   user: MeResponse | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  authError: string | null;
   bannedUser: BannedUserInfo | null;
   setUser: (u: MeResponse | null) => void;
   setBannedUser: (u: BannedUserInfo | null) => void;
@@ -49,10 +50,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: true,
   isAuthenticated: false,
+  authError: null,
   bannedUser: null,
 
   setUser: (u) =>
-    set({ user: u, isAuthenticated: u !== null, isLoading: false }),
+    set({ user: u, isAuthenticated: u !== null, isLoading: false, authError: null }),
 
   setBannedUser: (u) => set({ bannedUser: u }),
 
@@ -62,11 +64,12 @@ export const useAuthStore = create<AuthState>((set) => ({
         user: TEST_MOCK_USER,
         isAuthenticated: true,
         isLoading: false,
+        authError: null,
       });
       return;
     }
 
-    set({ isLoading: true });
+    set({ isLoading: true, authError: null });
     try {
       const res = await getMe();
       if (res.success && res.data) {
@@ -76,6 +79,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             user: null,
             isAuthenticated: false,
             isLoading: false,
+            authError: null,
             bannedUser: {
               first_name: res.data.user.first_name,
               last_name: res.data.user.last_name,
@@ -88,12 +92,20 @@ export const useAuthStore = create<AuthState>((set) => ({
           }
           return;
         }
-        set({ user: res.data, isAuthenticated: true, isLoading: false });
+        set({ user: res.data, isAuthenticated: true, isLoading: false, authError: null });
+      } else if (res.error === "Unauthorized") {
+        set({ user: null, isAuthenticated: false, isLoading: false, authError: null });
       } else {
-        set({ user: null, isAuthenticated: false, isLoading: false });
+        set({
+          isLoading: false,
+          authError: res.error ?? "Could not verify your session. Please try again.",
+        });
       }
-    } catch {
-      set({ user: null, isAuthenticated: false, isLoading: false });
+    } catch (error) {
+      set({
+        isLoading: false,
+        authError: error instanceof Error ? error.message : "Could not reach the server. Please try again.",
+      });
     }
   },
 }));

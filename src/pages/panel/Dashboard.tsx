@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { getApiKeys, getNotifications } from "@/lib/api";
+import { getApiKeys, getNotifications, getUsageStats } from "@/lib/api";
 import { PLAN_LABELS } from "@/types/index";
 import type { ApiKey, Notification, PlanCode } from "@/types/index";
 import { useQuery } from "@tanstack/react-query";
@@ -237,6 +237,27 @@ export function DashboardPage() {
   const { t } = useTranslation();
   const { user: me, isLoading: meLoading } = useAuth();
 
+  const {
+    data: usageSummary,
+    isLoading: usageLoading,
+    isError: usageError,
+    error: usageQueryError,
+    refetch: refetchUsage,
+  } = useQuery({
+    queryKey: ["usage-stats", me?.user?.id],
+    enabled: Boolean(me?.user?.id),
+    queryFn: async () => {
+      const response = await getUsageStats();
+      if (!response.success || !response.data) {
+        throw new Error(response.error ?? "Could not load usage statistics.");
+      }
+      return response.data;
+    },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+  });
+
   const { data: keysData, isLoading: keysLoading } = useQuery<ApiKey[]>({
     queryKey: ["api-keys"],
     queryFn: async () => {
@@ -253,15 +274,15 @@ export function DashboardPage() {
     },
   });
 
-  const isLoading = meLoading;
+  const isLoading = meLoading || (usageLoading && !usageSummary);
   const planCode = (me?.plan?.code ?? "free") as PlanCode;
   const planName = PLAN_LABELS[planCode] ?? "Free";
   const userName = me?.user?.first_name ?? me?.user?.email?.split("@")[0] ?? "";
   const userStatus = me?.user?.status ?? "active";
-  const dailyLimit = me?.plan?.daily_limit ?? 500;
-  const today = me?.usage?.today ?? 0;
-  const remaining = me?.usage?.remaining ?? 0;
-  const lifetime = me?.usage?.lifetime ?? 0;
+  const dailyLimit = usageSummary?.limit ?? me?.plan?.daily_limit ?? 500;
+  const today = usageSummary?.today ?? me?.usage?.today ?? 0;
+  const remaining = usageSummary?.remaining ?? me?.usage?.remaining ?? 0;
+  const lifetime = usageSummary?.lifetime ?? me?.usage?.lifetime ?? 0;
   const usedPct =
     dailyLimit > 0 ? Math.min(100, Math.round((today / dailyLimit) * 100)) : 0;
   const activeKey = keysData?.find((k) => k.status === "active");
@@ -271,6 +292,7 @@ export function DashboardPage() {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Kolkata",
   });
 
   return (
@@ -342,6 +364,27 @@ export function DashboardPage() {
               </div>
             </div>
           </motion.div>
+
+          {usageError && (
+            <div
+              className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+              role="alert"
+            >
+              <p className="text-sm text-foreground">
+                {usageQueryError instanceof Error
+                  ? usageQueryError.message
+                  : "Could not refresh usage statistics."}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void refetchUsage()}
+                className="shrink-0"
+              >
+                Retry
+              </Button>
+            </div>
+          )}
 
           {/* Stats Grid */}
           <div

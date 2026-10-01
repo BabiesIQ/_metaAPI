@@ -27,12 +27,19 @@ function StatCard({ icon: Icon, label, value, color, delay = 0 }: {
 }
 
 export function AdminDashboardPage() {
-  const { data: statsRes, isLoading } = useQuery({
+  const { data: stats, isLoading, isError, error, refetch } = useQuery<AdminStats>({
     queryKey: ["admin-stats"],
-    queryFn: () => getAdminStats(),
-    refetchInterval: 30000,
+    queryFn: async () => {
+      const response = await getAdminStats();
+      if (!response.success || !response.data) {
+        throw new Error(response.error ?? "Could not load dashboard statistics.");
+      }
+      return response.data;
+    },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
-  const stats: AdminStats | undefined = statsRes?.data ?? undefined;
 
   const cards = stats ? [
     { icon: Users,         label: "Total Users",     value: stats.total_users,     color: "bg-primary/10 text-primary",           delay: 0.05 },
@@ -58,6 +65,19 @@ export function AdminDashboardPage() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="h-20 rounded-xl bg-muted/40 animate-pulse" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5" role="alert">
+            <p className="text-sm text-foreground">
+              {error instanceof Error ? error.message : "Could not load dashboard statistics."}
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-3 rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            >
+              Retry
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

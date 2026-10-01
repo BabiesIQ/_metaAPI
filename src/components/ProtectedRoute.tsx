@@ -33,7 +33,7 @@ const MOCK_USER: MeResponse = {
 };
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, setUser } = useAuth();
+  const { isAuthenticated, isLoading, authError, initialize, setUser } = useAuth();
 
   // In test mode: skip auth entirely, inject mock user if needed
   if (isTestMode()) {
@@ -54,6 +54,24 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
           <p className="text-sm text-muted-foreground font-body">
             Checking session…
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && authError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="max-w-md space-y-4 text-center" role="alert">
+          <h1 className="text-lg font-semibold">Could not verify your session</h1>
+          <p className="text-sm text-muted-foreground">{authError}</p>
+          <button
+            type="button"
+            onClick={() => void initialize()}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );

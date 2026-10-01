@@ -1,6 +1,7 @@
 // Admin Panel API client
 import type { Admin, AdminStats, AdminUserRow, ContactMessage, PaginatedResponse, QuotaAdjustment } from "@/types/admin";
 import { getBackendUrl } from "@/lib/config";
+import { fetchWithTimeout } from "@/lib/fetchWithTimeout";
 import { useAdminAuthStore } from "@/store/adminAuth";
 
 function BASE_URL(): string {
@@ -33,7 +34,7 @@ async function parseResponse<T>(res: Response): Promise<ApiResponse<T>> {
 async function adminFetch<T>(path: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   // FIX: /api/admin prefix so nginx /api/ proxy block handles it
   const url = `${BASE_URL()}/api/admin${path}`;
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",

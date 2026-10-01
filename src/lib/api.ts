@@ -12,6 +12,7 @@ import type {
 } from "@/types/index";
 
 import { getBackendUrl } from "@/lib/config";
+import { fetchWithTimeout } from "@/lib/fetchWithTimeout";
 import { useAuthStore } from "@/store/auth";
 
 /** Always reads the runtime-configured backend URL — no hardcoded strings. */
@@ -73,7 +74,7 @@ async function authApiClient<T>(
   options: RequestInit = {},
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL()}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -94,7 +95,7 @@ async function publicApiClient<T>(
   options: RequestInit = {},
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL()}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     credentials: "omit",
     headers: {
       "Content-Type": "application/json",
@@ -115,7 +116,7 @@ async function protectedApiClient<T>(
   options: RequestInit = {},
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL()}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -141,14 +142,14 @@ async function protectedFormClient<T>(
   body: FormData | URLSearchParams,
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL()}${path}`;
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "POST",
     credentials: "include",
     headers: {
       "X-Requested-With": "XMLHttpRequest",
     },
     body,
-  });
+  }, 120_000);
 
   if (res.status === 401) {
     return handle401() as ApiResponse<T>;

@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { getQuotaAdjustments, getUsage, type QuotaAdjustment } from "@/lib/api";
+import {
+  getQuotaAdjustments,
+  getUsage,
+  getUsageStats,
+  type QuotaAdjustment,
+} from "@/lib/api";
 import { countdownToReset, IST_RESET_TIME_LABEL } from "@/types/index";
 import type { UsageDay } from "@/types/index";
 import { useQuery } from "@tanstack/react-query";
@@ -153,6 +158,18 @@ const STAT_CARDS = (
   },
 ];
 
+function indiaDateKey(date: Date): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const value = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  return `${value("year")}-${value("month")}-${value("day")}`;
+}
+
 export function UsagePage() {
   const { t } = useTranslation();
   const { user: me, isLoading: meLoading, initialize: refreshMe } = useAuth();
@@ -169,32 +186,67 @@ export function UsagePage() {
     isLoading: usageLoading,
     refetch: refetchUsage,
     isError: usageError,
+    error: usageQueryError,
   } = useQuery<UsageDay[]>({
-    queryKey: ["usage", selectedDays],
+    queryKey: ["usage", me?.user?.id, selectedDays],
+    enabled: Boolean(me?.user?.id),
     queryFn: async () => {
       const res = await getUsage(selectedDays);
-      return res.success && res.data ? res.data : [];
+      if (!res.success || !res.data) {
+        throw new Error(res.error ?? "Could not load usage history.");
+      }
+      return res.data;
     },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
-  const { data: quotaAdjustments = [], isLoading: quotaAdjustmentsLoading } =
+  const {
+    data: quotaAdjustments = [],
+    isLoading: quotaAdjustmentsLoading,
+    isError: quotaAdjustmentsError,
+    refetch: refetchQuotaAdjustments,
+  } =
     useQuery<QuotaAdjustment[]>({
       queryKey: ["quota-adjustments", me?.user?.id],
+      enabled: Boolean(me?.user?.id),
       queryFn: async () => {
         const res = await getQuotaAdjustments();
-        return res.success && res.data ? res.data : [];
+        if (!res.success || !res.data) {
+          throw new Error(res.error ?? "Could not load quota history.");
+        }
+        return res.data;
       },
     });
 
-  const isLoading = meLoading || usageLoading;
+  const {
+    data: usageSummary,
+    isLoading: summaryLoading,
+    isError: summaryError,
+    refetch: refetchSummary,
+  } = useQuery({
+    queryKey: ["usage-stats", me?.user?.id],
+    enabled: Boolean(me?.user?.id),
+    queryFn: async () => {
+      const res = await getUsageStats();
+      if (!res.success || !res.data) {
+        throw new Error(res.error ?? "Could not load usage statistics.");
+      }
+      return res.data;
+    },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+  });
 
-  const dailyLimit = me?.plan?.daily_limit ?? 500;
-  const today = me?.usage?.today ?? 0;
-  const remaining = me?.usage?.remaining ?? 0;
-  const lifetime = me?.usage?.lifetime ?? 0;
+  const isLoading = meLoading || usageLoading || (summaryLoading && !usageSummary);
 
-  const todayEntry = days?.find(
-    (d) => d.date === new Date().toISOString().split("T")[0],
-  );
+  const dailyLimit = usageSummary?.limit ?? me?.plan?.daily_limit ?? 500;
+  const today = usageSummary?.today ?? me?.usage?.today ?? 0;
+  const remaining = usageSummary?.remaining ?? me?.usage?.remaining ?? 0;
+  const lifetime = usageSummary?.lifetime ?? me?.usage?.lifetime ?? 0;
+
+  const todayEntry = days?.find((d) => d.date === indiaDateKey(new Date()));
   const usageStatus = todayEntry?.status ?? "safe";
 
   const chartData: ChartEntry[] = (days ?? []).map((d) => ({
@@ -227,6 +279,8 @@ export function UsagePage() {
   const handleRefresh = () => {
     void refreshMe();
     void refetchUsage();
+    void refetchSummary();
+    void refetchQuotaAdjustments();
   };
 
   const bannerInfo = STATUS_BANNER[usageStatus] ?? STATUS_BANNER.safe;
@@ -275,6 +329,25 @@ export function UsagePage() {
                 </Button>
               </div>
             </div>
+
+            {summaryError && (
+              <div
+                className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+                role="alert"
+              >
+                <p className="text-sm text-foreground">
+                  Could not refresh your usage summary. Showing the latest available values.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void refetchSummary()}
+                  className="shrink-0"
+                >
+                  Retry
+                </Button>
+              </div>
+            )}
 
             {/* Stats Row — staggered entrance */}
             <div
@@ -519,11 +592,22 @@ export function UsagePage() {
                     <div
                       className="py-12 text-center"
                       data-ocid="usage.chart.error_state"
+                      role="alert"
                     >
                       <Activity className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
                       <p className="text-sm text-muted-foreground">
-                        {t("usage.failed_load")}
+                        {usageQueryError instanceof Error
+                          ? usageQueryError.message
+                          : t("usage.failed_load")}
                       </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => void refetchUsage()}
+                        className="mt-3"
+                      >
+                        Retry
+                      </Button>
                     </div>
                   ) : !days || days.length === 0 ? (
                     <div

@@ -4,24 +4,42 @@ import { ROLE_COLORS, ROLE_LABELS, STATUS_COLORS, type AdminUserRow } from "@/ty
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, RefreshCw, Search, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export function AdminUsersPage() {
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, refetch } = useQuery({
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPage(1);
+    }, 300);
+    return () => window.clearTimeout(timeout);
+  }, [searchInput]);
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["admin-users", search, role, status, page],
-    queryFn: () => listAdminUsers({ search, role, status, page, limit: 20 }),
+    queryFn: async () => {
+      const response = await listAdminUsers({ search, role, status, page, limit: 20 });
+      if (!response.success || !response.data) {
+        throw new Error(response.error ?? "Could not load users.");
+      }
+      return response.data;
+    },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
 
-  const users: AdminUserRow[] = data?.data?.users ?? [];
-  const total = data?.data?.total ?? 0;
-  const pages = data?.data?.pages ?? 1;
+  const users: AdminUserRow[] = data?.users ?? [];
+  const total = data?.total ?? 0;
+  const pages = data?.pages ?? 1;
 
   return (
     <AdminLayout>
@@ -41,8 +59,8 @@ export function AdminUsersPage() {
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search by email or name..."
               className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
@@ -87,7 +105,23 @@ export function AdminUsersPage() {
                     ))}
                   </tr>
                 ))}
-                {!isLoading && users.map((u) => (
+                {isError && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center" role="alert">
+                      <p className="text-sm text-destructive">
+                        {error instanceof Error ? error.message : "Could not load users."}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => void refetch()}
+                        className="mt-3 rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
+                      >
+                        Retry
+                      </button>
+                    </td>
+                  </tr>
+                )}
+                {!isLoading && !isError && users.map((u) => (
                   <tr key={u.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -132,7 +166,7 @@ export function AdminUsersPage() {
                     </td>
                   </tr>
                 ))}
-                {!isLoading && users.length === 0 && (
+                {!isLoading && !isError && users.length === 0 && (
                   <tr><td colSpan={6} className="text-center py-10 text-muted-foreground">No users found</td></tr>
                 )}
               </tbody>
