@@ -30,10 +30,9 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Bar,
-  BarChart,
+  Area,
+  AreaChart,
   CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -42,8 +41,8 @@ import {
 
 const STATUS_COLOR: Record<string, string> = {
   safe: "#22c55e",
-  restricted: "#eab308",
-  banned: "#ef4444",
+  warning: "#eab308",
+  exceeded: "#ef4444",
 };
 
 const STATUS_BANNER: Record<string, { bg: string; text: string; key: string }> =
@@ -53,22 +52,21 @@ const STATUS_BANNER: Record<string, { bg: string; text: string; key: string }> =
       text: "text-emerald-400",
       key: "usage.status_safe",
     },
-    restricted: {
+    warning: {
       bg: "bg-amber-500/10 border-amber-500/20",
       text: "text-amber-400",
-      key: "usage.status_restricted",
+      key: "usage.status_warning",
     },
-    banned: {
+    exceeded: {
       bg: "bg-destructive/10 border-destructive/20",
       text: "text-destructive",
-      key: "usage.status_banned",
+      key: "usage.status_exceeded",
     },
   };
 
 interface ChartEntry {
   label: string;
   count: number;
-  status: string;
   date: string;
 }
 
@@ -81,24 +79,21 @@ function CustomTooltip({
   active,
   payload,
   t,
+  locale,
 }: {
   active?: boolean;
   payload?: TooltipPayloadItem[];
   t: (key: string) => string;
+  locale: string;
 }) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="surface-machined-soft px-4 py-3 shadow-elevated text-xs font-body">
-      <p className="text-foreground font-semibold mb-1">{d.date}</p>
-      <p className="text-muted-foreground">
-        {d.count.toLocaleString()} {t("usage.requests")}
-      </p>
-      <p
-        className="capitalize mt-1 font-medium"
-        style={{ color: STATUS_COLOR[d.status] ?? "#94a3b8" }}
-      >
-        {d.status}
+    <div className="rounded-xl border border-border/80 bg-popover/95 px-4 py-3 text-xs shadow-xl backdrop-blur-md">
+      <p className="mb-2 font-medium text-muted-foreground">{d.date}</p>
+      <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+        <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary)/0.7)]" />
+        {d.count.toLocaleString(locale)} {t("usage.requests")}
       </p>
     </div>
   );
@@ -116,11 +111,12 @@ const STAT_CARDS = (
   lifetime: number,
   dailyLimit: number,
   t: (k: string) => string,
+  locale: string,
 ) => [
   {
     icon: BarChart2,
     label: t("usage.today"),
-    value: today.toLocaleString(),
+    value: today.toLocaleString(locale),
     sub: t("usage.api_calls_today"),
     iconClass: "bg-primary/10 text-primary",
     tint: "from-primary/5 to-transparent",
@@ -128,7 +124,7 @@ const STAT_CARDS = (
   {
     icon: CheckCircle,
     label: t("usage.remaining"),
-    value: remaining.toLocaleString(),
+    value: remaining.toLocaleString(locale),
     sub: t("usage.calls_left"),
     iconClass:
       remaining > 100
@@ -142,7 +138,7 @@ const STAT_CARDS = (
   {
     icon: Activity,
     label: t("usage.lifetime"),
-    value: lifetime.toLocaleString(),
+    value: lifetime.toLocaleString(locale),
     sub: t("usage.total_all_time"),
     iconClass: "bg-accent/10 text-accent",
     tint: "from-accent/5 to-transparent",
@@ -151,7 +147,7 @@ const STAT_CARDS = (
     icon: Zap,
     label: t("usage.daily_limit"),
     value:
-      dailyLimit === -1 ? t("usage.unlimited") : dailyLimit.toLocaleString(),
+      dailyLimit === -1 ? t("usage.unlimited") : dailyLimit.toLocaleString(locale),
     sub: t("usage.per_day"),
     iconClass: "bg-amber-500/10 text-amber-400",
     tint: "from-amber-500/5 to-transparent",
@@ -171,7 +167,8 @@ function indiaDateKey(date: Date): string {
 }
 
 export function UsagePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? i18n.language ?? "en";
   const { user: me, isLoading: meLoading, initialize: refreshMe } = useAuth();
   const [selectedDays, setSelectedDays] = useState(7);
   const [resetCountdown, setResetCountdown] = useState(() => countdownToReset());
@@ -252,16 +249,26 @@ export function UsagePage() {
   const chartData: ChartEntry[] = (days ?? []).map((d) => ({
     label: (() => {
       try {
-        return format(parseISO(d.date), "EEE");
+        const date = new Date(`${d.date}T12:00:00`);
+        return date.toLocaleDateString(
+          locale,
+          selectedDays === 7
+            ? { weekday: "short" }
+            : { month: "short", day: "numeric" },
+        );
       } catch {
         return d.date;
       }
     })(),
     count: d.count,
-    status: d.status,
     date: (() => {
       try {
-        return format(parseISO(d.date), "MMM d");
+        return new Date(`${d.date}T12:00:00`).toLocaleDateString(locale, {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
       } catch {
         return d.date;
       }
@@ -284,7 +291,15 @@ export function UsagePage() {
   };
 
   const bannerInfo = STATUS_BANNER[usageStatus] ?? STATUS_BANNER.safe;
-  const stats = STAT_CARDS(today, remaining, lifetime, dailyLimit, t);
+  const stats = STAT_CARDS(today, remaining, lifetime, dailyLimit, t, locale);
+  const historyFrom =
+    days && days.length > 0 && days.length < selectedDays
+      ? new Date(`${days[0].date}T12:00:00`).toLocaleDateString(locale, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : null;
 
   return (
     <ProtectedRoute>
@@ -406,7 +421,7 @@ export function UsagePage() {
                       className={`w-2 h-2 rounded-full flex-shrink-0 ${
                         usageStatus === "safe"
                           ? "bg-emerald-400"
-                          : usageStatus === "restricted"
+                          : usageStatus === "warning"
                             ? "bg-amber-400"
                             : "bg-destructive"
                       }`}
@@ -524,19 +539,19 @@ export function UsagePage() {
                   {
                     icon: BarChart2,
                     label: t("usage.total_requests"),
-                    value: totalReqs.toLocaleString(),
+                    value: totalReqs.toLocaleString(locale),
                     iconClass: "text-primary",
                   },
                   {
                     icon: TrendingUp,
                     label: t("usage.avg_per_day"),
-                    value: avgPerDay.toLocaleString(),
+                    value: avgPerDay.toLocaleString(locale),
                     iconClass: "text-accent",
                   },
                   {
                     icon: Zap,
                     label: t("usage.peak_day"),
-                    value: peakDay ? peakDay.count.toLocaleString() : "0",
+                    value: peakDay ? peakDay.count.toLocaleString(locale) : "0",
                     iconClass: "text-amber-400",
                   },
                 ].map((s) => (
@@ -576,18 +591,15 @@ export function UsagePage() {
                     {t("usage.chart_title")} —{" "}
                     {t("usage.last_days", { days: selectedDays })}
                   </CardTitle>
+                  {historyFrom && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("usage.history_from", { date: historyFrom })}
+                    </p>
+                  )}
                 </CardHeader>
                 <CardContent>
                   {usageLoading ? (
-                    <div className="h-64 flex items-end gap-2 px-2 pb-2">
-                      {[40, 65, 50, 80, 55, 70, 45].map((h) => (
-                        <Skeleton
-                          key={`skel-bar-height-${h}`}
-                          className="flex-1 rounded-t-md"
-                          style={{ height: `${h}%` }}
-                        />
-                      ))}
-                    </div>
+                    <Skeleton className="h-[300px] w-full rounded-xl" />
                   ) : usageError ? (
                     <div
                       className="py-12 text-center"
@@ -623,55 +635,109 @@ export function UsagePage() {
                       </p>
                     </div>
                   ) : (
-                    <ResponsiveContainer width="100%" height={280}>
-                      <BarChart
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart
                         data={chartData}
-                        margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
+                        margin={{ top: 16, right: 12, left: 4, bottom: 4 }}
                       >
+                        <defs>
+                          <linearGradient
+                            id="usage-chart-gradient"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="0%"
+                              stopColor="hsl(var(--primary))"
+                              stopOpacity={0.34}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor="hsl(var(--primary))"
+                              stopOpacity={0.015}
+                            />
+                          </linearGradient>
+                        </defs>
                         <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="rgba(148,163,184,0.07)"
+                          strokeDasharray="4 7"
+                          stroke="hsl(var(--border))"
+                          strokeOpacity={0.5}
                           vertical={false}
                         />
                         <XAxis
                           dataKey="label"
+                          interval={Math.max(0, Math.ceil(chartData.length / 7) - 1)}
+                          minTickGap={16}
+                          tickMargin={12}
                           tick={{
                             fill: "var(--muted-foreground)",
-                            fontSize: 11,
+                            fontSize: 10,
                           }}
                           axisLine={false}
                           tickLine={false}
                         />
                         <YAxis
+                          width={48}
+                          tickFormatter={(value: number) =>
+                            new Intl.NumberFormat(locale, {
+                              notation: "compact",
+                              maximumFractionDigits: 1,
+                            }).format(value)
+                          }
                           tick={{
                             fill: "var(--muted-foreground)",
-                            fontSize: 11,
+                            fontSize: 10,
                           }}
                           axisLine={false}
                           tickLine={false}
                           allowDecimals={false}
+                          domain={[0, "auto"]}
                         />
-                        <Tooltip content={<CustomTooltip t={t} />} />
-                        <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                          {chartData.map((entry, index) => (
-                            <Cell
-                              key={`cell-${entry.status}-${index}`}
-                              fill={
-                                STATUS_COLOR[entry.status] ?? "var(--primary)"
-                              }
-                              fillOpacity={0.85}
-                            />
-                          ))}
-                        </Bar>
-                      </BarChart>
+                        <Tooltip
+                          content={<CustomTooltip t={t} locale={locale} />}
+                          cursor={{
+                            stroke: "hsl(var(--primary))",
+                            strokeDasharray: "4 4",
+                            strokeOpacity: 0.25,
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="count"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={3}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          fill="url(#usage-chart-gradient)"
+                          dot={
+                            chartData.length <= 7
+                              ? {
+                                  r: 3,
+                                  fill: "hsl(var(--background))",
+                                  strokeWidth: 2,
+                                }
+                              : false
+                          }
+                          activeDot={{
+                            r: 6,
+                            fill: "hsl(var(--primary))",
+                            stroke: "hsl(var(--background))",
+                            strokeWidth: 2,
+                          }}
+                        />
+                      </AreaChart>
                     </ResponsiveContainer>
                   )}
 
                   {/* Per-day breakdown */}
                   {!usageLoading && days && days.length > 0 && (
-                    <div className="mt-4 space-y-2 border-t border-border/50 pt-4">
+                    <div className="mt-4 max-h-64 space-y-2 overflow-y-auto border-t border-border/50 pt-4 pr-2">
                       {days.map((day, idx) => {
-                        const dot = STATUS_COLOR[day.status] ?? "#94a3b8";
+                        const dot = day.status
+                          ? STATUS_COLOR[day.status] ?? "var(--primary)"
+                          : "var(--primary)";
                         return (
                           <div
                             key={day.date}
@@ -681,7 +747,10 @@ export function UsagePage() {
                             <span className="text-muted-foreground font-mono w-16 flex-shrink-0">
                               {(() => {
                                 try {
-                                  return format(parseISO(day.date), "MMM d");
+                                  return new Date(`${day.date}T12:00:00`).toLocaleDateString(locale, {
+                                    month: "short",
+                                    day: "numeric",
+                                  });
                                 } catch {
                                   return day.date;
                                 }
@@ -697,13 +766,7 @@ export function UsagePage() {
                               />
                             </div>
                             <span className="font-mono text-foreground w-14 text-right flex-shrink-0">
-                              {day.count.toLocaleString()}
-                            </span>
-                            <span
-                              className="capitalize w-20 flex-shrink-0"
-                              style={{ color: dot }}
-                            >
-                              {day.status}
+                              {day.count.toLocaleString(locale)}
                             </span>
                           </div>
                         );

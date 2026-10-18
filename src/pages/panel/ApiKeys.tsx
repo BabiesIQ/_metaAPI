@@ -55,8 +55,8 @@ function maskKey(key: string): string {
   return `${key.slice(0, 8)}••••••••••••${key.slice(-4)}`;
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-IN", {
+function formatDate(dateStr: string, locale: string) {
+  return new Date(dateStr).toLocaleDateString(locale, {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -74,7 +74,8 @@ function SingleKeyCard({
   isLoading: boolean;
   onRegenerate: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? i18n.language ?? "en";
   const [showKey, setShowKey] = useState(false);
   const [copied, setCopied] = useState(false);
   const [revealTimer, setRevealTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
@@ -167,12 +168,12 @@ function SingleKeyCard({
               )}
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {t("api_keys.created")} {formatDate(activeKey.created_at)}
+                {t("api_keys_page.created")} {formatDate(activeKey.created_at, locale)}
               </span>
               {activeKey.expires_at && (
                 <span className="flex items-center gap-1 text-amber-400">
                   <CalendarDays className="w-3 h-3" />
-                  {t("api_keys.expires")} {formatDate(activeKey.expires_at)}
+                  {t("api_keys.expires")} {formatDate(activeKey.expires_at, locale)}
                 </span>
               )}
             </div>
@@ -192,7 +193,7 @@ function SingleKeyCard({
             <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto">
               <Key className="w-5 h-5 text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground">{t("api_keys.no_key")}</p>
+            <p className="text-sm text-muted-foreground">{t("api_keys.no_key_desc")}</p>
             <Button className="gradient-primary text-white border-0 gap-2" onClick={onRegenerate} data-ocid="api_keys.first.generate.button">
               <Key className="w-4 h-4" />
               {t("api_keys.generate_first")}
@@ -212,14 +213,17 @@ function MultiKeyRow({
   onResume,
   onRevoke,
   actionLoading,
+  canSetCustomLimit,
 }: {
   apiKey: ApiKey;
   onPause: (id: number) => void;
   onResume: (id: number) => void;
   onRevoke: (key: ApiKey) => void;
   actionLoading: number | null;
+  canSetCustomLimit: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? i18n.language ?? "en";
   const [showKey, setShowKey] = useState(false);
   const [copied, setCopied] = useState(false);
   const [revealTimer, setRevealTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
@@ -276,12 +280,12 @@ function MultiKeyRow({
           {isPaused ? (
             <Badge variant="outline" className="text-xs text-amber-400 border-amber-500/30 bg-amber-500/10 flex items-center gap-1">
               <Pause className="w-2.5 h-2.5" />
-              Paused
+              {t("api_keys.paused")}
             </Badge>
           ) : (
             <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-500/30 bg-emerald-500/10 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Active
+              {t("api_keys.active")}
             </Badge>
           )}
         </div>
@@ -293,7 +297,8 @@ function MultiKeyRow({
               type="button"
               onClick={() => onPause(apiKey.id)}
               disabled={isLoading}
-              title="Pause this key"
+              title={t("api_keys.pause")}
+              aria-label={t("api_keys.pause")}
               className="p-1.5 rounded-lg text-muted-foreground hover:text-amber-400 hover:bg-amber-500/10 transition-colors disabled:opacity-50"
             >
               <Pause className="w-3.5 h-3.5" />
@@ -304,7 +309,8 @@ function MultiKeyRow({
               type="button"
               onClick={() => onResume(apiKey.id)}
               disabled={isLoading}
-              title="Resume this key"
+              title={t("api_keys.resume")}
+              aria-label={t("api_keys.resume")}
               className="p-1.5 rounded-lg text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors disabled:opacity-50"
             >
               <Play className="w-3.5 h-3.5" />
@@ -314,7 +320,8 @@ function MultiKeyRow({
             type="button"
             onClick={() => onRevoke(apiKey)}
             disabled={isLoading}
-            title="Revoke this key"
+            title={t("api_keys_page.revoke_btn")}
+            aria-label={t("api_keys_page.revoke_btn")}
             className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -348,18 +355,20 @@ function MultiKeyRow({
       <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground flex-wrap">
         <span className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          Created {formatDate(apiKey.created_at)}
+          {t("api_keys_page.created")} {formatDate(apiKey.created_at, locale)}
         </span>
         {apiKey.expires_at && (
           <span className="flex items-center gap-1 text-amber-400">
             <CalendarDays className="w-3 h-3" />
-            Expires {formatDate(apiKey.expires_at)}
+            {t("api_keys.expires")} {formatDate(apiKey.expires_at, locale)}
           </span>
         )}
-        {apiKey.request_limit !== undefined && apiKey.request_limit !== null && (
+        {canSetCustomLimit && apiKey.request_limit !== undefined && apiKey.request_limit !== null && (
           <span className="flex items-center gap-1 text-primary">
             <Gauge className="w-3 h-3" />
-            {apiKey.request_limit === -1 ? "Unlimited" : `${apiKey.request_limit.toLocaleString()}/day`}
+            {apiKey.request_limit === -1
+              ? t("usage.unlimited")
+              : `${apiKey.request_limit.toLocaleString(locale)}/${t("usage.per_day")}`}
           </span>
         )}
       </div>
@@ -374,7 +383,11 @@ export function ApiKeysPage() {
   const queryClient = useQueryClient();
   const authUser = useAuthStore((s) => s.user);
   const userRole = authUser?.user.role;
-  const isMultiKeyUser = userRole === "business" || userRole === "admin";
+  const canManageMultipleKeys = Boolean(userRole);
+  const canSetCustomLimit =
+    userRole === "business" ||
+    userRole === "admin" ||
+    authUser?.plan.code === "business";
 
   // Dialog state
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -408,7 +421,7 @@ export function ApiKeysPage() {
 
   const generateMut = useMutation({
     mutationFn: () => {
-      const limit = requestLimit.trim()
+      const limit = canSetCustomLimit && requestLimit.trim()
         ? Number(requestLimit.trim())
         : null;
       return generateApiKey(appName.trim(), expiresAt || null, limit);
@@ -418,7 +431,7 @@ export function ApiKeysPage() {
         toast.error(res.error ?? "Could not generate API key.");
         return;
       }
-      toast.success("API key generated successfully!");
+      toast.success(t("api_keys.generated_success"));
       handleDialogClose(false);
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
@@ -428,12 +441,12 @@ export function ApiKeysPage() {
   const revokeMut = useMutation({
     mutationFn: (key: ApiKey) =>
       revokeApiKey(key.id, key.application_name ?? ""),
-    onSuccess: (res, key) => {
+    onSuccess: (res) => {
       if (!res.success) {
         toast.error(res.error ?? "Could not revoke key.");
         return;
       }
-      toast.success(`Key "${key.prefix}…" revoked`);
+      toast.success(t("api_keys.revoked_success"));
       setRevokeTarget(null);
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
@@ -447,7 +460,7 @@ export function ApiKeysPage() {
     },
     onSuccess: (res) => {
       if (!res.success) { toast.error(res.error ?? "Could not pause key."); return; }
-      toast.success("Key paused");
+      toast.success(t("api_keys.paused_success"));
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
     onError: () => toast.error("Network error."),
@@ -461,7 +474,7 @@ export function ApiKeysPage() {
     },
     onSuccess: (res) => {
       if (!res.success) { toast.error(res.error ?? "Could not resume key."); return; }
-      toast.success("Key resumed");
+      toast.success(t("api_keys.resumed_success"));
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
     },
     onError: () => toast.error("Network error."),
@@ -486,10 +499,10 @@ export function ApiKeysPage() {
     setAppNameError("");
 
     // Validate request limit
-    if (requestLimit.trim()) {
+    if (canSetCustomLimit && requestLimit.trim()) {
       const num = Number(requestLimit.trim());
       if (!Number.isInteger(num) || num < 1) {
-        setRequestLimitError("Must be a positive whole number (e.g. 500)");
+        setRequestLimitError(t("api_keys.request_limit_invalid"));
         return;
       }
     }
@@ -520,9 +533,7 @@ export function ApiKeysPage() {
                     {t("api_keys.title")}
                   </h1>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {isMultiKeyUser
-                      ? "Manage multiple API keys. Pause, resume, or revoke individual keys anytime."
-                      : t("api_keys.subtitle")}
+                    {t("api_keys.subtitle")}
                   </p>
                 </div>
                 <Button
@@ -530,23 +541,14 @@ export function ApiKeysPage() {
                   onClick={() => setConfirmOpen(true)}
                   data-ocid="api_keys.generate.open_modal_button"
                 >
-                  {isMultiKeyUser ? (
-                    <>
-                      <Plus className="w-4 h-4" />
-                      New Key
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="w-4 h-4" />
-                      {activeKey ? t("api_keys.generate_new") : t("api_keys.generate_first")}
-                    </>
-                  )}
+                  <Plus className="w-4 h-4" />
+                  {liveKeys.length > 0 ? t("api_keys.generate_new") : t("api_keys.generate_first")}
                 </Button>
               </div>
             </motion.div>
 
             {/* ── Multi-key view (Business / Admin) ── */}
-            {isMultiKeyUser ? (
+            {canManageMultipleKeys ? (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -558,7 +560,7 @@ export function ApiKeysPage() {
                       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Key className="w-4 h-4 text-primary" />
                       </div>
-                      Active Keys
+                      {t("api_keys.active_keys")}
                       {liveKeys.length > 0 && (
                         <Badge variant="outline" className="ml-1 text-xs border-primary/30 text-primary bg-primary/5">
                           {liveKeys.length}
@@ -578,7 +580,7 @@ export function ApiKeysPage() {
                         <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto">
                           <Key className="w-5 h-5 text-muted-foreground" />
                         </div>
-                        <p className="text-sm text-muted-foreground">No active keys yet. Generate your first key.</p>
+                        <p className="text-sm text-muted-foreground">{t("api_keys.no_key_desc")}</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -590,6 +592,7 @@ export function ApiKeysPage() {
                             onResume={(id) => resumeMut.mutate(id)}
                             onRevoke={setRevokeTarget}
                             actionLoading={actionLoadingId}
+                            canSetCustomLimit={canSetCustomLimit}
                           />
                         ))}
                       </div>
@@ -634,7 +637,7 @@ export function ApiKeysPage() {
                     <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center">
                       <History className="w-4 h-4 text-muted-foreground" />
                     </div>
-                    {t("api_keys.history_title")}
+                    {t("api_keys.key_history")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -690,15 +693,18 @@ export function ApiKeysPage() {
                   <Key className="w-6 h-6 text-primary" />
                 </div>
                 <DialogTitle className="font-display text-center text-lg">
-                  {isMultiKeyUser
-                    ? "Generate New API Key"
+                  {canManageMultipleKeys
+                    ? t("api_keys.gen_title")
                     : activeKey
                       ? t("api_keys.regen_title")
                       : t("api_keys.gen_title")}
                 </DialogTitle>
                 <DialogDescription className="text-center text-sm text-muted-foreground leading-relaxed">
-                  {isMultiKeyUser
-                    ? "A new key will be created. Your existing keys remain active."
+                  {canManageMultipleKeys
+                    ? <>
+                        {t("api_keys.gen_desc")}{" "}
+                        <span className="block mt-1">{t("api_keys.existing_keys_stay_active")}</span>
+                      </>
                     : activeKey
                       ? <>
                           {t("api_keys.regen_desc")}{" "}
@@ -739,8 +745,8 @@ export function ApiKeysPage() {
                 <div className="space-y-2">
                   <Label htmlFor="api_keys_expires_at" className="text-sm font-medium flex items-center gap-1.5">
                     <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
-                    Key Expiry Date
-                    <span className="text-xs text-muted-foreground font-normal ml-1">(optional)</span>
+                    {t("api_keys.expires")}
+                    <span className="text-xs text-muted-foreground font-normal ml-1">({t("api_keys.optional")})</span>
                   </Label>
                   <Input
                     id="api_keys_expires_at"
@@ -752,22 +758,22 @@ export function ApiKeysPage() {
                     data-ocid="api_keys.expires_at.input"
                     disabled={generateMut.isPending}
                   />
-                  <p className="text-xs text-muted-foreground">Leave blank for a key that never expires.</p>
+                  <p className="text-xs text-muted-foreground">{t("api_keys.never_expires")}</p>
                 </div>
 
                 {/* Per-key request limit — business/admin only */}
-                {isMultiKeyUser && (
+                {canSetCustomLimit && (
                   <div className="space-y-2">
                     <Label htmlFor="api_keys_request_limit" className="text-sm font-medium flex items-center gap-1.5">
                       <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
-                      Daily Request Limit
-                      <span className="text-xs text-muted-foreground font-normal ml-1">(optional)</span>
+                      {t("usage.daily_limit")}
+                      <span className="text-xs text-muted-foreground font-normal ml-1">({t("api_keys.optional")})</span>
                     </Label>
                     <Input
                       id="api_keys_request_limit"
                       type="number"
                       min={1}
-                      placeholder="e.g. 1000 — leave blank for plan default"
+                      placeholder={t("api_keys.custom_limit_placeholder")}
                       value={requestLimit}
                       onChange={(e) => { setRequestLimit(e.target.value); if (requestLimitError) setRequestLimitError(""); }}
                       className={`bg-background border-border h-11 ${requestLimitError ? "border-destructive focus-visible:ring-destructive" : ""}`}
@@ -778,7 +784,7 @@ export function ApiKeysPage() {
                       <p className="text-xs text-destructive">{requestLimitError}</p>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      Override the per-key daily cap. Leave blank to use your plan's default limit.
+                      {t("api_keys.custom_limit_hint")}
                     </p>
                   </div>
                 )}
@@ -802,8 +808,8 @@ export function ApiKeysPage() {
                 >
                   {generateMut.isPending
                     ? t("api_keys.generating")
-                    : isMultiKeyUser
-                      ? "Generate Key"
+                    : canManageMultipleKeys
+                      ? t("api_keys.generate_key")
                       : activeKey
                         ? t("api_keys.yes_regen")
                         : t("api_keys.generate_key")}
@@ -813,20 +819,19 @@ export function ApiKeysPage() {
           </Dialog>
 
           {/* ── Revoke Confirm Dialog (multi-key mode) ── */}
-          {isMultiKeyUser && (
+          {canManageMultipleKeys && (
             <Dialog open={!!revokeTarget} onOpenChange={(open) => { if (!open) setRevokeTarget(null); }}>
               <DialogContent className="sm:max-w-md bg-card border-border">
                 <DialogHeader>
                   <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center mx-auto mb-3">
                     <ShieldOff className="w-6 h-6 text-destructive" />
                   </div>
-                  <DialogTitle className="font-display text-center text-lg">Revoke API Key?</DialogTitle>
+                  <DialogTitle className="font-display text-center text-lg">{t("api_keys_page.revoke_title")}</DialogTitle>
                   <DialogDescription className="text-center text-sm text-muted-foreground leading-relaxed">
-                    Key{" "}
+                    {t("api_keys_page.revoke_desc")}{" "}
                     <span className="font-mono text-foreground/70">
-                      {revokeTarget?.prefix}…{revokeTarget?.api_key.slice(-4)}
+                      ({revokeTarget?.prefix}…{revokeTarget?.api_key.slice(-4)})
                     </span>{" "}
-                    will be permanently disabled. This cannot be undone.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="flex gap-2 sm:flex-row flex-col-reverse">
@@ -836,7 +841,7 @@ export function ApiKeysPage() {
                     onClick={() => setRevokeTarget(null)}
                     disabled={revokeMut.isPending}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                   <Button
                     variant="destructive"
@@ -844,7 +849,7 @@ export function ApiKeysPage() {
                     onClick={() => revokeTarget && revokeMut.mutate(revokeTarget)}
                     disabled={revokeMut.isPending}
                   >
-                    {revokeMut.isPending ? "Revoking…" : "Yes, Revoke"}
+                    {revokeMut.isPending ? t("api_keys_page.revoking") : t("api_keys_page.revoke_yes")}
                   </Button>
                 </DialogFooter>
               </DialogContent>

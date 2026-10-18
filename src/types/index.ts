@@ -55,7 +55,7 @@ export interface ApiKey {
 export interface UsageDay {
   date: string;
   count: number;
-  status: UsageStatus;
+  status?: UsageStatus;
 }
 
 export interface Invoice {
