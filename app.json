@@ -2,8 +2,8 @@
   "name": "BabiesIQ Web",
   "description": "BabiesIQ — Developer Platform frontend. React + Vite SPA with API dashboard, pricing, docs, and admin panel.",
   "keywords": ["react", "vite", "typescript", "tailwindcss", "shadcn", "babiesiq"],
-  "website": "https://github.com/BabiesIQ/web",
-  "repository": "https://github.com/BabiesIQ/web",
+  "website": "https://github.com/BabiesIQ/_metaAPI",
+  "repository": "https://github.com/BabiesIQ/_metaAPI",
   "stack": "heroku-22",
   "buildpacks": [
     {

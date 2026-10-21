@@ -1,0 +1,76 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "label": "Home",
+      "title": "BabiesIQ | YouTube Audio & Video Streaming API",
+      "description": "BabiesIQ is a fast YouTube audio and video streaming API for developers. Search videos, get stream URLs, apply EQ presets, and build with one API key.",
+      "heading": "BabiesIQ — YouTube Audio & Video API",
+      "summary": "Build with the BabiesIQ developer API for YouTube audio and video search, stream URLs, EQ presets, and developer tools.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#5b5bd6\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m13 9 19-15 19 15\"/><path d=\"M17 31v19h11V37h8v13h11V31\"/></g></svg>"
+    },
+    {
+      "path": "/docs",
+      "label": "API documentation",
+      "title": "BabiesIQ API Docs | YouTube Audio & Video Streaming API",
+      "description": "Read the BabiesIQ REST API documentation for YouTube search, audio and video stream URLs, downloads, seek, EQ presets, rate limits, and code examples.",
+      "heading": "BabiesIQ API Documentation",
+      "summary": "Learn API authentication, search and streaming endpoints, rate limits, EQ presets, SDKs, and working code examples.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#2563eb\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M32 16v34\"/><path d=\"M32 20c-8-7-16-7-23-3v32c7-4 15-4 23 3\"/><path d=\"M32 20c8-7 16-7 23-3v32c-7-4-15-4-23 3\"/></g></svg>"
+    },
+    {
+      "path": "/pricing",
+      "label": "Pricing",
+      "title": "BabiesIQ API Pricing | Free YouTube Streaming API Plan",
+      "description": "Compare BabiesIQ API plans for YouTube audio and video streaming, search, downloads, EQ presets, request limits, and developer support.",
+      "heading": "BabiesIQ API Pricing",
+      "summary": "Compare Free, Pro, Pro Plus, and Business plans, including daily request limits, API keys, support, and billing options.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#059669\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"12\" y=\"18\" width=\"40\" height=\"29\" rx=\"5\"/><path d=\"M12 27h40\"/><path d=\"M20 39h10\"/></g></svg>"
+    },
+    {
+      "path": "/contact",
+      "label": "Contact",
+      "title": "Contact BabiesIQ | API Support and Partnerships",
+      "description": "Contact the BabiesIQ team for API integration support, streaming API questions, business plans, partnerships, and developer help.",
+      "heading": "Contact BabiesIQ",
+      "summary": "Reach the BabiesIQ team for API integration support, account questions, partnership opportunities, or business-plan inquiries.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#ea580c\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"10\" y=\"16\" width=\"44\" height=\"32\" rx=\"5\"/><path d=\"m12 20 20 16 20-16\"/></g></svg>"
+    },
+    {
+      "path": "/privacy",
+      "label": "Privacy policy",
+      "title": "BabiesIQ Privacy Policy",
+      "description": "Read the BabiesIQ privacy policy for the website, API, and developer accounts.",
+      "heading": "Privacy Policy",
+      "summary": "Review how BabiesIQ handles account details, API usage, payments, cookies, and privacy requests.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#0891b2\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M32 10 50 17v13c0 12-8 20-18 25-10-5-18-13-18-25V17z\"/><path d=\"m24 32 6 6 12-13\"/></g></svg>"
+    },
+    {
+      "path": "/terms",
+      "label": "Terms of service",
+      "title": "BabiesIQ Terms of Service",
+      "description": "Read the terms that apply to using the BabiesIQ API, website, and developer services.",
+      "heading": "Terms of Service",
+      "summary": "Read the terms for BabiesIQ accounts, API usage, service access, billing, and user responsibilities.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#7c3aed\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 10h18l9 9v35H19z\"/><path d=\"M37 10v10h10\"/><path d=\"M26 31h13M26 39h13M26 47h9\"/></g></svg>"
+    },
+    {
+      "path": "/refund",
+      "label": "Refund policy",
+      "title": "BabiesIQ Refund Policy",
+      "description": "Read the BabiesIQ refund policy for paid API plans and developer services.",
+      "heading": "Refund Policy",
+      "summary": "See refund eligibility, request steps, and processing information for BabiesIQ paid plans.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#db2777\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17 22a20 20 0 0 1 34 5\"/><path d=\"M51 15v13H38\"/><path d=\"M47 42a20 20 0 0 1-34-5\"/><path d=\"M13 49V36h13\"/></g></svg>"
+    },
+    {
+      "path": "/sitemap",
+      "label": "Site map",
+      "title": "BabiesIQ Site Map | All Public Pages",
+      "description": "Browse the BabiesIQ website map for product pages, API documentation, pricing, account access, and legal information.",
+      "heading": "Explore BabiesIQ",
+      "summary": "Browse all public BabiesIQ pages, developer resources, account links, and legal policies from one place.",
+      "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect x=\"2\" y=\"2\" width=\"60\" height=\"60\" rx=\"18\" fill=\"#4f46e5\"/><g fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"32\" cy=\"17\" r=\"6\"/><circle cx=\"17\" cy=\"46\" r=\"6\"/><circle cx=\"47\" cy=\"46\" r=\"6\"/><path d=\"M29 23 20 40M35 23l9 17M23 46h18\"/></g></svg>"
+    }
+  ]
+}

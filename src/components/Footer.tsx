@@ -387,6 +387,12 @@ export function Footer() {
               >
                 {t("footer.refund")}
               </Link>
+              <Link
+                to="/sitemap"
+                className="hover:text-foreground transition-colors"
+              >
+                Site map
+              </Link>
             </div>
           </motion.div>
         </div>

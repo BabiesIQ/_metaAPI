@@ -39,6 +39,9 @@ const LoginPage = lazy(() =>
 const PricingPage = lazy(() =>
   import("@/pages/Pricing").then(({ PricingPage }) => ({ default: PricingPage })),
 );
+const SitemapPage = lazy(() =>
+  import("@/pages/Sitemap").then(({ SitemapPage }) => ({ default: SitemapPage })),
+);
 const PrivacyPage = lazy(() =>
   import("@/pages/Privacy").then(({ PrivacyPage }) => ({ default: PrivacyPage })),
 );
@@ -408,6 +411,7 @@ const contactRoute = createRoute({ getParentRoute: () => rootRoute, path: "/cont
 const privacyRoute = createRoute({ getParentRoute: () => rootRoute, path: "/privacy", component: PrivacyPage });
 const termsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/terms", component: TermsPage });
 const refundRoute = createRoute({ getParentRoute: () => rootRoute, path: "/refund", component: RefundPage });
+const sitemapRoute = createRoute({ getParentRoute: () => rootRoute, path: "/sitemap", component: SitemapPage });
 
 // ── Auth routes ───────────────────────────────────────────────────────────────
 const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: "/login", component: LoginPage });
@@ -477,6 +481,7 @@ const routeTree = rootRoute.addChildren([
   privacyRoute,
   termsRoute,
   refundRoute,
+  sitemapRoute,
   loginRoute,
   signinRoute,
   signupRoute,
@@ -514,7 +519,7 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const GITHUB_URL = "https://github.com/BabiesIQ/web";
+const GITHUB_URL = "https://github.com/BabiesIQ/_metaAPI";
 
 export default function App() {
   return (

@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Link } from "@tanstack/react-router";
 import { Shield } from "lucide-react";
 import { motion } from "motion/react";
+import { usePageSeo } from "@/lib/seo";
 
 const SECTIONS = [
   {
@@ -110,6 +111,11 @@ function PolicySection({
 }
 
 export function PrivacyPage() {
+  usePageSeo({
+    title: "BabiesIQ Privacy Policy",
+    description: "Read the BabiesIQ privacy policy for the website, API, and developer accounts.",
+    path: "/privacy",
+  });
   return (
     <Layout>
       <motion.div

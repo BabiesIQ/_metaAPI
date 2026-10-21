@@ -11,97 +11,84 @@ const INDEX_HTML = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
 const SITE_ORIGIN = "https://babiesiq.tech";
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/assets/banner.svg`;
 
-const PUBLIC_SEO = {
-  "/": {
-    title: "BabiesIQ | YouTube Audio & Video Streaming API",
-    description:
-      "BabiesIQ is a fast YouTube audio and video streaming API for developers. Search videos, get stream URLs, apply EQ presets, and build with one API key.",
-  },
-  "/docs": {
-    title: "BabiesIQ API Docs | YouTube Audio & Video Streaming API",
-    description:
-      "Read the BabiesIQ REST API documentation for YouTube search, audio and video stream URLs, downloads, seek, EQ presets, rate limits, and code examples.",
-  },
-  "/pricing": {
-    title: "BabiesIQ API Pricing | Free YouTube Streaming API Plan",
-    description:
-      "Compare BabiesIQ API plans for YouTube audio and video streaming, search, downloads, EQ presets, request limits, and developer support.",
-  },
-  "/contact": {
-    title: "Contact BabiesIQ | API Support and Partnerships",
-    description:
-      "Contact the BabiesIQ team for API integration support, streaming API questions, business plans, partnerships, and developer help.",
-  },
-  "/privacy": {
-    title: "BabiesIQ Privacy Policy",
-    description: "Read the BabiesIQ privacy policy for the website, API, and developer accounts.",
-  },
-  "/terms": {
-    title: "BabiesIQ Terms of Service",
-    description: "Read the terms that apply to using the BabiesIQ API, website, and developer services.",
-  },
-  "/refund": {
-    title: "BabiesIQ Refund Policy",
-    description: "Read the BabiesIQ refund policy for paid API plans and developer services.",
-  },
-};
+const SEO_ROUTES = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "src/lib/seo-routes.json"), "utf8"),
+).routes;
+const PUBLIC_SEO = Object.fromEntries(SEO_ROUTES.map((route) => [route.path, route]));
 
-function escapeAttribute(value) {
-  return value
+function escapeHtml(value) {
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;");
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("'", "&#39;");
+}
+
+function replaceWholeHeadTag(html, marker, replacement) {
+  const start = html.indexOf(marker);
+  if (start < 0) return html;
+  const end = html.indexOf(">", start);
+  if (end < 0) return html;
+  return html.slice(0, start) + replacement + html.slice(end + 1);
+}
+
+function replaceMeta(html, attribute, key, value) {
+  const marker = '<meta ' + attribute + '="' + key + '"';
+  const tag = '<meta ' + attribute + '="' + key + '" content="' + escapeHtml(value) + '" />';
+  if (html.includes(marker)) return replaceWholeHeadTag(html, marker, tag);
+  return html.replace("</head>", "    " + tag + "\n  </head>");
+}
+
+function renderSeoFallback(page) {
+  const links = SEO_ROUTES.map((item) => '<li><a href="' + escapeHtml(item.path) + '">' + escapeHtml(item.label) + '</a></li>').join("");
+  return '<!--SEO_FALLBACK_START--><main class="seo-fallback" style="max-width:68rem;margin:0 auto;padding:3rem 1.5rem;color:#e7e7ed;font-family:system-ui,sans-serif"><p style="color:#8b86ff;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase">BabiesIQ · Developer platform</p><h1 style="font-size:clamp(2rem,5vw,3.25rem);line-height:1.1;margin:1rem 0">' + escapeHtml(page.heading) + '</h1><p style="max-width:48rem;color:#a4a4b2;line-height:1.7">' + escapeHtml(page.summary) + '</p><nav aria-label="Public pages"><ul style="display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;padding:1.5rem 0 0 1.25rem">' + links + '</ul></nav></main><!--SEO_FALLBACK_END-->';
 }
 
 function seoHtml(pathname) {
-  const page = PUBLIC_SEO[pathname];
-  const title = page?.title ?? "BabiesIQ | YouTube Audio & Video Streaming API";
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const page = PUBLIC_SEO[normalizedPath];
+  const title = page?.title ?? "Page not found | BabiesIQ";
   const description =
-    page?.description ??
-    "BabiesIQ is a fast YouTube audio and video streaming API for developers.";
+    page?.description ?? "This BabiesIQ page could not be found.";
   const robots = page ? "index, follow" : "noindex, follow";
-  const canonical = `${SITE_ORIGIN}${pathname === "/" ? "/" : pathname}`;
-  return INDEX_HTML.replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
-    .replace(
-      /<meta name="description"[^>]*>/,
-      `<meta name="description" content="${escapeAttribute(description)}" />`,
-    )
-    .replace(
-      /<meta name="robots"[^>]*>/,
-      `<meta name="robots" content="${robots}" />`,
-    )
-    .replace(
-      /<link rel="canonical"[^>]*>/,
-      `<link rel="canonical" href="${escapeAttribute(canonical)}" />`,
-    )
-    .replace(
-      /<meta property="og:title"[^>]*>/,
-      `<meta property="og:title" content="${escapeAttribute(title)}" />`,
-    )
-    .replace(
-      /<meta property="og:description"[^>]*>/,
-      `<meta property="og:description" content="${escapeAttribute(description)}" />`,
-    )
-    .replace(
-      /<meta property="og:url"[^>]*>/,
-      `<meta property="og:url" content="${escapeAttribute(canonical)}" />`,
-    )
-    .replace(
-      /<meta property="og:image"[^>]*>/,
-      `<meta property="og:image" content="${DEFAULT_OG_IMAGE}" />`,
-    )
-    .replace(
-      /<meta name="twitter:title"[^>]*>/,
-      `<meta name="twitter:title" content="${escapeAttribute(title)}" />`,
-    )
-    .replace(
-      /<meta name="twitter:description"[^>]*>/,
-      `<meta name="twitter:description" content="${escapeAttribute(description)}" />`,
-    )
-    .replace(
-      /<meta name="twitter:image"[^>]*>/,
-      `<meta name="twitter:image" content="${DEFAULT_OG_IMAGE}" />`,
-    );
+  const canonical = SITE_ORIGIN + normalizedPath;
+  let html = INDEX_HTML;
+  const titleStart = html.indexOf("<title>");
+  const titleEnd = html.indexOf("</title>", titleStart);
+  if (titleStart >= 0 && titleEnd >= 0) {
+    html = html.slice(0, titleStart) + "<title>" + escapeHtml(title) + "</title>" + html.slice(titleEnd + 8);
+  }
+  html = replaceWholeHeadTag(html, '<link rel="canonical"', '<link rel="canonical" href="' + escapeHtml(canonical) + '" />');
+  html = replaceMeta(html, "name", "description", description);
+  html = replaceMeta(html, "name", "robots", robots);
+  html = replaceMeta(html, "property", "og:title", title);
+  html = replaceMeta(html, "property", "og:description", description);
+  html = replaceMeta(html, "property", "og:type", "website");
+  html = replaceMeta(html, "property", "og:url", canonical);
+  html = replaceMeta(html, "property", "og:image", DEFAULT_OG_IMAGE);
+  html = replaceMeta(html, "property", "og:site_name", "BabiesIQ");
+  html = replaceMeta(html, "name", "twitter:card", "summary_large_image");
+  html = replaceMeta(html, "name", "twitter:title", title);
+  html = replaceMeta(html, "name", "twitter:description", description);
+  html = replaceMeta(html, "name", "twitter:image", DEFAULT_OG_IMAGE);
+
+  const icon = page
+    ? "data:image/svg+xml," + encodeURIComponent(page.iconSvg)
+    : "/favicon.svg";
+  html = replaceWholeHeadTag(
+    html,
+    '<link rel="icon" type="image/svg+xml"',
+    '<link rel="icon" type="image/svg+xml" href="' + escapeHtml(icon) + '" />',
+  );
+
+  const fallbackStart = html.indexOf("<!--SEO_FALLBACK_START-->");
+  const fallbackEnd = html.indexOf("<!--SEO_FALLBACK_END-->");
+  if (fallbackStart >= 0 && fallbackEnd >= fallbackStart) {
+    const fallback = page ? renderSeoFallback(page) : "";
+    html = html.slice(0, fallbackStart) + fallback + html.slice(fallbackEnd + "<!--SEO_FALLBACK_END-->".length);
+  }
+  return html;
 }
 
 // ── Static files ──────────────────────────────────────────────────────────────
@@ -155,6 +142,7 @@ const APP_ROUTES = new Set([
   "/privacy",
   "/terms",
   "/refund",
+  "/sitemap",
   "/login",
   "/signin",
   "/signup",

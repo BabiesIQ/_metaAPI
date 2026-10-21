@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import SEO_ROUTE_DATA from "./seo-routes.json";
 
 export const SITE_ORIGIN = "https://babiesiq.tech";
-export const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/assets/banner.svg`;
+export const DEFAULT_OG_IMAGE = SITE_ORIGIN + "/assets/banner.svg";
 
 export type PageSeo = {
   title: string;
@@ -12,9 +13,11 @@ export type PageSeo = {
   jsonLd?: Record<string, unknown>;
 };
 
+const PAGE_SEO = new Map(SEO_ROUTE_DATA.routes.map((route) => [route.path, route] as const));
+
 function upsertMeta(attribute: "name" | "property", key: string, content: string) {
   let element = document.head.querySelector<HTMLMetaElement>(
-    `meta[${attribute}="${key}"]`,
+    'meta[' + attribute + '="' + key + '"]',
   );
 
   if (!element) {
@@ -40,6 +43,23 @@ function upsertCanonical(href: string) {
   element.href = href;
 }
 
+function upsertPageIcon(iconSvg?: string) {
+  let element = document.head.querySelector<HTMLLinkElement>(
+    'link[rel="icon"][type="image/svg+xml"]',
+  );
+
+  if (!element) {
+    element = document.createElement("link");
+    element.rel = "icon";
+    element.type = "image/svg+xml";
+    document.head.appendChild(element);
+  }
+
+  element.href = iconSvg
+    ? "data:image/svg+xml," + encodeURIComponent(iconSvg)
+    : "/favicon.svg";
+}
+
 function upsertJsonLd(value: Record<string, unknown>) {
   let element = document.head.querySelector<HTMLScriptElement>(
     'script[data-seo-jsonld="true"]',
@@ -63,24 +83,35 @@ export function usePageSeo({
   robots = "index, follow",
   jsonLd,
 }: PageSeo) {
+  const route = PAGE_SEO.get(path);
+  const pageTitle = route?.title ?? title;
+  const pageDescription = route?.description ?? description;
+
   useEffect(() => {
     const canonical = new URL(path, SITE_ORIGIN).toString();
 
-    document.title = title;
-    upsertMeta("name", "description", description);
+    document.title = pageTitle;
+    upsertMeta("name", "description", pageDescription);
     upsertMeta("name", "robots", robots);
-    upsertMeta("property", "og:title", title);
-    upsertMeta("property", "og:description", description);
+    upsertMeta("property", "og:title", pageTitle);
+    upsertMeta("property", "og:description", pageDescription);
     upsertMeta("property", "og:type", type);
     upsertMeta("property", "og:url", canonical);
     upsertMeta("property", "og:image", DEFAULT_OG_IMAGE);
-    upsertMeta("name", "twitter:title", title);
-    upsertMeta("name", "twitter:description", description);
+    upsertMeta("property", "og:site_name", "BabiesIQ");
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:title", pageTitle);
+    upsertMeta("name", "twitter:description", pageDescription);
     upsertMeta("name", "twitter:image", DEFAULT_OG_IMAGE);
     upsertCanonical(canonical);
+    upsertPageIcon(route?.iconSvg);
 
     if (jsonLd) {
       upsertJsonLd(jsonLd);
+    } else {
+      document.head
+        .querySelector('script[data-seo-jsonld="true"]')
+        ?.remove();
     }
-  }, [description, jsonLd, path, robots, title, type]);
+  }, [jsonLd, pageDescription, pageTitle, path, robots, route, type]);
 }

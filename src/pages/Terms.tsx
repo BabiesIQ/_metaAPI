@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Link } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 import { motion } from "motion/react";
+import { usePageSeo } from "@/lib/seo";
 
 const SECTIONS = [
   {
@@ -121,6 +122,11 @@ function PolicySection({
 }
 
 export function TermsPage() {
+  usePageSeo({
+    title: "BabiesIQ Terms of Service",
+    description: "Read the terms that apply to using the BabiesIQ API, website, and developer services.",
+    path: "/terms",
+  });
   return (
     <Layout>
       <motion.div

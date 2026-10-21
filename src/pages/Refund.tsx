@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Link } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
 import { motion } from "motion/react";
+import { usePageSeo } from "@/lib/seo";
 
 const SECTIONS = [
   {
@@ -109,6 +110,11 @@ function PolicySection({
 }
 
 export function RefundPage() {
+  usePageSeo({
+    title: "BabiesIQ Refund Policy",
+    description: "Read the BabiesIQ refund policy for paid API plans and developer services.",
+    path: "/refund",
+  });
   return (
     <Layout>
       <motion.div
