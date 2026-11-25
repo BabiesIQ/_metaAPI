@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { useState } from "react";
 import { motion } from "motion/react";
 import {
@@ -295,7 +296,7 @@ export function SdkPage() {
                 SDKs &amp; CLI
               </span>
             </div>
-            <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">
+            <h1 className="font-display font-semibold text-3xl md:text-4xl text-foreground mb-3 flex flex-wrap items-center gap-3 tracking-tight justify-center"><MetaIcon name="sdk" size={44} />
               Official Client Libraries
             </h1>
             <p className="text-sm text-muted-foreground font-body max-w-xl mb-8 leading-relaxed">

@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -520,7 +521,7 @@ export function ApiKeysPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <PageTransition>
-          <div className="space-y-6 fade-in max-w-2xl" data-ocid="api_keys.page">
+          <div className="space-y-6 fade-in max-w-4xl mx-auto" data-ocid="api_keys.page">
             {/* Page header */}
             <motion.div
               initial={{ opacity: 0, y: -6 }}
@@ -529,7 +530,7 @@ export function ApiKeysPage() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-display font-bold text-foreground">
+                  <h1 className="text-2xl font-display font-semibold text-foreground flex flex-wrap items-center gap-3 tracking-tight"><MetaIcon name="api-keys" size={44} />
                     {t("api_keys.title")}
                   </h1>
                   <p className="text-sm text-muted-foreground mt-1">

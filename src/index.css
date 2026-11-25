@@ -699,3 +699,37 @@ body { background-image: none; background-attachment: scroll; }
 @media (prefers-reduced-motion: reduce) {
   .orb-animate-1, .orb-animate-2, .orb-animate-3, .live-indicator, .marquee-track, .animated-gradient-bg, .animate-gradient, .animate-float, .float-icon-1, .float-icon-2, .float-icon-3 { animation: none !important; }
 }
+
+
+/* MetaAPI application shell and shared layout system. */
+.meta-nav-drawer[data-slot="dialog-content"] {
+  display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;top:0;left:0;
+  width:min(86vw,340px);max-width:none;height:100dvh;transform:none;
+  border-radius:0;overflow:hidden;padding:0;gap:0;background:oklch(var(--background)) !important;
+  animation:meta-drawer-in 220ms cubic-bezier(.2,.75,.25,1) both;
+}
+[dir="rtl"] .meta-nav-drawer[data-slot="dialog-content"] {left:auto;right:0;animation-name:meta-drawer-rtl;}
+.meta-language-sheet[data-slot="dialog-content"] {
+  position:fixed;display:flex;flex-direction:column;top:auto;bottom:0;left:50%;
+  transform:translateX(-50%);width:100%;max-width:768px;max-height:86dvh;
+  border-radius:30px 30px 0 0;overflow:hidden;gap:0;padding:0;
+  padding-bottom:env(safe-area-inset-bottom);
+  background:oklch(var(--background)) !important;
+  animation:meta-sheet-in 250ms cubic-bezier(.2,.75,.25,1) both;
+}
+@keyframes meta-drawer-in {from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@keyframes meta-drawer-rtl {from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes meta-sheet-in {from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+.meta-nav-drawer[data-state="closed"], .meta-language-sheet[data-state="closed"] {animation:meta-close 130ms ease both;}
+@keyframes meta-close {to{opacity:0}}
+.meta-panel [data-slot="card"],.meta-public [data-slot="card"] {box-shadow:0 1px 3px oklch(0.2 0.01 260 / .05);}
+.meta-feature-card {min-height:174px;box-shadow:0 1px 3px oklch(0.2 0.01 260 / .04);}
+.meta-public section {scroll-margin-top:80px;}
+.meta-public h1,.meta-panel h1 {overflow-wrap:anywhere;}
+.meta-panel [data-slot="card-title"] {overflow-wrap:anywhere;}
+.meta-panel [data-slot="card-content"] {min-width:0;}
+.meta-public pre,.meta-panel pre {max-width:100%;overflow-x:auto;}
+.meta-panel [data-slot="table-container"] {max-width:100%;}
+.meta-public .plan-card-glow:hover {transform:translateY(-2px);box-shadow:0 5px 18px oklch(0.2 0.01 260 / .09);}
+@media (max-width:380px){.meta-feature-card{min-height:auto;}}
+@media (prefers-reduced-motion:reduce){.meta-nav-drawer[data-slot="dialog-content"],.meta-language-sheet[data-slot="dialog-content"]{animation:none!important;}}

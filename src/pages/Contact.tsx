@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -215,7 +216,7 @@ export function ContactPage() {
               <Mail className="w-3 h-3" />
               Get in Touch
             </div>
-            <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3 tracking-tight">
+            <h1 className="font-display font-semibold text-3xl md:text-4xl text-foreground mb-3 tracking-tight flex flex-wrap items-center gap-3 tracking-tight justify-center"><MetaIcon name="contact" size={44} />
               Contact Us
             </h1>
             <p className="text-muted-foreground font-body text-sm max-w-md mx-auto">
@@ -234,15 +235,15 @@ export function ContactPage() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.45, delay: i * 0.1 }}
                 whileHover={{ y: -4 }}
-                className={`rounded-xl border p-5 ${card.bg} transition-all duration-300`}
+                className={`rounded-2xl border border-border bg-card p-6 transition-colors duration-200`}
               >
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3 bg-card">
                   <card.icon className={`w-4 h-4 ${card.color}`} />
                 </div>
-                <h3 className="font-display font-semibold text-sm text-foreground mb-1">
+                <h3 className="font-display font-semibold text-base text-foreground mb-2">
                   {card.title}
                 </h3>
-                <p className="text-xs text-muted-foreground font-body leading-relaxed">
+                <p className="text-sm text-muted-foreground font-body leading-relaxed">
                   {card.desc}
                 </p>
               </motion.div>

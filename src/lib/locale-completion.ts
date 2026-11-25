@@ -37,7 +37,11 @@ export const localeCompletion = {
       "choose_language": "Choose your language",
       "language_description": "Select the language you prefer to use on BabiesIQ.",
       "light_mode": "Light mode",
-      "dark_mode": "Dark mode"
+      "dark_mode": "Dark mode",
+      "menu": "Menu",
+      "search_languages": "Search languages",
+      "no_language_results": "No languages found",
+      "language_saved": "Your language choice is saved on this device."
     }
   },
   "hi": {
@@ -78,7 +82,11 @@ export const localeCompletion = {
       "choose_language": "अपनी भाषा चुनें",
       "language_description": "BabiesIQ इस्तेमाल करने के लिए अपनी पसंद की भाषा चुनें।",
       "light_mode": "लाइट मोड",
-      "dark_mode": "डार्क मोड"
+      "dark_mode": "डार्क मोड",
+      "menu": "मेनू",
+      "search_languages": "भाषाएँ खोजें",
+      "no_language_results": "कोई भाषा नहीं मिली",
+      "language_saved": "आपकी चुनी हुई भाषा इस डिवाइस पर सेव रहती है।"
     }
   },
   "es": {
@@ -119,7 +127,11 @@ export const localeCompletion = {
       "choose_language": "Elige tu idioma",
       "language_description": "Selecciona el idioma que prefieres usar en BabiesIQ.",
       "light_mode": "Modo claro",
-      "dark_mode": "Modo oscuro"
+      "dark_mode": "Modo oscuro",
+      "menu": "Menú",
+      "search_languages": "Buscar idiomas",
+      "no_language_results": "No se encontraron idiomas",
+      "language_saved": "Tu idioma se guarda en este dispositivo."
     }
   },
   "fr": {
@@ -160,7 +172,11 @@ export const localeCompletion = {
       "choose_language": "Choisissez votre langue",
       "language_description": "Sélectionnez la langue que vous souhaitez utiliser sur BabiesIQ.",
       "light_mode": "Mode clair",
-      "dark_mode": "Mode sombre"
+      "dark_mode": "Mode sombre",
+      "menu": "Menu",
+      "search_languages": "Rechercher une langue",
+      "no_language_results": "Aucune langue trouvée",
+      "language_saved": "Votre choix de langue est enregistré sur cet appareil."
     }
   },
   "ar": {
@@ -201,7 +217,11 @@ export const localeCompletion = {
       "choose_language": "اختر لغتك",
       "language_description": "اختر اللغة التي تفضل استخدامها على BabiesIQ.",
       "light_mode": "الوضع الفاتح",
-      "dark_mode": "الوضع الداكن"
+      "dark_mode": "الوضع الداكن",
+      "menu": "القائمة",
+      "search_languages": "البحث عن اللغات",
+      "no_language_results": "لم يتم العثور على لغات",
+      "language_saved": "يُحفظ اختيار لغتك على هذا الجهاز."
     }
   },
   "pt": {
@@ -242,7 +262,11 @@ export const localeCompletion = {
       "choose_language": "Escolha seu idioma",
       "language_description": "Selecione o idioma que prefere usar no BabiesIQ.",
       "light_mode": "Modo claro",
-      "dark_mode": "Modo escuro"
+      "dark_mode": "Modo escuro",
+      "menu": "Menu",
+      "search_languages": "Buscar idiomas",
+      "no_language_results": "Nenhum idioma encontrado",
+      "language_saved": "Sua escolha de idioma é salva neste dispositivo."
     }
   },
   "de": {
@@ -283,7 +307,11 @@ export const localeCompletion = {
       "choose_language": "Wähle deine Sprache",
       "language_description": "Wähle die Sprache, in der du BabiesIQ verwenden möchtest.",
       "light_mode": "Heller Modus",
-      "dark_mode": "Dunkler Modus"
+      "dark_mode": "Dunkler Modus",
+      "menu": "Menü",
+      "search_languages": "Sprachen suchen",
+      "no_language_results": "Keine Sprachen gefunden",
+      "language_saved": "Deine Sprachauswahl wird auf diesem Gerät gespeichert."
     }
   },
   "ja": {
@@ -324,7 +352,11 @@ export const localeCompletion = {
       "choose_language": "言語を選択",
       "language_description": "BabiesIQで使用する言語を選択してください。",
       "light_mode": "ライトモード",
-      "dark_mode": "ダークモード"
+      "dark_mode": "ダークモード",
+      "menu": "メニュー",
+      "search_languages": "言語を検索",
+      "no_language_results": "言語が見つかりません",
+      "language_saved": "選択した言語はこの端末に保存されます。"
     }
   },
   "ko": {
@@ -365,7 +397,11 @@ export const localeCompletion = {
       "choose_language": "언어 선택",
       "language_description": "BabiesIQ에서 사용할 언어를 선택해 주세요.",
       "light_mode": "라이트 모드",
-      "dark_mode": "다크 모드"
+      "dark_mode": "다크 모드",
+      "menu": "메뉴",
+      "search_languages": "언어 검색",
+      "no_language_results": "검색 결과가 없습니다",
+      "language_saved": "선택한 언어는 이 기기에 저장됩니다."
     }
   },
   "zh": {
@@ -406,7 +442,11 @@ export const localeCompletion = {
       "choose_language": "选择您的语言",
       "language_description": "请选择您希望在 BabiesIQ 中使用的语言。",
       "light_mode": "浅色模式",
-      "dark_mode": "深色模式"
+      "dark_mode": "深色模式",
+      "menu": "菜单",
+      "search_languages": "搜索语言",
+      "no_language_results": "未找到语言",
+      "language_saved": "您选择的语言会保存在此设备上。"
     }
   }
 } as const;

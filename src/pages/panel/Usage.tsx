@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -309,7 +310,7 @@ export function UsagePage() {
             {/* Page header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h1 className="text-2xl font-display font-bold text-foreground">
+                <h1 className="text-2xl font-display font-semibold text-foreground flex flex-wrap items-center gap-3 tracking-tight"><MetaIcon name="usage" size={44} />
                   {t("usage.title")}
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -366,7 +367,7 @@ export function UsagePage() {
 
             {/* Stats Row — staggered entrance */}
             <div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+              className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
               data-ocid="usage.stats.section"
             >
               {stats.map((s, i) => (

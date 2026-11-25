@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { Layout } from "@/components/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -333,7 +334,7 @@ export function PricingPage() {
               <Zap className="w-3 h-3" />
               Simple, transparent pricing
             </div>
-            <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-foreground mb-5 leading-[1.08] tracking-tight">
+            <h1 className="font-display font-semibold text-3xl sm:text-4xl lg:text-5xl text-foreground mb-5 leading-[1.08] tracking-tight">
               Plans for every <span className="text-gradient">developer</span>
             </h1>
             <p className="text-base md:text-lg text-muted-foreground font-body max-w-xl mx-auto leading-relaxed">
@@ -414,7 +415,7 @@ export function PricingPage() {
       {/* Plan Cards */}
       <section className="bg-background pb-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
             {PLANS.map((plan, i) => (
               <PlanCard
                 key={plan.code}
@@ -668,7 +669,7 @@ function PlanCard({
         delay: index * 0.1,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -2 }}
       className="relative flex"
       data-ocid={`pricing.plan.item.${index + 1}`}
     >
@@ -681,13 +682,14 @@ function PlanCard({
         </div>
       )}
       <div
-        className={`relative flex flex-col w-full rounded-xl border p-5 transition-all duration-300 ${
+        className={`relative flex flex-col w-full rounded-3xl border p-6 transition-colors duration-200 ${
           plan.highlight
             ? "border-primary bg-card shadow-elevated shadow-primary/10 ring-1 ring-primary/20 hover:shadow-[0_0_32px_-4px_oklch(0.72_0.24_254_/_0.35),0_12px_28px_-8px_rgba(0,0,0,0.3)]"
             : "border-border bg-card hover:border-primary/30 hover:shadow-[0_0_32px_-4px_oklch(0.72_0.24_254_/_0.15),0_12px_28px_-8px_rgba(0,0,0,0.25)]"
         }`}
       >
-        <div className="mb-4">
+        <div className="mb-5">
+          <MetaIcon name={plan.code} size={52} className="mb-3" />
           <h3
             className={`font-display font-bold text-base mb-1 ${
               plan.highlight ? "text-primary" : "text-foreground"

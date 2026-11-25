@@ -1,494 +1,75 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@tanstack/react-router";
-import {
-  Bell,
-  Megaphone,
-  ChevronDown,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Settings,
-  User,
-  X,
-} from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { Bell, Menu, Megaphone } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { UpdateChannel } from "./UpdateChannel";
+import { MetaIcon, MetaLogo } from "./MetaIcon";
 
 const NAV_KEYS = [
-  { key: "home", to: "/" },
-  { key: "docs", to: "/docs" },
-  { key: "pricing", to: "/pricing" },
-  { key: "contact", to: "/contact" },
-];
+  { key: "home", to: "/" }, { key: "docs", to: "/docs" },
+  { key: "pricing", to: "/pricing" }, { key: "contact", to: "/contact" },
+] as const;
 
-// ── Language Dropdown ─────────────────────────────────────────────────────────
 export function Header() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [channelOpen, setChannelOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const { t } = useTranslation();
-
-  const displayName =
-    user?.user?.first_name || user?.user?.email?.split("@")[0] || "Account";
+  const displayName = user?.user?.first_name || user?.user?.email?.split("@")[0] || t("nav.dashboard");
   const avatarUrl = user?.user?.avatar ?? null;
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 1024) setMobileOpen(false);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
+  const close = () => setMenuOpen(false);
+  const linkClass = "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-muted transition-colors";
   return (
     <>
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "border-b border-border bg-card shadow-elevated"
-          : "border-b border-border/70 bg-background"
-      }`}
-      data-ocid="header"
-    >
-      {/* Scroll progress bar */}
-      <div className="scroll-progress" id="scroll-progress" />
-
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 h-16 px-4">
-        {/* ── Logo & brand ─────────────────────────────────────────────── */}
-        <Link
-          to="/"
-          className="flex items-center gap-2 shrink-0 group"
-          data-ocid="header.logo.link"
-        >
-          {/* Music waveform icon in gradient circle */}
-          <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
-            style={{
-              background:
-                "linear-gradient(145deg, #087b63, #159c87)",
-              boxShadow:
-                "0 2px 8px rgba(8,123,99,.18)",
-            }}
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-white"
-              aria-hidden="true"
-            >
-              <rect
-                x="0"
-                y="6"
-                width="2"
-                height="2"
-                rx="1"
-                fill="currentColor"
-              />
-              <rect
-                x="3"
-                y="4"
-                width="2"
-                height="6"
-                rx="1"
-                fill="currentColor"
-              />
-              <rect
-                x="6"
-                y="1"
-                width="2"
-                height="12"
-                rx="1"
-                fill="currentColor"
-              />
-              <rect
-                x="9"
-                y="4"
-                width="2"
-                height="6"
-                rx="1"
-                fill="currentColor"
-              />
-              <rect
-                x="12"
-                y="6"
-                width="2"
-                height="2"
-                rx="1"
-                fill="currentColor"
-              />
-            </svg>
-          </div>
-
-          {/* Brand name + live dot */}
-          <div className="flex items-center gap-1.5">
-            <span
-              className="font-display font-bold text-lg sm:text-xl text-foreground"
-              style={{
-                
-              }}
-            >
-              BabiesIQ
-            </span>
-            <span className="live-indicator" aria-hidden="true" />
-          </div>
-        </Link>
-
-        {/* ── Desktop nav ──────────────────────────────────────────────── */}
-        <nav className="hidden lg:flex items-center gap-1 mx-4">
-          {NAV_KEYS.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="relative px-3.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md group"
-              activeProps={{ className: "text-foreground bg-muted" }}
-              data-ocid={`nav.${link.key}.link`}
-            >
-              {t(`nav.${link.key}`)}
-              {/* Animated underline */}
-              <span
-                className="absolute inset-x-3 -bottom-px h-[1.5px] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 origin-left"
-                style={{
-                  background: "linear-gradient(90deg, #a855f7, #ec4899)",
-                }}
-              />
-            </Link>
-          ))}
-        </nav>
-
-        {/* ── Desktop right controls ────────────────────────────────── */}
-        <div className="hidden lg:flex items-center gap-2 shrink-0">
-          <LanguageSwitcher />
-          <ThemeSwitcher />
-
-          {/* BabiesIQ Update Channel button */}
-          <button
-            type="button"
-            onClick={() => setChannelOpen(true)}
-            className="relative flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
-            aria-label="BabiesIQ Update Channel"
-            title="BabiesIQ Update"
-            data-ocid="header.channel.button"
-          >
-            <Megaphone className="w-4 h-4" />
-            <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-black"
-              style={{ background: "linear-gradient(135deg, #a855f7, #ec4899)" }}
-            />
-          </button>
-
-          {isAuthenticated ? (
-            <div className="flex items-center gap-1.5 pl-1">
-              {/* Notification bell */}
-              <Link
-                to="/panel/notifications"
-                className="relative flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
-                aria-label="Notifications"
-                data-ocid="header.notifications.link"
-              >
-                <Bell className="w-4 h-4" />
-              </Link>
-
-              {/* User dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    className="surface-machined-soft flex items-center gap-2 h-8 pl-2 pr-3 rounded-lg hover:border-purple-400/40 transition-all duration-200 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50"
-                    data-ocid="header.user_menu.button"
-                  >
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt={displayName}
-                        className="w-5 h-5 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #a855f7, #ec4899)",
-                        }}
-                      >
-                        <span className="text-[9px] font-bold text-white">
-                          {displayName.slice(0, 1).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                    <span className="text-xs font-medium max-w-[100px] truncate text-muted-foreground">
-                      {displayName}
-                    </span>
-                    <ChevronDown className="w-3 h-3 opacity-50 text-white" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-52 surface-machined"
-                >
-                  <DropdownMenuLabel className="pb-1">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #a855f7, #ec4899)",
-                        }}
-                      >
-                        <span className="text-[10px] font-bold text-white">
-                          {displayName.slice(0, 1).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold text-foreground truncate">
-                          {displayName}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground truncate">
-                          {user?.user?.email}
-                        </p>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link
-                      to="/panel/dashboard"
-                      className="flex items-center gap-2 cursor-pointer"
-                      data-ocid="header.dashboard.link"
-                    >
-                      <LayoutDashboard className="w-3.5 h-3.5 opacity-60" />
-                      {t("nav.dashboard")}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      to="/panel/profile-settings"
-                      className="flex items-center gap-2 cursor-pointer"
-                      data-ocid="header.profile.link"
-                    >
-                      <Settings className="w-3.5 h-3.5 opacity-60" />
-                      {t("nav.settings")}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={logout}
-                    className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
-                    data-ocid="header.logout.button"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    {t("nav.logout")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 pl-1">
-              <Link
-                to="/signin"
-                className="h-8 px-4 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-lg hover:bg-muted"
-                data-ocid="header.login.button"
-              >
-                {t("nav.login")}
-              </Link>
-              <Link
-                to="/signup"
-                className="h-8 px-4 flex items-center text-sm font-semibold text-white rounded-lg transition-all duration-200 hover:scale-105"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #7c3aed 0%, #db2777 100%)",
-                  boxShadow: "0 4px 14px rgba(124,58,237,0.4)",
-                }}
-                data-ocid="header.signup.button"
-              >
-                {t("nav.signup")}
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* ── Mobile controls ───────────────────────────────────────── */}
-        <div className="lg:hidden flex items-center gap-1.5">
-          <LanguageSwitcher />
-          <ThemeSwitcher />
-          <button
-            type="button"
-            onClick={() => setChannelOpen(true)}
-            className="relative flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
-            aria-label="BabiesIQ Update Channel"
-            data-ocid="header.mobile_channel.button"
-          >
-            <Megaphone className="w-4 h-4" />
-            <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-black"
-              style={{ background: "linear-gradient(135deg, #a855f7, #ec4899)" }}
-            />
-          </button>
-          <button
-            type="button"
-            className="flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
-            aria-expanded={mobileOpen}
-            data-ocid="header.mobile_menu.toggle"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {mobileOpen ? (
-                <motion.span
-                  key="close"
-                  initial={{ opacity: 0, rotate: -90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: 90 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <X className="w-4 h-4" />
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="open"
-                  initial={{ opacity: 0, rotate: 90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: -90 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <Menu className="w-4 h-4" />
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
-      </div>
-
-      {/* ── Mobile nav drawer ─────────────────────────────────────────── */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            key="mobile-nav"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:hidden overflow-hidden"
-          >
-            <div
-              className="border-t border-border px-4 pb-5 pt-3 surface-machined"
-              style={{
-                 background: "oklch(var(--card))",
-              }}
-            >
-              {/* Nav links */}
-              <nav className="flex flex-col gap-0.5 mb-4">
-                {NAV_KEYS.map((link, i) => (
-                  <motion.div
-                    key={link.to}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <Link
-                      to={link.to}
-                      className="flex items-center text-sm font-medium py-2.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
-                      onClick={() => setMobileOpen(false)}
-                      activeProps={{ className: "text-foreground bg-muted" }}
-                      data-ocid={`nav.mobile.${link.key}.link`}
-                    >
-                      {t(`nav.${link.key}`)}
-                    </Link>
-                  </motion.div>
-                ))}
-              </nav>
-
-              {/* Auth section */}
-              <div className="pt-3 border-t border-border">
-                {isAuthenticated ? (
-                  <div className="flex flex-col gap-1">
-                    <Link
-                      to="/panel/dashboard"
-                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
-                      onClick={() => setMobileOpen(false)}
-                      data-ocid="header.mobile_dashboard.link"
-                    >
-                      <LayoutDashboard className="w-4 h-4 opacity-60" />
-                      {t("nav.dashboard")}
-                    </Link>
-                    <Link
-                      to="/panel/profile-settings"
-                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
-                      onClick={() => setMobileOpen(false)}
-                      data-ocid="header.mobile_profile.link"
-                    >
-                      <User className="w-4 h-4 opacity-60" />
-                      {t("nav.settings")}
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        logout();
-                      }}
-                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors duration-200 w-full text-left"
-                      data-ocid="header.mobile_logout.button"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      {t("nav.logout")}
-                    </button>
+      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur" data-ocid="header">
+        <div className="scroll-progress" id="scroll-progress" />
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
+              <DialogTrigger asChild>
+                <button type="button" aria-label={t("common.menu")} aria-expanded={menuOpen} data-ocid="header.mobile_menu.toggle" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-border hover:bg-muted">
+                  <Menu className="h-5 w-5" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className="meta-nav-drawer p-0 gap-0" aria-describedby="meta-nav-description">
+                <div className="flex items-center gap-3 border-b border-border p-5 pr-12">
+                  <MetaLogo size={44} />
+                  <div className="min-w-0">
+                    <DialogTitle className="truncate text-base">BabiesIQ Music API</DialogTitle>
+                    <DialogDescription id="meta-nav-description" className="mt-1 truncate text-xs">{isAuthenticated ? user?.user?.email : t("footer.tagline")}</DialogDescription>
                   </div>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <Link
-                      to="/signin"
-                      onClick={() => setMobileOpen(false)}
-                      className="w-full flex items-center justify-center h-9 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
-                      data-ocid="header.mobile_login.button"
-                    >
-                      {t("nav.login")}
-                    </Link>
-                    <Link
-                      to="/signup"
-                      onClick={() => setMobileOpen(false)}
-                      className="w-full flex items-center justify-center h-9 rounded-lg text-sm font-semibold text-white transition-all duration-200"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #7c3aed 0%, #db2777 100%)",
-                        boxShadow: "0 4px 14px rgba(124,58,237,0.4)",
-                      }}
-                      data-ocid="header.mobile_signup.button"
-                    >
-                      {t("nav.signup")}
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
-
-    {/* BabiesIQ Update Channel Panel */}
-    <UpdateChannel open={channelOpen} onClose={() => setChannelOpen(false)} />
+                </div>
+                <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
+                  {NAV_KEYS.map(({ key, to }) => <Link key={to} to={to} onClick={close} activeOptions={{ exact: to === "/" }} activeProps={{ className: "bg-muted text-foreground" }} className={linkClass} data-ocid={`nav.mobile.${key}.link`}><MetaIcon name={key} />{t(`nav.${key}`)}</Link>)}
+                  {isAuthenticated && <>
+                    <div className="my-3 border-t border-border" />
+                    <Link to="/panel/dashboard" onClick={close} className={linkClass}><MetaIcon name="dashboard"/>{t("nav.dashboard")}</Link>
+                    <Link to="/panel/notifications" onClick={close} className={linkClass}><MetaIcon name="notifications"/>{t("dashboard.notifications")}</Link>
+                    <Link to="/panel/profile-settings" onClick={close} className={linkClass}><MetaIcon name="profile-settings"/>{t("nav.settings")}</Link>
+                  </>}
+                  <button type="button" onClick={() => { close(); setChannelOpen(true); }} className={`${linkClass} w-full text-start`}><MetaIcon name="updates"/>{t("channel.official_channel")}</button>
+                </nav>
+                <div className="space-y-2 border-t border-border p-3">
+                  <LanguageSwitcher variant="row" />
+                  {isAuthenticated ? <button type="button" onClick={() => { close(); logout(); }} data-ocid="header.mobile_logout.button" className={`${linkClass} w-full text-destructive`}><MetaIcon name="logout"/>{t("nav.logout")}</button> : <div className="grid grid-cols-2 gap-2"><Link to="/signin" onClick={close} className="rounded-xl border border-border px-3 py-3 text-center text-sm font-semibold hover:bg-muted">{t("nav.login")}</Link><Link to="/signup" onClick={close} className="rounded-xl bg-primary px-3 py-3 text-center text-sm font-semibold text-primary-foreground">{t("nav.signup")}</Link></div>}
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Link to="/" data-ocid="header.logo.link" className="flex min-w-0 items-center gap-2"><MetaLogo size={38}/><span className="truncate text-sm font-semibold tracking-tight sm:text-lg">BabiesIQ<span className="hidden sm:inline"> Music API</span></span></Link>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <button type="button" onClick={() => setChannelOpen(true)} aria-label={t("channel.official_channel")} title={t("channel.official_channel")} data-ocid="header.channel.button" className="hidden h-10 w-10 place-items-center rounded-xl border border-border hover:bg-muted sm:grid"><Megaphone className="h-[18px] w-[18px]"/></button>
+            {isAuthenticated && <Link to="/panel/notifications" aria-label={t("dashboard.notifications")} className="grid h-10 w-10 place-items-center rounded-xl border border-border hover:bg-muted" data-ocid="header.notifications.link"><Bell className="h-[18px] w-[18px]"/></Link>}
+            <ThemeSwitcher />
+            {isAuthenticated ? <Link to="/panel/dashboard" aria-label={t("nav.dashboard")} title={t("nav.dashboard")} className="flex h-10 items-center gap-2 rounded-xl border border-border px-1.5 sm:px-3 hover:bg-muted" data-ocid="header.dashboard.link">{avatarUrl ? <img src={avatarUrl} alt={displayName} className="h-7 w-7 rounded-full object-cover"/> : <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{displayName.slice(0,1).toUpperCase()}</span>}<span className="hidden max-w-24 truncate text-sm font-medium lg:inline">{t("nav.dashboard")}</span></Link> : <Link to="/signin" className="hidden rounded-xl border border-border px-3 py-2 text-sm font-medium hover:bg-muted min-[380px]:inline-flex" data-ocid="header.login.button">{t("nav.login")}</Link>}
+          </div>
+        </div>
+      </header>
+      <UpdateChannel open={channelOpen} onClose={() => setChannelOpen(false)} />
     </>
   );
 }

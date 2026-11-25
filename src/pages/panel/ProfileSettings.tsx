@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Badge } from "@/components/ui/badge";
@@ -262,12 +263,12 @@ export function ProfileSettingsPage() {
       <DashboardLayout>
         <PageTransition>
           <div
-            className="space-y-6 max-w-2xl"
+            className="space-y-6 max-w-4xl mx-auto"
             data-ocid="profile_settings.page"
           >
             {/* Page header */}
             <div>
-              <h1 className="text-2xl font-display font-bold text-foreground">
+              <h1 className="text-2xl font-display font-semibold text-foreground flex flex-wrap items-center gap-3 tracking-tight"><MetaIcon name="profile-settings" size={44} />
                 {t("profile.title")}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">

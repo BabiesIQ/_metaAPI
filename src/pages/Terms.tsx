@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { Layout } from "@/components/Layout";
 import { Link } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
@@ -144,7 +145,7 @@ export function TermsPage() {
                 Legal
               </span>
             </div>
-            <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground mb-2">
+            <h1 className="font-display font-semibold text-2xl md:text-3xl text-foreground mb-2 flex flex-wrap items-center gap-3 tracking-tight justify-center"><MetaIcon name="docs" size={44} />
               Terms of Service
             </h1>
             <p className="text-sm text-muted-foreground font-body">

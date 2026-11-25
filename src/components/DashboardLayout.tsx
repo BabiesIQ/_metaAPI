@@ -1,3 +1,4 @@
+import { MetaIcon, MetaLogo } from "./MetaIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -161,16 +162,15 @@ function SidebarContent({
             onClick={onNavigate}
             aria-label="BabiesIQ Home"
           >
-            <span className="text-xs font-bold text-white">B</span>
+            <MetaLogo size={36} />
           </Link>
         ) : (
           <Link
             to="/"
-            className="font-display font-bold text-xl tracking-tight flex items-center gap-0.5"
+            className="font-display font-bold text-xl tracking-tight flex items-center gap-2"
             onClick={onNavigate}
           >
-            <span className="text-gradient">Babies</span>
-            <span className="text-foreground">IQ</span>
+            <MetaLogo size={38} /><span className="text-sm font-semibold text-foreground">BabiesIQ Music API</span>
           </Link>
         )}
       </div>
@@ -182,7 +182,7 @@ function SidebarContent({
         }`}
         data-ocid="dashboard.sidebar.nav"
       >
-        {sidebarLinks.map(({ labelKey, label, to, icon: Icon, exact }) => {
+        {sidebarLinks.map(({ labelKey, label, to, exact }) => {
           const isActive = exact
             ? currentPath === to
             : currentPath.startsWith(to);
@@ -205,7 +205,7 @@ function SidebarContent({
                 }`}
                 data-ocid={`dashboard.sidebar.${to.split("/").pop()}.link`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <MetaIcon name={to.split("/").pop() || "dashboard"} size={30} />
               </Link>
             );
           }
@@ -215,18 +215,14 @@ function SidebarContent({
               key={to}
               to={to}
               onClick={onNavigate}
-              className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_16px_oklch(var(--primary)/0.08)]"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent"
               }`}
               data-ocid={`dashboard.sidebar.${to.split("/").pop()}.link`}
             >
-              <Icon
-                className={`w-4 h-4 shrink-0 transition-colors duration-200 ${
-                  isActive ? "text-primary" : "group-hover:text-foreground"
-                }`}
-              />
+              <MetaIcon name={to.split("/").pop() || "dashboard"} size={32} />
               <span className="flex-1 min-w-0 truncate">{displayLabel}</span>
               {isActive && (
                 <ChevronRight className="w-3.5 h-3.5 opacity-40 shrink-0" />
@@ -362,13 +358,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const sidebarWidth = collapsed ? "w-[64px]" : "w-[256px]";
-  const contentMargin = collapsed ? "md:ml-[64px]" : "md:ml-[256px]";
+  const contentMargin = collapsed ? "md:ms-[64px]" : "md:ms-[256px]";
 
   return (
     <div className="flex h-[100dvh] bg-background text-foreground overflow-hidden">
       {/* ── Desktop sidebar ───────────────────────────────────────────────────── */}
       <aside
-        className={`hidden md:flex flex-col ${sidebarWidth} shrink-0 border-r border-border bg-card fixed inset-y-0 left-0 z-30 transition-all duration-300 shadow-elevated`}
+        className={`hidden md:flex flex-col ${sidebarWidth} shrink-0 border-r border-border bg-sidebar fixed inset-y-0 start-0 z-30 transition-all duration-300 shadow-elevated`}
         data-ocid="dashboard.sidebar"
       >
         <SidebarContent
@@ -416,7 +412,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 340, damping: 32 }}
-              className="fixed inset-y-0 left-0 z-50 w-[min(86vw,340px)] surface-machined border-r border-border shadow-2xl md:hidden"
+              className="fixed inset-y-0 start-0 z-50 w-[min(86vw,340px)] bg-background border-r border-border shadow-2xl md:hidden"
               data-ocid="dashboard.sidebar_mobile"
             >
               <button
@@ -570,10 +566,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Page content */}
         <main
-          className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-background"
+          className="meta-panel flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-background"
           data-ocid="dashboard.main"
         >
           <motion.div
+            className="mx-auto w-full max-w-6xl min-w-0"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}

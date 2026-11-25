@@ -1,3 +1,4 @@
+import { MetaLogo } from "./MetaIcon";
 import { Link } from "@tanstack/react-router";
 import { ArrowUp, Check, Send } from "lucide-react";
 import { AnimatePresence, motion, useScroll } from "motion/react";
@@ -237,12 +238,12 @@ export function Footer() {
   return (
     <>
       <NewsletterStrip />
-      <footer className="surface-machined rounded-t-2xl border-t border-border" data-ocid="footer">
+      <footer className="bg-background border-t border-border" data-ocid="footer">
         {/* Top accent line */}
         <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-        <div className="container mx-auto px-4 md:px-6 pt-14 pb-8">
+        <div className="mx-auto max-w-6xl px-5 pt-12 pb-8">
           {/* 4-col grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
             {/* Brand col */}
             <motion.div
               className="sm:col-span-2 lg:col-span-1"
@@ -255,10 +256,7 @@ export function Footer() {
                 to="/"
                 className="inline-flex items-center gap-1 font-display font-bold text-xl text-foreground mb-3"
               >
-                <span className="w-5 h-5 rounded-md gradient-primary flex items-center justify-center shrink-0">
-                  <span className="text-white font-bold text-[9px]">B</span>
-                </span>
-                <span className="text-gradient">Babies</span>IQ
+                <MetaLogo size={38}/>BabiesIQ Music API
               </Link>
               <p className="text-sm text-muted-foreground leading-relaxed font-body mb-5">
                 {t("footer.tagline")}

@@ -1,5 +1,7 @@
+import { MetaLogo } from "./MetaIcon";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Link } from "@tanstack/react-router";
-import { Activity, Globe, Shield, Zap } from "lucide-react";
+import { Globe, Shield, Zap } from "lucide-react";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,7 +39,7 @@ export function AuthShell({ children }: AuthShellProps) {
         className="hidden lg:flex lg:w-[52%] xl:w-[55%] flex-col justify-between relative overflow-hidden"
         style={{
           background:
-            "linear-gradient(145deg, oklch(0.12 0.06 254) 0%, oklch(0.09 0.04 270) 50%, oklch(0.11 0.08 290) 100%)",
+            "linear-gradient(145deg, #0c352f, #0b2725 55%, #0b171b)",
         }}
       >
         {/* Animated orbs */}
@@ -82,7 +84,7 @@ export function AuthShell({ children }: AuthShellProps) {
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2.5 mb-14 group">
             <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200">
-              <Activity className="w-5 h-5 text-white" />
+              <MetaLogo size={44} />
             </div>
             <span className="font-display font-bold text-xl tracking-tight text-white">
               Babies<span className="opacity-60">IQ</span>
@@ -211,7 +213,8 @@ export function AuthShell({ children }: AuthShellProps) {
       {/* ── Right form panel ── */}
       <div className="flex-1 flex flex-col min-h-screen relative overflow-hidden">
         {/* Keep the user's selected day/night theme available throughout auth. */}
-        <div className="absolute top-5 right-5 z-20">
+        <div className="absolute top-4 end-4 z-20 flex items-center gap-2">
+          <LanguageSwitcher />
           <ThemeSwitcher />
         </div>
 
@@ -237,10 +240,10 @@ export function AuthShell({ children }: AuthShellProps) {
         </div>
 
         {/* Mobile logo (hidden on desktop) */}
-        <div className="lg:hidden flex items-center justify-center pt-8 pb-2 relative z-10">
+        <div className="lg:hidden flex items-center justify-center pt-20 pb-2 relative z-10">
           <Link to="/" className="inline-flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shadow">
-              <Activity className="w-4 h-4 text-white" />
+              <MetaLogo size={36} />
             </div>
             <span className="font-display font-bold text-lg tracking-tight">
               <span className="text-primary">Babies</span>
@@ -251,8 +254,8 @@ export function AuthShell({ children }: AuthShellProps) {
 
         {/* Form centered */}
         <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-8 relative z-10">
-          <div className="w-full max-w-[420px]">
-            <div className="surface-machined rounded-2xl p-7 sm:p-8 shadow-elevated">
+          <div className="w-full max-w-md">
+            <div className="rounded-3xl border border-border bg-card p-5 sm:p-8 shadow-elevated">
               {children}
             </div>
 

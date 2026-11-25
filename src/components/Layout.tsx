@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -46,7 +47,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
       <Header />
       <motion.main
-        className="flex-1"
+        className="meta-public flex-1 min-w-0"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -54,6 +55,7 @@ export function Layout({ children }: LayoutProps) {
         {children}
       </motion.main>
       <Footer />
+      <LanguageSwitcher variant="floating" />
     </div>
   );
 }

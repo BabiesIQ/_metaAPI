@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -170,12 +171,12 @@ export default function BillingPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <PageTransition>
-          <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+          <div className="max-w-5xl mx-auto py-4 sm:py-8 space-y-6">
 
             {/* Header */}
             <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center">
               <p className="text-xs font-mono text-primary uppercase tracking-widest mb-2">{t("billing.subscription")}</p>
-              <h1 className="text-3xl font-bold text-foreground font-display mb-2">{t("billing.upgrade_title")}</h1>
+              <h1 className="text-3xl font-semibold text-foreground font-display mb-2 flex flex-wrap items-center gap-3 tracking-tight justify-center"><MetaIcon name="billing" size={44} />{t("billing.upgrade_title")}</h1>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">Scale your audio & video streaming API. Instant activation, cancel anytime.</p>
             </motion.div>
 
@@ -187,7 +188,7 @@ export default function BillingPage() {
                   <Crown className="w-4 h-4 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold">Current Plan: <span className="text-primary">{PLAN_LABEL[currentPlan] ?? currentPlan}</span></p>
+                  <p className="text-sm font-semibold">{t("billing.current_plan")}: <span className="text-primary">{PLAN_LABEL[currentPlan] ?? currentPlan}</span></p>
                   {futureSubs.length > 0 && (
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Active until {new Date(futureSubs[futureSubs.length - 1].end_at).toLocaleDateString()}
@@ -271,7 +272,7 @@ export default function BillingPage() {
                         </span>
                       </div>
                     )}
-                    <div className={cn("relative flex flex-col flex-1 rounded-2xl border p-5 transition-all duration-300",
+                    <div className={cn("relative flex flex-col flex-1 rounded-3xl border p-6 transition-colors duration-200",
                       plan.highlight ? "border-primary/50 bg-card shadow-[0_0_32px_-4px_oklch(0.72_0.24_254_/_0.25)] ring-1 ring-primary/20" : "border-border bg-card hover:border-primary/30 hover:shadow-md")}>
                       <div className="mb-4">
                         <div className="flex items-center gap-2.5 mb-3">

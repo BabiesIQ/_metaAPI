@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { DownloadYoutubeButton } from "@/components/DownloadYoutubeButton";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -304,7 +305,7 @@ export function DashboardPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-2xl bg-card border border-border p-6"
+            className="relative overflow-hidden rounded-3xl bg-card border border-border p-5 sm:p-7"
             data-ocid="dashboard.welcome.card"
           >
             <div className="absolute top-0 right-0 w-80 h-40 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl pointer-events-none" />
@@ -315,11 +316,11 @@ export function DashboardPage() {
                   {isLoading ? (
                     <Skeleton className="w-6 h-6 rounded-full" />
                   ) : (
-                    <User className="w-6 h-6 text-primary" />
+                    <MetaIcon name="dashboard" size={48} />
                   )}
                 </div>
                 <div>
-                  <h2 className="text-xl font-display font-bold text-foreground">
+                  <h2 className="text-2xl font-display font-semibold tracking-tight text-foreground">
                     {isLoading ? (
                       <Skeleton className="h-6 w-52 inline-block" />
                     ) : (
@@ -388,7 +389,7 @@ export function DashboardPage() {
 
           {/* Stats Grid */}
           <div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+            className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
             data-ocid="dashboard.stats.section"
           >
             <StatCard

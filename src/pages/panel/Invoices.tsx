@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -132,7 +133,7 @@ export function InvoicesPage() {
             {/* Page header */}
             <div className="flex items-end justify-between">
               <div>
-                <h1 className="text-2xl font-display font-bold text-foreground">
+                <h1 className="text-2xl font-display font-semibold text-foreground flex flex-wrap items-center gap-3 tracking-tight"><MetaIcon name="invoices" size={44} />
                   {t("invoices.title")}
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">

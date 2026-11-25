@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { Layout } from "@/components/Layout";
 import { DownloadYoutubeButton } from "@/components/DownloadYoutubeButton";
 import { TryItWidget } from "@/components/TryItWidget";
@@ -652,7 +653,7 @@ export function DocsPage() {
                 Developer Reference
               </span>
             </div>
-            <h1 className="font-display font-bold text-2xl md:text-3xl text-foreground mb-1">
+            <h1 className="font-display font-semibold text-2xl md:text-3xl text-foreground mb-1 flex flex-wrap items-center gap-3 tracking-tight justify-center"><MetaIcon name="docs" size={44} />
               API Documentation
             </h1>
             <p className="text-sm text-muted-foreground font-body">
@@ -685,7 +686,7 @@ export function DocsPage() {
         </div>
 
         {/* Content layout */}
-        <div className="max-w-6xl mx-auto px-4 py-8 flex gap-8">
+        <div className="max-w-6xl mx-auto px-4 py-8 flex gap-5 lg:gap-8">
           {/* Desktop sidebar */}
           <aside className="hidden lg:block w-52 flex-shrink-0">
             <div className="sticky top-24">
@@ -798,7 +799,7 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
             </motion.section>
 
             {/* ── Endpoints ── */}
-            <section className="mb-14" data-ocid="docs.endpoints.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.endpoints.section">
               <SectionHeading
                 id="endpoints"
                 title={t("docs.section_endpoints")}
@@ -906,7 +907,7 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
             </section>
 
             {/* ── Rate Limits (visual bars) ── */}
-            <section className="mb-14" data-ocid="docs.rate_limits.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.rate_limits.section">
               <SectionHeading
                 id="rate-limits"
                 title={t("docs.section_rate_limits")}
@@ -966,7 +967,7 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
             </section>
 
             {/* ── EQ Presets ── */}
-            <section className="mb-14" data-ocid="docs.eq_presets.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.eq_presets.section">
               <SectionHeading
                 id="eq-presets"
                 title={t("docs.section_eq_presets")}
@@ -996,7 +997,7 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
             </section>
 
             {/* ── Code Examples ── */}
-            <section className="mb-14" data-ocid="docs.code_examples.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.code_examples.section">
               <SectionHeading
                 id="code-examples"
                 title={t("docs.section_code_examples")}
@@ -1049,7 +1050,7 @@ curl "${base}/api/stream/audio_JGwWNGJdvx8?token=tok_xxx&eq=bass_boost&api=YOUR_
 
 
             {/* ── SDK Downloads ── */}
-            <section className="mb-14" data-ocid="docs.sdk.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.sdk.section">
               <SectionHeading
                 id="sdk"
                 title="SDKs & Libraries"
@@ -1194,7 +1195,7 @@ echo $song->streamUrl;`,
             </section>
 
             {/* ── CLI Tool ── */}
-            <section className="mb-14" data-ocid="docs.cli.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.cli.section">
               <SectionHeading
                 id="cli"
                 title="CLI Tool"
@@ -1286,7 +1287,7 @@ babiesiq song JGwWNGJdvx8 --stream-url | xargs ffmpeg -i - output.ogg`,
             </section>
 
             {/* ── Try It ── */}
-            <section className="mb-14" data-ocid="docs.try_it.section">
+            <section className="mb-8 rounded-2xl border border-border bg-card p-4 sm:p-6" data-ocid="docs.try_it.section">
               <SectionHeading
                 id="try-it"
                 title={t("docs.section_try_it")}

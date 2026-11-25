@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { Layout } from "@/components/Layout";
 import { TryItWidget } from "@/components/TryItWidget";
 import { Badge } from "@/components/ui/badge";
@@ -343,378 +344,7 @@ function DeveloperGirlScene() {
       />
       <div className="relative w-full max-w-[420px]">
         <FloatingNotes />
-        <svg
-          viewBox="0 0 340 320"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full max-w-[340px] mx-auto drop-shadow-2xl"
-          aria-label="Developer girl with headphones and laptop"
-          role="img"
-        >
-          <rect
-            x="30"
-            y="230"
-            width="280"
-            height="12"
-            rx="6"
-            fill="oklch(0.25 0.01 260)"
-          />
-          <rect
-            x="10"
-            y="238"
-            width="320"
-            height="6"
-            rx="3"
-            fill="oklch(0.2 0.01 260)"
-          />
-          <rect
-            x="80"
-            y="200"
-            width="180"
-            height="8"
-            rx="4"
-            fill="oklch(0.22 0.01 260)"
-          />
-          <rect
-            x="70"
-            y="205"
-            width="200"
-            height="6"
-            rx="3"
-            fill="oklch(0.18 0.01 260)"
-          />
-          <rect
-            x="85"
-            y="100"
-            width="170"
-            height="110"
-            rx="8"
-            fill="oklch(0.2 0.01 260)"
-          />
-          <rect
-            x="90"
-            y="105"
-            width="160"
-            height="100"
-            rx="5"
-            fill="oklch(0.1 0.005 260)"
-          />
-          <rect
-            x="90"
-            y="105"
-            width="160"
-            height="100"
-            rx="5"
-            fill="none"
-            stroke="oklch(0.72 0.24 254 / 0.5)"
-            strokeWidth="1.5"
-          />
-          <rect
-            x="93"
-            y="108"
-            width="154"
-            height="94"
-            rx="3"
-            fill="oklch(0.08 0.008 260)"
-          />
-          <rect
-            x="93"
-            y="108"
-            width="154"
-            height="14"
-            rx="3"
-            fill="oklch(0.14 0.008 260)"
-          />
-          <circle cx="102" cy="115" r="3" fill="oklch(0.62 0.21 25)" />
-          <circle cx="112" cy="115" r="3" fill="oklch(0.75 0.15 85)" />
-          <circle cx="122" cy="115" r="3" fill="oklch(0.65 0.2 145)" />
-          <text
-            x="134"
-            y="119"
-            fontSize="7"
-            fill="oklch(0.5 0.01 260)"
-            fontFamily="monospace"
-          >
-            BabiesIQ Console
-          </text>
-          <text
-            x="97"
-            y="132"
-            fontSize="6"
-            fill="oklch(0.72 0.24 254)"
-            fontFamily="monospace"
-          >
-            {">"} GET /api/search?q=lofi
-          </text>
-          <text
-            x="97"
-            y="142"
-            fontSize="6"
-            fill="oklch(0.65 0.2 145)"
-            fontFamily="monospace"
-          >
-            ✓ 200 OK 12ms
-          </text>
-          <text
-            x="97"
-            y="152"
-            fontSize="6"
-            fill="oklch(0.75 0 0)"
-            fontFamily="monospace"
-          >
-            {'{ "results": ['}{" "}
-          </text>
-          <text
-            x="97"
-            y="161"
-            fontSize="6"
-            fill="oklch(0.65 0.22 310)"
-            fontFamily="monospace"
-          >
-            {'  { "title": "lofi hip..."'}
-          </text>
-          <text
-            x="97"
-            y="170"
-            fontSize="6"
-            fill="oklch(0.65 0.22 310)"
-            fontFamily="monospace"
-          >
-            {'  { "title": "chill beats..."'}
-          </text>
-          <text
-            x="97"
-            y="179"
-            fontSize="6"
-            fill="oklch(0.75 0 0)"
-            fontFamily="monospace"
-          >
-            {"]"}
-          </text>
-          <rect
-            x="97"
-            y="184"
-            width="5"
-            height="7"
-            rx="1"
-            fill="oklch(0.72 0.24 254)"
-            opacity="0.9"
-          >
-            <animate
-              attributeName="opacity"
-              values="0.9;0;0.9"
-              dur="1s"
-              repeatCount="indefinite"
-            />
-          </rect>
-          <ellipse
-            cx="170"
-            cy="240"
-            rx="35"
-            ry="12"
-            fill="oklch(0.18 0.01 260)"
-          />
-          <path
-            d="M140 200 Q140 215 135 230 Q150 235 170 235 Q190 235 205 230 Q200 215 200 200 Q185 190 170 188 Q155 190 140 200Z"
-            fill="oklch(0.72 0.24 254 / 0.85)"
-          />
-          <path
-            d="M157 192 Q170 195 183 192"
-            stroke="oklch(0.85 0.15 254)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M140 205 Q120 215 110 225 Q115 230 120 228 Q130 218 145 210Z"
-            fill="oklch(0.65 0.08 30)"
-          />
-          <ellipse cx="112" cy="227" rx="8" ry="5" fill="oklch(0.65 0.08 30)" />
-          <path
-            d="M200 205 Q218 215 225 225 Q220 230 216 228 Q208 218 197 210Z"
-            fill="oklch(0.65 0.08 30)"
-          />
-          <ellipse cx="223" cy="227" rx="8" ry="5" fill="oklch(0.65 0.08 30)" />
-          <rect
-            x="162"
-            y="168"
-            width="16"
-            height="22"
-            rx="6"
-            fill="oklch(0.65 0.08 30)"
-          />
-          <ellipse
-            cx="170"
-            cy="150"
-            rx="36"
-            ry="38"
-            fill="oklch(0.65 0.08 30)"
-          />
-          <path
-            d="M134 140 Q136 100 170 96 Q204 100 206 140 Q202 115 200 110 Q185 95 170 93 Q155 95 140 110 Q138 115 134 140Z"
-            fill="oklch(0.22 0.03 40)"
-          />
-          <path
-            d="M134 140 Q128 148 130 162 Q135 158 138 150Z"
-            fill="oklch(0.22 0.03 40)"
-          />
-          <path
-            d="M206 140 Q212 148 210 162 Q205 158 202 150Z"
-            fill="oklch(0.22 0.03 40)"
-          />
-          <ellipse cx="155" cy="147" rx="8" ry="9" fill="white" />
-          <ellipse
-            cx="155"
-            cy="148"
-            rx="6"
-            ry="6.5"
-            fill="oklch(0.25 0.1 260)"
-          />
-          <ellipse
-            cx="155"
-            cy="148"
-            rx="4"
-            ry="4.5"
-            fill="oklch(0.08 0.01 260)"
-          />
-          <circle cx="158" cy="145" r="2" fill="white" />
-          <circle cx="153" cy="150" r="1" fill="white" opacity="0.6" />
-          <ellipse cx="185" cy="147" rx="8" ry="9" fill="white" />
-          <ellipse
-            cx="185"
-            cy="148"
-            rx="6"
-            ry="6.5"
-            fill="oklch(0.25 0.1 260)"
-          />
-          <ellipse
-            cx="185"
-            cy="148"
-            rx="4"
-            ry="4.5"
-            fill="oklch(0.08 0.01 260)"
-          />
-          <circle cx="188" cy="145" r="2" fill="white" />
-          <circle cx="183" cy="150" r="1" fill="white" opacity="0.6" />
-          <g fill="oklch(0.85 0.2 85)" opacity="0.9">
-            <path d="M145 135 l1.5 3 l3 1.5 l-3 1.5 l-1.5 3 l-1.5-3 l-3-1.5 l3-1.5z" />
-          </g>
-          <g fill="oklch(0.72 0.24 254)" opacity="0.8">
-            <path d="M196 135 l1 2 l2 1 l-2 1 l-1 2 l-1-2 l-2-1 l2-1z" />
-          </g>
-          <path
-            d="M148 135 Q155 130 163 134"
-            stroke="oklch(0.22 0.03 40)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M177 135 Q184 130 192 134"
-            stroke="oklch(0.22 0.03 40)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M160 162 Q170 170 180 162"
-            stroke="oklch(0.4 0.05 10)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path d="M163 163 Q170 168 177 163" fill="white" opacity="0.7" />
-          <ellipse
-            cx="145"
-            cy="160"
-            rx="8"
-            ry="5"
-            fill="oklch(0.75 0.15 10)"
-            opacity="0.25"
-          />
-          <ellipse
-            cx="195"
-            cy="160"
-            rx="8"
-            ry="5"
-            fill="oklch(0.75 0.15 10)"
-            opacity="0.25"
-          />
-          <path
-            d="M130 148 Q132 105 170 102 Q208 105 210 148"
-            stroke="oklch(0.22 0.008 260)"
-            strokeWidth="8"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M131 148 Q133 108 170 105 Q207 108 209 148"
-            stroke="oklch(0.35 0.01 260)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-            opacity="0.5"
-          />
-          <ellipse
-            cx="130"
-            cy="152"
-            rx="11"
-            ry="13"
-            fill="oklch(0.22 0.008 260)"
-          />
-          <ellipse
-            cx="130"
-            cy="152"
-            rx="7"
-            ry="9"
-            fill="oklch(0.12 0.006 260)"
-          />
-          <ellipse
-            cx="130"
-            cy="152"
-            rx="4"
-            ry="5"
-            fill="oklch(0.72 0.24 254 / 0.4)"
-          />
-          <circle cx="130" cy="152" r="2" fill="oklch(0.72 0.24 254)">
-            <animate
-              attributeName="opacity"
-              values="1;0.4;1"
-              dur="1.5s"
-              repeatCount="indefinite"
-            />
-          </circle>
-          <ellipse
-            cx="210"
-            cy="152"
-            rx="11"
-            ry="13"
-            fill="oklch(0.22 0.008 260)"
-          />
-          <ellipse
-            cx="210"
-            cy="152"
-            rx="7"
-            ry="9"
-            fill="oklch(0.12 0.006 260)"
-          />
-          <ellipse
-            cx="210"
-            cy="152"
-            rx="4"
-            ry="5"
-            fill="oklch(0.72 0.24 254 / 0.4)"
-          />
-          <circle cx="210" cy="152" r="2" fill="oklch(0.72 0.24 254)">
-            <animate
-              attributeName="opacity"
-              values="1;0.4;1"
-              dur="1.5s"
-              begin="0.5s"
-              repeatCount="indefinite"
-            />
-          </circle>
-        </svg>
+        <img src="/assets/meta/music-api-hero.svg" alt="" className="w-full rounded-3xl shadow-elevated" draggable={false} />
         <div className="flex justify-center mt-2">
           <MiniEqBars />
         </div>
@@ -756,7 +386,7 @@ function DeveloperGirlScene() {
         </motion.div>
       </div>
       <motion.div
-        className="relative w-full max-w-[380px] rounded-xl border border-primary/20 bg-card/90 backdrop-blur-md shadow-2xl shadow-primary/15 overflow-hidden mt-[-20px]"
+        className="relative w-full max-w-[380px] rounded-xl border border-primary/20 bg-card/90 backdrop-blur-md shadow-elevated overflow-hidden mt-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
@@ -1022,7 +652,7 @@ export function HomePage() {
 
       {/* ═══ HERO ═══ */}
       <section
-        className="relative min-h-[100vh] flex items-center overflow-hidden bg-background"
+        className="relative overflow-hidden bg-background"
         data-ocid="home.hero.section"
       >
         {/* Grid overlay */}
@@ -1046,10 +676,10 @@ export function HomePage() {
         {/* Bottom fade */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
-        <div className="relative container mx-auto px-6 py-20 max-w-6xl w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="relative mx-auto max-w-5xl px-5 pb-16 pt-20 sm:pt-28 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: copy */}
-            <div className="flex flex-col items-start text-left">
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-start">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1066,7 +696,7 @@ export function HomePage() {
               </motion.div>
 
               <motion.h1
-                className="font-display font-bold text-[clamp(2.4rem,5.5vw,4.8rem)] leading-[1.04] tracking-tight text-foreground mb-6"
+                className="font-display font-semibold text-4xl sm:text-5xl lg:text-6xl leading-[1.13] tracking-[-0.045em] text-foreground mb-5"
                 initial="hidden"
                 animate="visible"
                 variants={{
@@ -1074,47 +704,7 @@ export function HomePage() {
                   visible: { transition: { staggerChildren: 0.09 } },
                 }}
               >
-                {["Stream", "Audio", "&", "Video"].map((word) => (
-                  <motion.span
-                    key={word}
-                    className={`inline-block mr-[0.22em] ${
-                      word === "Stream" ? "text-gradient" : ""
-                    }`}
-                    variants={{
-                      hidden: { opacity: 0, y: 32 },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          duration: 0.55,
-                          ease: [0.22, 1, 0.36, 1],
-                        },
-                      },
-                    }}
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-                <br className="hidden md:block" />
-                {["at", "Scale"].map((word) => (
-                  <motion.span
-                    key={word}
-                    className="inline-block mr-[0.22em]"
-                    variants={{
-                      hidden: { opacity: 0, y: 32 },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          duration: 0.55,
-                          ease: [0.22, 1, 0.36, 1],
-                        },
-                      },
-                    }}
-                  >
-                    {word}
-                  </motion.span>
-                ))}
+                {t("hero.title")}
               </motion.h1>
 
               <motion.p
@@ -1208,8 +798,8 @@ export function HomePage() {
             </div>
           </div>
 
-          {/* Mobile terminal */}
-          <div className="lg:hidden mt-12">
+          {/* Mobile API preview */}
+          <div className="lg:hidden mt-8 space-y-4"><img src="/assets/meta/music-api-hero.svg" alt="" className="w-full max-w-[460px] mx-auto rounded-3xl" draggable={false}/>
             <motion.div
               className="relative w-full max-w-[460px] mx-auto rounded-xl border border-primary/20 bg-card/90 backdrop-blur-md shadow-2xl shadow-primary/15 overflow-hidden"
               initial={{ opacity: 0, y: 20 }}
@@ -1297,7 +887,7 @@ export function HomePage() {
 
       {/* ═══ HOW IT WORKS ═══ */}
       <section
-        className="bg-muted/20 py-28 border-b border-border"
+        className="bg-muted/20 py-16 sm:py-20 border-b border-border"
         data-ocid="home.how_it_works.section"
       >
         <div className="container mx-auto px-6 max-w-5xl">
@@ -1345,7 +935,7 @@ export function HomePage() {
 
       {/* ═══ FEATURES GRID ═══ */}
       <section
-        className="bg-background py-28 border-b border-border"
+        className="bg-background py-16 sm:py-20 border-b border-border"
         data-ocid="home.features.section"
       >
         <div className="container mx-auto px-6 max-w-5xl">
@@ -1362,7 +952,7 @@ export function HomePage() {
           </FadeUp>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map(
-              ({ icon: Icon, title, desc, color, iconColor, iconBg }, i) => (
+              ({ title, desc }, i) => (
                 <motion.div
                   key={title}
                   initial={{ opacity: 0, y: 24 }}
@@ -1370,22 +960,16 @@ export function HomePage() {
                   viewport={{ once: true, amount: 0.15 }}
                   transition={{ duration: 0.5, delay: i * 0.08 }}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className="group relative rounded-xl border border-border bg-card/60 backdrop-blur-sm p-6 overflow-hidden hover:border-primary/30 hover:shadow-xl hover:shadow-primary/8 transition-smooth cursor-default"
+                  className="meta-feature-card group relative rounded-2xl border border-border bg-card p-5 sm:p-6 overflow-hidden hover:border-primary/40 transition-colors"
                   data-ocid={`home.features.item.${i + 1}`}
                 >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-100 transition-smooth pointer-events-none rounded-xl`}
-                  />
+                  
                   <div className="relative">
-                    <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-smooth ${iconBg}`}
-                    >
-                      <Icon className={`w-5 h-5 ${iconColor}`} />
-                    </div>
-                    <h3 className="font-display font-semibold text-foreground text-sm mb-2">
+                    <MetaIcon name={["search","audio","video","equalizer","download","speed"][i]} size={52} className="mb-4" />
+                    <h3 className="font-display font-semibold text-foreground text-base mb-2">
                       {title}
                     </h3>
-                    <p className="text-xs text-muted-foreground font-body leading-relaxed">
+                    <p className="text-sm text-muted-foreground font-body leading-relaxed">
                       {desc}
                     </p>
                   </div>
@@ -1398,7 +982,7 @@ export function HomePage() {
 
       {/* ═══ WAVEFORM SHOWCASE ═══ */}
       <section
-        className="relative bg-card border-b border-border py-28 overflow-hidden"
+        className="relative bg-card border-b border-border py-16 sm:py-20 overflow-hidden"
         data-ocid="home.waveform.section"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
@@ -1509,7 +1093,7 @@ export function HomePage() {
 
       {/* ═══ TESTIMONIALS ═══ */}
       <section
-        className="bg-muted/25 border-b border-border py-28"
+        className="bg-muted/25 border-b border-border py-16 sm:py-20"
         data-ocid="home.testimonials.section"
       >
         <div className="container mx-auto px-6 max-w-5xl">
@@ -1533,7 +1117,7 @@ export function HomePage() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 whileHover={{ y: -4 }}
-                className="bg-card rounded-xl border border-border p-6 flex flex-col gap-4 transition-smooth hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+                className="bg-card rounded-2xl border border-border p-6 flex flex-col gap-4 transition-smooth hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
                 data-ocid={`home.testimonials.item.${i + 1}`}
               >
                 <div className="flex items-center gap-1">
@@ -1585,7 +1169,7 @@ export function HomePage() {
 
       {/* ═══ TRY IT LIVE ═══ */}
       <section
-        className="relative bg-background border-b border-border py-28 overflow-hidden"
+        className="relative bg-background border-b border-border py-16 sm:py-20 overflow-hidden"
         data-ocid="home.try_it.section"
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
@@ -1699,7 +1283,7 @@ export function HomePage() {
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 whileHover={{ y: -4 }}
                 data-ocid={`home.pricing_teaser.plan.${i + 1}`}
-                className={`flex flex-col p-5 rounded-xl border text-left transition-smooth ${
+                className={`flex flex-col p-6 rounded-2xl border text-start transition-smooth ${
                   plan.highlight
                     ? "border-primary bg-primary/5 shadow-lg shadow-primary/10 ring-1 ring-primary/20"
                     : "border-border bg-background hover:border-primary/30"

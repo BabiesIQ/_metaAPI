@@ -1,3 +1,4 @@
+import { MetaIcon } from "@/components/MetaIcon";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -169,12 +170,12 @@ export function NotificationsPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <PageTransition>
-          <div className="space-y-5 max-w-3xl" data-ocid="notifications.page">
+          <div className="space-y-5 max-w-4xl mx-auto" data-ocid="notifications.page">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-                  <Bell className="w-6 h-6 text-primary" />
+                  <MetaIcon name="notifications" size={44} />
                   {t("notifications.title")}
                 </h1>
                 {unreadCount > 0 && (

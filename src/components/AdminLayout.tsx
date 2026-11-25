@@ -1,3 +1,4 @@
+import { MetaLogo } from "./MetaIcon";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
@@ -132,6 +133,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
         <header className="h-16 border-b border-border flex items-center gap-4 px-4 lg:px-6 shrink-0 bg-card shadow-[0_8px_20px_-18px_rgba(0,0,0,.9)]">
+          <MetaLogo size={34} />
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden text-muted-foreground hover:text-foreground"
