@@ -12,6 +12,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and build production frontend
+        run: |
+          npm install --include=dev
+          npm run build
+          test -s dist/index.html
+          test -n "$(find dist/assets -maxdepth 1 -type f -name 'Login-*.js' -print -quit)"
+
       - name: Package source for deployment
         run: tar -czf /tmp/deploy.tar.gz --exclude=node_modules --exclude=.git .
 

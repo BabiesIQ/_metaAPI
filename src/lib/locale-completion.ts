@@ -41,7 +41,8 @@ export const localeCompletion = {
       "menu": "Menu",
       "search_languages": "Search languages",
       "no_language_results": "No languages found",
-      "language_saved": "Your language choice is saved on this device."
+      "language_saved": "Your language choice is saved on this device.",
+      "page_load_error": "The page could not load. Please try again."
     }
   },
   "hi": {
@@ -86,7 +87,8 @@ export const localeCompletion = {
       "menu": "मेनू",
       "search_languages": "भाषाएँ खोजें",
       "no_language_results": "कोई भाषा नहीं मिली",
-      "language_saved": "आपकी चुनी हुई भाषा इस डिवाइस पर सेव रहती है।"
+      "language_saved": "आपकी चुनी हुई भाषा इस डिवाइस पर सेव रहती है।",
+      "page_load_error": "पेज लोड नहीं हो सका। कृपया दोबारा कोशिश करें।"
     }
   },
   "es": {
@@ -131,7 +133,8 @@ export const localeCompletion = {
       "menu": "Menú",
       "search_languages": "Buscar idiomas",
       "no_language_results": "No se encontraron idiomas",
-      "language_saved": "Tu idioma se guarda en este dispositivo."
+      "language_saved": "Tu idioma se guarda en este dispositivo.",
+      "page_load_error": "No se pudo cargar la página. Inténtalo de nuevo."
     }
   },
   "fr": {
@@ -176,7 +179,8 @@ export const localeCompletion = {
       "menu": "Menu",
       "search_languages": "Rechercher une langue",
       "no_language_results": "Aucune langue trouvée",
-      "language_saved": "Votre choix de langue est enregistré sur cet appareil."
+      "language_saved": "Votre choix de langue est enregistré sur cet appareil.",
+      "page_load_error": "Impossible de charger la page. Veuillez réessayer."
     }
   },
   "ar": {
@@ -221,7 +225,8 @@ export const localeCompletion = {
       "menu": "القائمة",
       "search_languages": "البحث عن اللغات",
       "no_language_results": "لم يتم العثور على لغات",
-      "language_saved": "يُحفظ اختيار لغتك على هذا الجهاز."
+      "language_saved": "يُحفظ اختيار لغتك على هذا الجهاز.",
+      "page_load_error": "تعذر تحميل الصفحة. يرجى المحاولة مرة أخرى."
     }
   },
   "pt": {
@@ -266,7 +271,8 @@ export const localeCompletion = {
       "menu": "Menu",
       "search_languages": "Buscar idiomas",
       "no_language_results": "Nenhum idioma encontrado",
-      "language_saved": "Sua escolha de idioma é salva neste dispositivo."
+      "language_saved": "Sua escolha de idioma é salva neste dispositivo.",
+      "page_load_error": "Não foi possível carregar a página. Tente novamente."
     }
   },
   "de": {
@@ -311,7 +317,8 @@ export const localeCompletion = {
       "menu": "Menü",
       "search_languages": "Sprachen suchen",
       "no_language_results": "Keine Sprachen gefunden",
-      "language_saved": "Deine Sprachauswahl wird auf diesem Gerät gespeichert."
+      "language_saved": "Deine Sprachauswahl wird auf diesem Gerät gespeichert.",
+      "page_load_error": "Die Seite konnte nicht geladen werden. Bitte versuche es erneut."
     }
   },
   "ja": {
@@ -356,7 +363,8 @@ export const localeCompletion = {
       "menu": "メニュー",
       "search_languages": "言語を検索",
       "no_language_results": "言語が見つかりません",
-      "language_saved": "選択した言語はこの端末に保存されます。"
+      "language_saved": "選択した言語はこの端末に保存されます。",
+      "page_load_error": "ページを読み込めませんでした。もう一度お試しください。"
     }
   },
   "ko": {
@@ -401,7 +409,8 @@ export const localeCompletion = {
       "menu": "메뉴",
       "search_languages": "언어 검색",
       "no_language_results": "검색 결과가 없습니다",
-      "language_saved": "선택한 언어는 이 기기에 저장됩니다."
+      "language_saved": "선택한 언어는 이 기기에 저장됩니다.",
+      "page_load_error": "페이지를 불러오지 못했습니다. 다시 시도해 주세요."
     }
   },
   "zh": {
@@ -446,7 +455,8 @@ export const localeCompletion = {
       "menu": "菜单",
       "search_languages": "搜索语言",
       "no_language_results": "未找到语言",
-      "language_saved": "您选择的语言会保存在此设备上。"
+      "language_saved": "您选择的语言会保存在此设备上。",
+      "page_load_error": "页面加载失败，请重试。"
     }
   }
 } as const;

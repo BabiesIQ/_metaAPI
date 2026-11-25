@@ -7,6 +7,8 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect } from "react";
+import { isChunkLoadError, recoverChunk } from "@/lib/chunk-recovery";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/hooks/useAuth";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
@@ -511,7 +513,22 @@ const routeTree = rootRoute.addChildren([
   adminTrustedDomainsRoute,
 ]);
 
-const router = createRouter({ routeTree });
+function RouteError({ error }: { error: Error }) {
+  const { t } = useTranslation();
+  const chunkError = isChunkLoadError(error);
+  useEffect(() => { if (chunkError) recoverChunk(error); }, [chunkError, error]);
+  return (
+    <main className="min-h-[70dvh] grid place-items-center bg-background px-5 py-12">
+      <section role="alert" className="w-full max-w-md rounded-3xl border border-border bg-card p-7 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("common.error")}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t("common.page_load_error")}</p>
+        <button type="button" onClick={() => { const url = new URL(window.location.href); url.searchParams.set("__biq_reload", String(Date.now())); window.location.replace(url.toString()); }} className="mt-6 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">{t("common.retry")}</button>
+      </section>
+    </main>
+  );
+}
+
+const router = createRouter({ routeTree, defaultErrorComponent: RouteError });
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -1,4 +1,10 @@
 import "./lib/i18n";
+import { recoverChunk } from "./lib/chunk-recovery";
+
+window.addEventListener("vite:preloadError", (event) => {
+  const error = (event as Event & { payload?: unknown }).payload;
+  if (recoverChunk(error)) event.preventDefault();
+});
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import App from "./App";

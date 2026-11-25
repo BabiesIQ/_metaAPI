@@ -101,10 +101,12 @@ app.use(
       const relativePath = path.relative(DIST, filePath).replaceAll(path.sep, "/");
       const fileName = path.basename(filePath);
 
-      if (
-        relativePath.startsWith("assets/index-") ||
-        /\.[a-f0-9]{8,}\.(?:js|css|map)$/i.test(fileName)
-      ) {
+      if (fileName.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-store, max-age=0");
+        return;
+      }
+
+      if (relativePath.startsWith("assets/") && /-[A-Za-z0-9_-]{8,}\.(?:js|css|map)$/i.test(fileName)) {
         res.setHeader(
           "Cache-Control",
           "public, max-age=31536000, immutable",
@@ -123,12 +125,18 @@ app.use(
       if (relativePath.startsWith("assets/")) {
         res.setHeader(
           "Cache-Control",
-          "public, max-age=604800, stale-while-revalidate=2592000",
+          "public, max-age=300, must-revalidate",
         );
       }
     },
   }),
 );
+
+// Missing versioned assets must not fall through to the SPA HTML document.
+app.use("/assets", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  res.status(404).type("text/plain").send("Asset not found");
+});
 
 // ── Health / Ping endpoint ────────────────────────────────────────────────────
 app.get("/ping", (_req, res) => res.json({ ok: true, ts: Date.now() }));
@@ -182,7 +190,7 @@ function isKnownAppRoute(pathname) {
 app.get("*", (req, res) => {
   res.setHeader(
     "Cache-Control",
-    "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+    "no-store, max-age=0",
   );
   res
     .status(isKnownAppRoute(req.path) ? 200 : 404)
