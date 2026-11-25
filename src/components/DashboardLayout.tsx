@@ -36,6 +36,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 // ── Nav link definitions ───────────────────────────────────────────────────────
 const sidebarLinks = [
@@ -360,8 +361,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     await logout();
   };
 
-  const sidebarWidth = collapsed ? "w-[64px]" : "w-[240px]";
-  const contentMargin = collapsed ? "md:ml-[64px]" : "md:ml-[240px]";
+  const sidebarWidth = collapsed ? "w-[64px]" : "w-[256px]";
+  const contentMargin = collapsed ? "md:ml-[64px]" : "md:ml-[256px]";
 
   return (
     <div className="flex h-[100dvh] bg-background text-foreground overflow-hidden">
@@ -415,7 +416,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 340, damping: 32 }}
-              className="fixed inset-y-0 left-0 z-50 w-[240px] surface-machined border-r border-border shadow-2xl md:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-[min(86vw,340px)] surface-machined border-r border-border shadow-2xl md:hidden"
               data-ocid="dashboard.sidebar_mobile"
             >
               <button
@@ -447,7 +448,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Top bar */}
         <header
-          className="sticky top-0 z-20 h-14 shrink-0 flex items-center gap-3 px-4 bg-card border-b border-border shadow-[0_8px_20px_-18px_rgba(0,0,0,.9)]"
+          className="sticky top-0 z-20 h-16 shrink-0 flex items-center gap-3 px-4 bg-card border-b border-border shadow-[0_8px_20px_-18px_rgba(0,0,0,.9)]"
           data-ocid="dashboard.topbar"
         >
           {/* Mobile hamburger */}
@@ -477,6 +478,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Right actions */}
           <div className="flex items-center gap-1 shrink-0">
+            <LanguageSwitcher />
             <ThemeSwitcher />
 
             {/* Notification bell */}

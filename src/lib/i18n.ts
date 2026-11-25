@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { localeCompletion } from "./locale-completion";
 
 export const SUPPORTED_LANGUAGES = [
   {
@@ -6332,19 +6333,45 @@ const resources = {
   },
 };
 
+// Keep the existing dictionaries and fill the missing interface keys.
+for (const [code, additions] of Object.entries(localeCompletion)) {
+  const resource = resources[code as keyof typeof resources].translation as unknown as Record<string, Record<string, string>>;
+  for (const [group, entries] of Object.entries(additions)) {
+    resource[group] = { ...resource[group], ...entries };
+  }
+}
+
+const resolveLanguage = (code: string) => {
+  const base = code.toLowerCase().split(/[-_]/)[0];
+  return SUPPORTED_LANGUAGES.some((item) => item.code === base) ? base : undefined;
+};
+
 const savedLang = (() => {
   try {
-    return localStorage.getItem("babiesiq-lang") || "en";
-  } catch {
-    return "en";
+    const saved = resolveLanguage(localStorage.getItem("babiesiq-lang") || "");
+    if (saved) return saved;
+  } catch {}
+  if (typeof navigator !== "undefined") {
+    for (const code of navigator.languages || [navigator.language]) {
+      const supported = resolveLanguage(code);
+      if (supported) return supported;
+    }
   }
+  return "en";
 })();
+
+i18n.on("languageChanged", (code) => {
+  if (typeof document !== "undefined") applyDocumentDir(resolveLanguage(code) || "en");
+});
 
 i18n.use(initReactI18next).init({
   resources,
   lng: savedLang,
+  supportedLngs: SUPPORTED_LANGUAGES.map((item) => item.code),
   fallbackLng: "en",
   interpolation: { escapeValue: false },
 });
+
+if (typeof document !== "undefined") applyDocumentDir(savedLang);
 
 export default i18n;

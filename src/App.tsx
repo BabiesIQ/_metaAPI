@@ -15,7 +15,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { AdminProtectedRoute } from "@/pages/admin/AdminProtectedRoute";
 
 import { AnimatePresence, motion } from "motion/react";
-import { applyDocumentDir } from "./lib/i18n";
+
 
 // Keep the initial public bundle small. Auth, panel, admin, and documentation
 // pages are only downloaded when a user navigates to them.
@@ -381,7 +381,7 @@ function RootComponent() {
 
   useEffect(() => {
     initialize();
-    applyDocumentDir(localStorage.getItem("babiesiq-lang") || "en");
+
   }, [initialize]);
 
   return (

@@ -13,7 +13,6 @@ import {
   Bell,
   Megaphone,
   ChevronDown,
-  Globe,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -22,9 +21,9 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import i18n, { SUPPORTED_LANGUAGES, applyDocumentDir } from "../lib/i18n";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { UpdateChannel } from "./UpdateChannel";
 
@@ -36,102 +35,6 @@ const NAV_KEYS = [
 ];
 
 // ── Language Dropdown ─────────────────────────────────────────────────────────
-function LanguageSwitcher() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const currentLang = (i18n.language || "en").slice(0, 2);
-  const currentLangData =
-    SUPPORTED_LANGUAGES.find((l) => currentLang.startsWith(l.code)) ??
-    SUPPORTED_LANGUAGES[0];
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    function onOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
-    }
-    document.addEventListener("keydown", onKey);
-    document.addEventListener("mousedown", onOutside);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.removeEventListener("mousedown", onOutside);
-    };
-  }, []);
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="group flex items-center gap-1.5 h-8 px-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-white/60 hover:text-white"
-        aria-label="Change language"
-        aria-expanded={open}
-        data-ocid="header.lang_switcher.button"
-      >
-        <Globe className="h-3.5 w-3.5" />
-        <span className="text-xs font-semibold uppercase tracking-wide">
-          {currentLangData.flag}
-        </span>
-        <span className="hidden lg:inline text-xs font-medium">
-          {currentLang.toUpperCase()}
-        </span>
-        <ChevronDown
-          className={`h-3 w-3 opacity-50 transition-transform duration-200 ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
-            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-0 top-full mt-2 w-52 rounded-xl surface-machined z-50 overflow-hidden"
-            data-ocid="header.lang_dropdown.popover"
-          >
-            <div className="p-1.5 max-h-72 overflow-y-auto">
-              {SUPPORTED_LANGUAGES.map((lang) => {
-                const isActive = (i18n.language || "en").startsWith(lang.code);
-                return (
-                  <button
-                    key={lang.code}
-                    type="button"
-                    onClick={() => {
-                      i18n.changeLanguage(lang.code);
-                      applyDocumentDir(lang.code);
-                      setOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 text-left ${
-                      isActive
-                        ? "bg-purple-500/20 text-purple-300 font-semibold"
-                        : "text-white/60 hover:bg-white/10 hover:text-white"
-                    }`}
-                    data-ocid={`header.lang.${lang.code}.button`}
-                  >
-                    <span className="text-base leading-none w-5 shrink-0">
-                      {lang.flag}
-                    </span>
-                    <span className="flex-1 truncate">{lang.nativeName}</span>
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ── Header ────────────────────────────────────────────────────────────────────
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -151,7 +54,7 @@ export function Header() {
 
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth >= 768) setMobileOpen(false);
+      if (window.innerWidth >= 1024) setMobileOpen(false);
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -170,7 +73,7 @@ export function Header() {
       {/* Scroll progress bar */}
       <div className="scroll-progress" id="scroll-progress" />
 
-      <div className="container mx-auto flex items-center justify-between h-16 px-4 md:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 h-16 px-4">
         {/* ── Logo & brand ─────────────────────────────────────────────── */}
         <Link
           to="/"
@@ -182,9 +85,9 @@ export function Header() {
             className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
             style={{
               background:
-                "linear-gradient(135deg, #a855f7 0%, #ec4899 60%, #3b82f6 100%)",
+                "linear-gradient(145deg, #087b63, #159c87)",
               boxShadow:
-                "0 0 18px rgba(168,85,247,0.55), 0 0 6px rgba(168,85,247,0.3)",
+                "0 2px 8px rgba(8,123,99,.18)",
             }}
           >
             <svg
@@ -242,10 +145,9 @@ export function Header() {
           {/* Brand name + live dot */}
           <div className="flex items-center gap-1.5">
             <span
-              className="font-display font-bold text-xl bg-clip-text text-transparent"
+              className="font-display font-bold text-lg sm:text-xl text-foreground"
               style={{
-                backgroundImage:
-                  "linear-gradient(90deg, #c084fc 0%, #f472b6 50%, #60a5fa 100%)",
+                
               }}
             >
               BabiesIQ
@@ -255,13 +157,13 @@ export function Header() {
         </Link>
 
         {/* ── Desktop nav ──────────────────────────────────────────────── */}
-        <nav className="hidden md:flex items-center gap-1 mx-8">
+        <nav className="hidden lg:flex items-center gap-1 mx-4">
           {NAV_KEYS.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="relative px-3.5 py-1.5 text-sm font-medium text-white/65 hover:text-white transition-colors duration-200 rounded-md group"
-              activeProps={{ className: "text-white" }}
+              className="relative px-3.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md group"
+              activeProps={{ className: "text-foreground bg-muted" }}
               data-ocid={`nav.${link.key}.link`}
             >
               {t(`nav.${link.key}`)}
@@ -277,7 +179,7 @@ export function Header() {
         </nav>
 
         {/* ── Desktop right controls ────────────────────────────────── */}
-        <div className="hidden md:flex items-center gap-2 shrink-0">
+        <div className="hidden lg:flex items-center gap-2 shrink-0">
           <LanguageSwitcher />
           <ThemeSwitcher />
 
@@ -285,7 +187,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setChannelOpen(true)}
-            className="relative flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200"
+            className="relative flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
             aria-label="BabiesIQ Update Channel"
             title="BabiesIQ Update"
             data-ocid="header.channel.button"
@@ -302,7 +204,7 @@ export function Header() {
               {/* Notification bell */}
               <Link
                 to="/panel/notifications"
-                className="relative flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200"
+                className="relative flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
                 aria-label="Notifications"
                 data-ocid="header.notifications.link"
               >
@@ -336,7 +238,7 @@ export function Header() {
                         </span>
                       </div>
                     )}
-                    <span className="text-xs font-medium max-w-[100px] truncate text-white/80">
+                    <span className="text-xs font-medium max-w-[100px] truncate text-muted-foreground">
                       {displayName}
                     </span>
                     <ChevronDown className="w-3 h-3 opacity-50 text-white" />
@@ -406,7 +308,7 @@ export function Header() {
             <div className="flex items-center gap-2 pl-1">
               <Link
                 to="/signin"
-                className="h-8 px-4 flex items-center text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/10"
+                className="h-8 px-4 flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-lg hover:bg-muted"
                 data-ocid="header.login.button"
               >
                 {t("nav.login")}
@@ -428,13 +330,13 @@ export function Header() {
         </div>
 
         {/* ── Mobile controls ───────────────────────────────────────── */}
-        <div className="md:hidden flex items-center gap-1.5">
+        <div className="lg:hidden flex items-center gap-1.5">
           <LanguageSwitcher />
           <ThemeSwitcher />
           <button
             type="button"
             onClick={() => setChannelOpen(true)}
-            className="relative flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200"
+            className="relative flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
             aria-label="BabiesIQ Update Channel"
             data-ocid="header.mobile_channel.button"
           >
@@ -446,7 +348,7 @@ export function Header() {
           </button>
           <button
             type="button"
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors duration-200"
+            className="flex items-center justify-center w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
@@ -488,7 +390,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden overflow-hidden"
+            className="lg:hidden overflow-hidden"
           >
             <div
               className="border-t border-border px-4 pb-5 pt-3 surface-machined"
@@ -507,9 +409,9 @@ export function Header() {
                   >
                     <Link
                       to={link.to}
-                      className="flex items-center text-sm font-medium py-2.5 px-3 rounded-lg text-white/65 hover:text-white hover:bg-white/10 transition-colors duration-200"
+                      className="flex items-center text-sm font-medium py-2.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
                       onClick={() => setMobileOpen(false)}
-                      activeProps={{ className: "text-white bg-white/10" }}
+                      activeProps={{ className: "text-foreground bg-muted" }}
                       data-ocid={`nav.mobile.${link.key}.link`}
                     >
                       {t(`nav.${link.key}`)}
@@ -519,12 +421,12 @@ export function Header() {
               </nav>
 
               {/* Auth section */}
-              <div className="pt-3 border-t border-white/10">
+              <div className="pt-3 border-t border-border">
                 {isAuthenticated ? (
                   <div className="flex flex-col gap-1">
                     <Link
                       to="/panel/dashboard"
-                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-white/65 hover:text-white hover:bg-white/10 transition-colors duration-200"
+                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
                       onClick={() => setMobileOpen(false)}
                       data-ocid="header.mobile_dashboard.link"
                     >
@@ -533,7 +435,7 @@ export function Header() {
                     </Link>
                     <Link
                       to="/panel/profile-settings"
-                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-white/65 hover:text-white hover:bg-white/10 transition-colors duration-200"
+                      className="flex items-center gap-2 text-sm font-medium py-2.5 px-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
                       onClick={() => setMobileOpen(false)}
                       data-ocid="header.mobile_profile.link"
                     >
@@ -558,7 +460,7 @@ export function Header() {
                     <Link
                       to="/signin"
                       onClick={() => setMobileOpen(false)}
-                      className="w-full flex items-center justify-center h-9 rounded-lg border border-white/15 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white transition-all duration-200"
+                      className="w-full flex items-center justify-center h-9 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
                       data-ocid="header.mobile_login.button"
                     >
                       {t("nav.login")}

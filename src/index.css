@@ -603,3 +603,99 @@ select:focus-visible {
 .md-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.8rem; }
 .md-th { text-align: left; padding: 0.4rem 0.6rem; background: rgba(168,85,247,0.15); color: rgba(255,255,255,0.8); border-bottom: 1px solid rgba(255,255,255,0.12); font-weight: 600; }
 .md-td { padding: 0.35rem 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.65); }
+
+
+/* Shared BabiesIQ Cloud design tokens, adapted to Tailwind 3 OKLCH channels. */
+:root {
+  --font-display: "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, sans-serif;
+  --radius: 0.75rem;
+}
+:root:not(.dark):not([data-theme="midnight"]) {
+  color-scheme: light;
+  --background: 0.995 0 0;
+  --foreground: 0.20 0.003 260;
+  --card: 1 0 0;
+  --card-foreground: 0.20 0.003 260;
+  --popover: 1 0 0;
+  --popover-foreground: 0.20 0.003 260;
+  --primary: 0.46 0.13 165;
+  --primary-foreground: 0.99 0 0;
+  --secondary: 0.94 0.012 265;
+  --secondary-foreground: 0.25 0.02 265;
+  --muted: 0.95 0.008 265;
+  --muted-foreground: 0.46 0.025 265;
+  --accent: 0.94 0.025 165;
+  --accent-foreground: 0.20 0.03 165;
+  --border: 0.90 0.008 265;
+  --input: 0.90 0.008 265;
+  --ring: 0.46 0.13 165;
+  --chart-1: 0.46 0.13 165;
+  --sidebar: 0.965 0 0;
+  --sidebar-foreground: 0.24 0.003 260;
+  --sidebar-primary: 0.46 0.13 165;
+  --sidebar-primary-foreground: 0.99 0 0;
+  --sidebar-accent: 0.92 0 0;
+  --sidebar-accent-foreground: 0.24 0.003 260;
+  --sidebar-border: 0.87 0 0;
+  --sidebar-ring: 0.46 0.13 165;
+}
+:root.dark, :root[data-theme="midnight"] {
+  color-scheme: dark;
+  --background: 0.14 0.003 260;
+  --foreground: 0.95 0 0;
+  --card: 0.18 0.003 260;
+  --card-foreground: 0.95 0 0;
+  --popover: 0.18 0.003 260;
+  --popover-foreground: 0.95 0 0;
+  --primary: 0.75 0.14 165;
+  --primary-foreground: 0.14 0.003 260;
+  --secondary: 0.215 0.018 265;
+  --secondary-foreground: 0.87 0.02 265;
+  --muted: 0.215 0.012 265;
+  --muted-foreground: 0.68 0.018 265;
+  --accent: 0.26 0.035 165;
+  --accent-foreground: 0.93 0.01 165;
+  --border: 0.28 0.008 260;
+  --input: 0.30 0.008 260;
+  --ring: 0.75 0.14 165;
+  --chart-1: 0.75 0.14 165;
+  --sidebar: 0.20 0.003 260;
+  --sidebar-foreground: 0.95 0 0;
+  --sidebar-primary: 0.75 0.14 165;
+  --sidebar-primary-foreground: 0.14 0.003 260;
+  --sidebar-accent: 0.23 0.015 265;
+  --sidebar-accent-foreground: 0.95 0 0;
+  --sidebar-border: 0.28 0.008 260;
+  --sidebar-ring: 0.75 0.14 165;
+}
+body { background-image: none; background-attachment: scroll; }
+.surface-machined, .surface-machined-soft {
+  border: 1px solid oklch(var(--border));
+  box-shadow: 0 2px 8px oklch(0.20 0.01 260 / .06);
+  border-radius: 1rem;
+}
+.press-depth:hover { border-color: oklch(var(--ring) / .55); }
+.press-depth:active { box-shadow: none; }
+.shadow-elevated { box-shadow: 0 8px 28px oklch(0.14 0.01 260 / .10); }
+.gradient-primary { background: linear-gradient(145deg, #087b63, #08705d); }
+.text-gradient { background-image: linear-gradient(90deg, oklch(var(--primary)), oklch(var(--foreground))); }
+.live-indicator { background: #10b981; animation: none; box-shadow: 0 0 0 3px #10b98125; }
+.scroll-progress { height: 2px; background: oklch(var(--primary)); pointer-events: none; }
+[data-slot="popover-content"], [data-slot="dropdown-menu-content"], [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="sheet-content"], [role="dialog"] {
+  border-color: oklch(var(--border)) !important;
+  box-shadow: 0 12px 40px oklch(0.14 0.01 260 / .18) !important;
+}
+.md-root, .md-p, .md-td, .md-blockquote { color: oklch(var(--muted-foreground)); }
+.md-h1, .md-h2, .md-h3, .md-th { color: oklch(var(--foreground)); }
+.md-hr, .md-td { border-color: oklch(var(--border)); }
+.md-th, .md-blockquote { background: oklch(var(--muted)); }
+.md-code { color: oklch(var(--primary)); background: oklch(var(--muted)); }
+.md-pre .md-code { color: #e2e8f0; background: transparent; }
+.meta-language-sheet { border-radius: 1.5rem; }
+@media (max-width: 639px) {
+  .meta-language-sheet[data-slot="dialog-content"] { top: auto; bottom: 0; left: 0; transform: none; max-width: 100%; border-radius: 1.75rem 1.75rem 0 0; padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orb-animate-1, .orb-animate-2, .orb-animate-3, .live-indicator, .marquee-track, .animated-gradient-bg, .animate-gradient, .animate-float, .float-icon-1, .float-icon-2, .float-icon-3 { animation: none !important; }
+}

@@ -1,7 +1,9 @@
-# dist is pre-built locally and committed to repo
-# Railway only needs to install runtime deps and start the server
+# Build the current frontend sources rather than serving a stale committed dist.
 [phases.install]
-cmds = ["npm install --omit=dev"]
+cmds = ["npm install --include=dev"]
+
+[phases.build]
+cmds = ["npm run build"]
 
 [start]
 cmd = "node server.js"
